@@ -1,0 +1,245 @@
+import React from 'react';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import { toggleNavMenu } from '../../actions/menu';
+import { userNav } from '../../actions/navigation';
+
+import Collapse from '@material-ui/core/Collapse';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import { withStyles } from '@material-ui/core/styles';
+
+import ExpandLess from '@material-ui/icons/ExpandLess'
+import ExpandMore from '@material-ui/icons/ExpandMore'
+
+const styles = (theme) => ({
+    menuItem: {
+        flex: 1,
+        width: '100%',
+        minWidth: 200,
+        maxWidth: 360,
+        borderBottom: "1px solid rgb(0,0,0,0.2)",
+        justifyContent: "space-between",
+        /*"&.Mui-selected": {
+            backgroundColor: "rgb(0,0,0,0.6)",
+            color: "rgb(255,255,255,1)"
+          }*/
+    },
+    navList: {
+        width: '100%',
+        maxWidth: '360',
+    },
+    subMenu: {
+        padding: "0px",
+        paddingLeft: "0px",
+        marginTop: "0px",
+        borderBottom: "1px solid rgb(0,0,0,0.2)",
+    },
+    subMenuItem: {
+        fontSize: "11pt",
+        padding: "auto 20px",
+        paddingLeft: "2em",
+    },
+});
+
+class NavMenu extends React.Component {
+    constructor(props) {
+        super(props);
+        this.activeRoute = this.activeRoute.bind(this);
+        this.classes = null;
+    }
+
+    static propTypes = {
+        menuOpened: PropTypes.bool.isRequired,
+        toggleNavMenu: PropTypes.func.isRequired,
+        userNav: PropTypes.func.isRequired,
+        isAuthenticated: PropTypes.bool
+    }
+
+    state = {
+        manageInventoryMenuOpen: false,
+        manageInventoryMenuAnchor: null,
+        manageGroupOpen: false,
+        inventoryGroupOpen: false,
+        financialGroupOpen: false,
+    }
+
+    navigateTo(url, e) {
+        this.closeManageInventoryMenu();
+        this.props.toggleNavMenu();
+        this.props.history.push(url);
+        this.props.userNav(url);
+    }
+
+    activeRoute = (routePath) => {
+        return this.props.location.pathname === routePath ? true : false;
+    }
+
+    guestMenuOptions() {
+        return (
+            <List>
+                <ListItem button 
+                    onClick={this.navigateTo.bind(this, "/login")}
+                    selected={this.activeRoute("/login")}>
+                    <ListItemText>Log In</ListItemText>
+                </ListItem>
+                <ListItem button 
+                    onClick={this.navigateTo.bind(this, "/register")}
+                    selected={this.activeRoute("/register")}>
+                    <ListItemText>Register</ListItemText>
+                </ListItem>
+            </List>
+        );
+    }
+
+    showManageInventoryMenu = (event) => {
+        this.setState({...this.state,
+            manageInventoryMenuOpen: true,
+            manageInventoryMenuAnchor: event.target,
+        });
+    }
+
+    closeManageInventoryMenu = () => {
+        this.setState({...this.state,
+            manageInventoryMenuOpen: false,
+            manageInventoryMenuAnchor: null,
+        }); 
+    }
+
+    toggleFinancialGroup = (event) => {
+        this.setState({
+            ...this.state,
+            financialGroupOpen: !this.state.financialGroupOpen,
+            inventoryGroupOpen: false,
+            manageGroupOpen: false
+        }); 
+    }
+
+    toggleInventoryGroup = (event) => {
+        this.setState({
+            ...this.state,
+            inventoryGroupOpen: !this.state.inventoryGroupOpen,
+            financialGroupOpen: false,
+            manageGroupOpen: false
+        }); 
+    }
+
+    toggleManageGroup = (event) => {
+        this.setState({
+            ...this.state,
+            manageGroupOpen: !this.state.manageGroupOpen,
+            inventoryGroupOpen: false,
+            financialGroupOpen: false
+        }); 
+    }
+
+    userMenuOptions() {
+        return (
+            <List component="nav" className={this.classes.navList}>
+                <ListItem button className={this.classes.menuItem}
+                    onClick={this.navigateTo.bind(this, "/")}
+                    selected = {this.activeRoute("/")}>
+                    <ListItemText primary="Home" />
+                </ListItem>
+                <ListItem button className={this.classes.menuItem}
+                    onClick={this.toggleFinancialGroup}
+                    selected={this.state.financialGroupOpen}>
+                    <ListItemText primary="Financials" />
+                    {Boolean(this.state.financialGroupOpen) ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={this.state.financialGroupOpen} unmountOnExit>
+                    <List className={this.classes.subMenu} dense>
+                        <ListItem button dense className={this.classes.subMenuItem}
+                            onClick={this.navigateTo.bind(this, "/financial")}
+                            selected = {this.activeRoute("/financial")}>
+                                Overview
+                            </ListItem>
+                        <ListItem button dense className={this.classes.subMenuItem}
+                            onClick={this.navigateTo.bind(this, "/financial/accounts")}
+                            selected = {this.activeRoute("/financial/accounts")}>
+                                Accounts
+                        </ListItem>
+                        <ListItem button dense className={this.classes.subMenuItem}
+                            onClick={this.navigateTo.bind(this, "/financial/assets")}
+                            selected = {this.activeRoute("/financial/assets")}>
+                                Assets
+                        </ListItem>
+                        <ListItem button dense className={this.classes.subMenuItem}>Budgets</ListItem>
+                    </List>
+                </Collapse>
+                <ListItem button className={this.classes.menuItem}
+                    onClick={this.toggleInventoryGroup}
+                    selected={this.state.inventoryGroupOpen}>
+                    <ListItemText primary="Inventory" />
+                    {Boolean(this.state.inventoryGroupOpen) ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={this.state.inventoryGroupOpen} unmountOnExit>
+                    <List className={this.classes.subMenu} dense>
+                        <ListItem button dense className={this.classes.subMenuItem}>Overview</ListItem>
+                        <ListItem button dense className={this.classes.subMenuItem}>Count</ListItem>
+                        <ListItem button dense className={this.classes.subMenuItem}>Receive</ListItem>
+                        <ListItem button dense className={this.classes.subMenuItem}>Use</ListItem>
+                    </List>
+                </Collapse>
+                <ListItem button className={this.classes.menuItem}
+                    onClick={this.toggleManageGroup}
+                    selected={this.state.manageGroupOpen}>
+                    <ListItemText primary="Manage" />
+                    {Boolean(this.state.manageGroupOpen) ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={this.state.manageGroupOpen} unmountOnExit>
+                    <List className={this.classes.subMenu} dense>
+                        <ListItem button dense className={this.classes.subMenuItem}
+                            onClick={this.navigateTo.bind(this, "/manage/homes")}
+                            selected = {this.activeRoute("/manage/homes")}>
+                                Homes
+                        </ListItem>
+                        <ListItem button dense onClick={this.showManageInventoryMenu} className={this.classes.subMenuItem}>Inventory</ListItem>
+                        <ListItem button dense className={this.classes.subMenuItem}
+                            onClick={this.navigateTo.bind(this, "/manage/people")} 
+                            selected={this.activeRoute("/manage/people")}>
+                                People
+                        </ListItem>
+                    </List>
+                </Collapse>
+
+            </List>
+        );
+    }
+
+    render() {
+        const { classes } = this.props;
+        this.classes = classes;
+
+        return(
+            <>
+                <SwipeableDrawer anchor={"left"} open={this.props.menuOpened} style={{zIndex: "1"}} onClose={this.props.toggleNavMenu} onOpen={this.props.toggleNavMenu}>
+                    <div style={{height: "54px"}}>&nbsp;</div>
+                    { this.props.isAuthenticated ? this.userMenuOptions() : this.guestMenuOptions() }
+                </SwipeableDrawer>
+                <Menu open={Boolean(this.state.manageInventoryMenuOpen)} anchorEl={this.state.manageInventoryMenuAnchor} anchorOrigin={{ vertical: "top", horizontal: "right" }} 
+                    onClose={this.closeManageInventoryMenu}>
+                    <MenuItem button dense onClick={this.navigateTo.bind(this, "/inventory/categories")}>Categories</MenuItem>
+                    <MenuItem button dense onClick={this.navigateTo.bind(this, "/")}>Items</MenuItem>
+                    <MenuItem button dense onClick={this.navigateTo.bind(this, "/")}>Recipes</MenuItem>
+                    <MenuItem button dense onClick={this.navigateTo.bind(this, "/")}>Suppliers</MenuItem>
+                </Menu>
+            </>
+        );
+    }
+
+}
+
+const mapStateToProps = state => ({
+    menuOpened: state.menu.opened,
+    isAuthenticated: state.auth.isAuthenticated
+});
+
+
+export default withRouter(connect(mapStateToProps, { toggleNavMenu, userNav })(withStyles(styles, { withTheme: true })(NavMenu)));

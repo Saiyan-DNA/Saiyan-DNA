@@ -1,0 +1,49 @@
+// Front-End Application Actions
+export const TOGGLE_MENU = 'TOGGLE_MENU'
+export const SET_TITLE = 'SET_TITLE'
+export const USER_NAV = "USER_NAV"
+export const USER_HOME = "USER_HOME"
+export const CREATE_MESSAGE = 'CREATE_MESSAGE'
+
+// Auth ACTIONS
+export const USER_LOADING = 'USER_LOADING'
+export const USER_LOADED = 'USER_LOADED'
+export const AUTH_ERROR = 'AUTH_ERROR'
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
+export const LOGIN_FAIL = 'LOGIN_FAIL'
+export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS'
+
+// Inventory Actions
+export const GET_CATEGORIES = "GET_CATEGORIES"
+export const GET_CATEGORY = "GET_CATEGORY"
+export const CLEAR_CATEGORY = "CLEAR_CATEGORY"
+export const GET_ITEMS = "GET_ITEMS"
+export const DELETE_ITEM = "DELETE_ITEM"
+export const CREATE_ITEM = "CREATE_ITEM"
+
+// Financial Actions
+export const GET_ACCOUNTS = 'GET_ACCOUNTS'
+export const CREATE_ACCOUNT = 'CREATE_ACCOUNT'
+export const UPDATE_ACCOUNT = 'UPDATE_ACCOUNT'
+export const DELETE_ACCOUNT = 'DELETE_ACCOUNT'
+export const GET_ACCOUNT = 'GET_ACCOUNT'
+export const GET_TRANSACTIONS = 'GET_TRANSACTIONS'
+export const CLEAR_TRANSACTIONS = 'CLEAR_TRANSACTIONS'
+export const CLEAR_ACCOUNT = 'CLEAR_ACCOUNT'
+export const GET_FINANCIAL_CATEGORIES = 'GET_FINANCIAL_CATEGORIES'
+export const GET_FINANCIAL_INSTITUTIONS = 'GET_FINANCIAL_INSTITUTIONS'
+export const GET_FINANCIAL_INSTITUTION = 'GET_FINANCIAL_INSTITUTION'
+export const GET_ASSETS = 'GET_ASSETS'
+export const CREATE_ASSET = 'CREATE_ASSET'
+export const UPDATE_ASSET = 'UPDATE_ASSET'
+export const DELETE_ASSET = 'DELETE_ASSET'
+export const GET_ASSET = 'GET_ASSET'
+export const CLEAR_ASSET = 'CLEAR_ASSET'
+
+// Home Actions
+export const GET_HOMES = 'GET_HOMES'
+export const GET_HOME = 'GET_HOME'
+export const CLEAR_HOME = 'CLEAR_HOME'
+export const CREATE_HOME = 'CREATE_HOME'
+export const UPDATE_HOME = 'UPDATE_HOME'
+export const DELETE_HOME = 'DELETE_HOME'

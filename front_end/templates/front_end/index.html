@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  {% load static %}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <title>Home Central</title>
+    <!-- <link rel="shortcut icon" href="{% static "front_end/images/favicon-32x32.png" %}"> -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,700&display=swap" />
+    <style>
+    </style>
+  </head>
+  <body style="margin: 0px;font-family: Open Sans;">
+    <div id="app">
+        <!-- React will load here -->
+    </div>
+    <!-- Development -->
+    <script src="{% static "front_end/Financial.main.js" %}"></script>
+    <script src="{% static "front_end/General.main.js" %}"></script>
+    <script src="{% static "front_end/Manage.main.js" %}"></script>
+    <script src="{% static "front_end/vendors~Financial.main.js" %}"></script>
+    <script src="{% static "front_end/vendors~General.main.js" %}"></script>
+    <script src="{% static "front_end/vendors~Financial~Manage.main.js" %}"></script>
+    <script src="{% static "front_end/vendors~Financial~General~Manage.main.js" %}"></script>
+    
+    <!-- Production -->
+    {% comment %} <script src="{% static "front_end/0.main.js" %}"></script>
+    <script src="{% static "front_end/1.main.js" %}"></script>
+    <script src="{% static "front_end/2.main.js" %}"></script>
+    <script src="{% static "front_end/3.main.js" %}"></script>
+    <script src="{% static "front_end/4.main.js" %}"></script>
+    <script src="{% static "front_end/6.main.js" %}"></script>
+    <script src="{% static "front_end/7.main.js" %}"></script> {% endcomment %}
+    
+    <!-- Main -->
+    <script src="{% static "front_end/main.js" %}"></script>
+  </body>
+
+</html>

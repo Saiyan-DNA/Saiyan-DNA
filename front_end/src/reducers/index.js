@@ -1,0 +1,22 @@
+import { combineReducers } from 'redux';
+import accounts from './accounts';
+import assets from './assets';
+import auth from './auth';
+import homes from './homes';
+import inventory from './inventory';
+import items from './items';
+import menu from './menu';
+import messages from './messages';
+import navigation from './navigation';
+
+export default combineReducers({
+    accounts,
+    assets,
+    auth,
+    homes,
+    inventory,
+    items,
+    menu,
+    messages,
+    navigation    
+});

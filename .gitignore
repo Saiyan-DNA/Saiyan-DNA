@@ -1,0 +1,10 @@
+.vscode
+.pylitrc
+manage.py
+homedb.sqlite3
+settings.py
+migrations
+Pipfile.lock
+package-lock.json
+node_modules
+*main.js

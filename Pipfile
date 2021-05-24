@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+django = "*"
+djangorestframework = "*"
+pylint-django = "*"
+djangorestframework-jwt = "*"
+djangorestframework-recursive = "*"
+django-filter = "*"
+django-extensions = "*"
+
+[requires]
+python_version = "3.8"
