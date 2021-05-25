@@ -41,7 +41,8 @@ class TransactionModal extends React.Component {
             transactionAmount: "",
             transferFromAccount: "",
             transferToAccount: "",
-            isValid: false
+            isValid: false,
+            isEdited: false,
         }
     }
 
@@ -59,18 +60,40 @@ class TransactionModal extends React.Component {
     componentDidUpdate() {
         var trns = this.props.transaction;
 
+        // Apply transaction details to component state for potential edit by the end-user.
         if (trns.id != this.state.transaction.transactionId) {
+            if (trns.id) {
+                this.setState({transaction: {
+                    transactionId: trns.id,
+                    transactionType: trns.transaction_type,
+                    transactionSummary: trns.summary, 
+                    transactionDescription: trns.description,
+                    transactionCategory: trns.financial_category,
+                    transactionAmount: trns.amount,
+                    transferFromAccount: "",
+                    transferToAccount: "",
+                    isEdited: false,
+                    isValid: false
+                }});
+            }
+        } 
+
+        // Clear Transaction details for modal (if any exist) on close.
+        if (!this.props.open && (this.state.transaction.transactionId || this.state.transaction.isEdited)) {
             this.setState({transaction: {
-                transactionId: trns.id,
-                transactionType: trns.transaction_type,
-                transactionSummary: trns.summary, 
-                transactionDescription: trns.description,
-                transactionCategory: trns.financial_category,
-                transactionAmount: trns.amount,
+                transactionId: null,
+                transactionType: "",
+                transactionSummary: "",
+                transactionDescription: "",
+                transactionCategory: null,
+                transactionAmount: "",
                 transferFromAccount: "",
                 transferToAccount: "",
+                isValid: false,
+                isEdited: false,
             }});
         }
+
     }
 
     validateTransaction = (e, transaction) => {
@@ -90,7 +113,10 @@ class TransactionModal extends React.Component {
 
     onChange = (e) => {
         var updatedTransaction = {...this.state.transaction};
+        
         updatedTransaction[e.target.name] = e.target.value;
+        updatedTransaction["isEdited"] = true;
+        
         this.setState({"transaction": updatedTransaction});
         
         if (updatedTransaction.transactionType == "TRN") {
@@ -229,16 +255,16 @@ class TransactionModal extends React.Component {
                             </Grid>
                             <Grid item xs={12} sm={12}>
                                 <FormControl fullWidth={true}>
-                                    <InputLabel htmlFor="transferToAccount">Transfer From</InputLabel>
+                                    <InputLabel htmlFor="transferToAccount">Transfer To</InputLabel>
                                     <Select id="transferToAccount" name="transferToAccount"
                                         onChange={this.onChange.bind(this)} 
                                         onBlur={this.validateTransaction.bind(this)}
                                         value={this.state.transaction.transferToAccount}
                                         fullWidth={true} defaultValue={this.state.transaction.transferToAccount}>
                                             <MenuItem value=""><em>None</em></MenuItem>
-                                            { this.props.accounts.map(acct => (
+                                            { this.props.accounts.sort((a, b) => a.name > b.name ? 1 : -1).map(acct => (
                                                 <MenuItem key={acct.id} value={acct.id}
-                                                    disabled={(acct.id == transaction.transferFromAccount)}>
+                                                    disabled={(acct.id == this.state.transaction.transferFromAccount)}>
                                                     {acct.name}
                                                 </MenuItem>    
                                             ))}
