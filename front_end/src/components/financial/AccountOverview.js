@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import AutoComplete from '@material-ui/lab/AutoComplete'
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -11,24 +10,19 @@ import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 import NumberFormat from 'react-number-format';
 import { withStyles } from '@material-ui/core/styles';
 
-import DestructiveButton from '../common/DestructiveButton';
-import BasicModal from '../common/BasicModal';
+import TransactionModal from './TransactionModal';
+
 import { setTitle } from '../../actions/navigation';
 import { getTransactions } from '../../actions/accounts';
 import { getFinancialCategories } from '../../actions/financial_categories';
@@ -97,27 +91,14 @@ class AccountOverview extends React.Component {
     state = {
         actionMenuOpen: false,
         transactionModalOpen: false,
-        transferDetailsVisible: false,
         menuAnchor: null,
-        currentTransaction: {
-            transactionId: null,
-            transactionType: "",
-            transactionSummary: "",
-            transactionDescription: "",
-            transactionCategory: null,
-            transactionAmount: "",
-            transferFromAccount: "",
-            transferToAccount: "",
-            isValid: false
-        }
+        currentTransaction: {}
     };
 
     componentDidMount() {
         this.props.setTitle("Account Overview");
         this.startDate = new Date("2021-04-01");
         this.endDate = new Date("2021-04-17");
-
-        this.props.getFinancialCategories();
     }
 
     componentDidUpdate() {
@@ -134,22 +115,6 @@ class AccountOverview extends React.Component {
         accounts: PropTypes.array.isRequired,
         currentUser: PropTypes.object.isRequired,
         getTransactions: PropTypes.func.isRequired,
-        getFinancialCategories: PropTypes.func.isRequired
-    }
-
-    validateTransaction = (e, transaction) => {
-        var transDetails = (transaction ? transaction: this.state.currentTransaction);
-        transDetails.isValid = false;
-
-        if (transDetails.transactionType == "TRN" && transDetails.transactionAmount != "" && transDetails.transferFromAccount != "" && transDetails.transferToAccount != "") {
-            transDetails.isValid = true;
-        }
-
-        if (["CRD", "DBT"].includes(transDetails.transactionType) && transDetails.transactionAmount != "") {
-            transDetails.isValid = true;
-        }
-
-        this.setState({currentTransaction: transDetails});
     }
 
     toggleActionMenu = (event) => {
@@ -161,20 +126,13 @@ class AccountOverview extends React.Component {
         this.setState({actionMenuOpen: false});
     }
 
-    toggleTransactionModal = (trans_id) => {
+    toggleTransactionModal = (trns) => {
         this.setState({transactionModalOpen: !this.state.transactionModalOpen})
 
-        if (!trans_id) {
-            this.setState({currentTransaction: {
-                transactionId: null,
-                transactionType: "",
-                transactionSummary: "", 
-                transactionDescription: "",
-                transactionCategory: null,
-                transactionAmount: "",
-                transferFromAccount: "",
-                transferToAccount: "",
-            }, transferDetailsVisible: false})
+        if (trns) {
+            this.setState({currentTransaction: trns});
+        } else {
+            this.setState({currentTransaction: {}});
         }
 
         this.closeMenu();
@@ -185,203 +143,6 @@ class AccountOverview extends React.Component {
         window.open(url,"target=_blank");
     }
 
-    editTransaction = (t) => {
-        this.setState({currentTransaction: {
-            transactionId: t.id,
-            transactionType: t.transaction_type,
-            transactionSummary: t.summary, 
-            transactionDescription: t.description,
-            transactionCategory: t.financial_category,
-            transactionAmount: t.amount,
-            transferFromAccount: "",
-            transferToAccount: "",
-        }});
-
-        this.toggleTransactionModal(t.id);
-    }
-
-    onChange = (e) => {
-        var updatedTransaction = {...this.state.currentTransaction};
-        updatedTransaction[e.target.name] = e.target.value;
-        this.setState({"currentTransaction": updatedTransaction});
-        
-        if (updatedTransaction.transactionType == "TRN") {
-            this.setState({"transferDetailsVisible": true});
-        } else {
-            this.setState({"transferDetailsVisible": false});
-        }
-
-        // Run Validate without waiting for 'onBlur' event for Select elements
-        if (["transactionType", "transferFromAccount", "transferToAccount"].includes(e.target.name)) {
-            this.validateTransaction(e, updatedTransaction);
-        }
-    }
-
-    categorySelected = (option, value) => {
-        if (option.id == value.id) {
-            return true
-        }
-        return false;
-    }
-
-    saveTransaction = () => {
-        console.log(this.state.currentTransaction);
-    }
-
-    amountFormat(props) {
-        const { inputRef, onChange, ...other } = props;
-      
-        return (
-          <NumberFormat
-            {...other}
-            getInputRef={inputRef}
-            style={{"textAlign": "right"}}
-            onValueChange={(values) => {
-              onChange({
-                target: {
-                  name: props.name,
-                  value: values.value,
-                },
-              });
-            }}
-            onClick={(e) => {
-                e.target.select();
-            }}
-            onBlur={props.onBlur}
-            decimalScale={2}
-            fixedDecimalScale={true}
-            thousandSeparator
-            isNumericString
-            prefix="$"
-          />
-        );
-      }
-
-    transactionModal(styleClasses) {
-        return (
-            <BasicModal open={this.state.transactionModalOpen} onClose={this.toggleTransactionModal} title={this.state.currentTransaction.transactionId ? "Edit Transaction" : "Add Transaction"}>
-                <Grid container spacing={2} justify="space-between">
-                    <Grid item xs={6} sm={6}>
-                        <FormControl fullWidth={true}>
-                            <InputLabel htmlFor="transactionType">Type</InputLabel>
-                            <Select id="transactionType" name="transactionType" fullWidth={true} 
-                                onChange={this.onChange.bind(this)} 
-                                onBlur={this.validateTransaction.bind(this)}
-                                value={this.state.currentTransaction.transactionType}
-                                defaultValue={this.state.currentTransaction.transactionType}>
-                                    <MenuItem value=""><em>None</em></MenuItem>
-                                    <MenuItem value={"CRD"}>Credit</MenuItem>
-                                    <MenuItem value={"DBT"}>Debit</MenuItem>
-                                    <MenuItem value={"TRN"}>Transfer</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={6} sm={6}>
-                        <TextField id="transactionAmount" name="transactionAmount"
-                            label="Amount"
-                            className="numberFormat"
-                            onChange={this.onChange.bind(this)} 
-                            onBlur={this.validateTransaction.bind(this)}
-                            value={this.state.currentTransaction.transactionAmount}
-                            fullWidth={true} InputProps={{inputComponent: this.amountFormat,}}/>                                
-                    </Grid>
-                    <Grid item xs={12} sm={12}>
-                        <FormControl fullWidth={true}>
-                            <InputLabel htmlFor="transactionDescription">Summary</InputLabel>
-                            <Input id="transactionSummary" name="transactionSummary" 
-                                onChange={this.onChange.bind(this)} 
-                                onBlur={this.validateTransaction.bind(this)}
-                                value={this.state.currentTransaction.transactionSummary} 
-                                fullWidth={true} />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={12}>
-                        <FormControl fullWidth={true}>
-                            <InputLabel htmlFor="transactionDescription">Description</InputLabel>
-                            <Input id="transactionDescription" name="transactionDescription" 
-                                onChange={this.onChange.bind(this)} 
-                                onBlur={this.validateTransaction.bind(this)}
-                                value={this.state.currentTransaction.transactionDescription} 
-                                fullWidth={true} />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={12}>
-                        <AutoComplete id="transactionCategory" name="transactionCategory"
-                            fullWidth={true} 
-                            options={this.props.financialCategories ? this.props.financialCategories.sort((a, b) => a.path_name.localeCompare(b.path_name)) : []}
-                            getOptionLabel={(option) => option.path_name}
-                            getOptionSelected={(option, value) => this.categorySelected(option, value)}
-                            value={this.state.currentTransaction.transactionCategory}
-                            onChange={(event, value) => this.onChange({target: {name: "transactionCategory", value: value}})}
-                            renderInput={(params) => <TextField {...params} label="Category" variant="outlined" />}>
-                        </AutoComplete>
-
-                    </Grid>
-                    { this.state.transferDetailsVisible &&
-                        <>
-                            <Grid item xs={12} sm={12}>
-                                <FormControl fullWidth={true}>
-                                    <InputLabel htmlFor="transferFromAccount">Transfer From</InputLabel>
-                                    <Select id="transferFromAccount" name="transferFromAccount"
-                                        onChange={this.onChange.bind(this)} 
-                                        onBlur={this.validateTransaction.bind(this)}
-                                        value={this.state.currentTransaction.transferFromAccount}
-                                        fullWidth={true} defaultValue={this.state.currentTransaction.transferFromAccount}>
-                                        <MenuItem value=""><em>None</em></MenuItem>
-                                        { this.props.accounts.filter(acct => acct.account_type == "CK" || acct.account_type == "SV").sort((a, b) => a.name > b.name ? 1 : -1).map(acct => (
-                                            <MenuItem key={acct.id} value={acct.id}
-                                                disabled={acct.id == this.state.currentTransaction.transferToAccount}>
-                                                {acct.name}
-                                            </MenuItem>    
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <FormControl fullWidth={true}>
-                                    <InputLabel htmlFor="transferToAccount">Transfer From</InputLabel>
-                                    <Select id="transferToAccount" name="transferToAccount"
-                                        onChange={this.onChange.bind(this)} 
-                                        onBlur={this.validateTransaction.bind(this)}
-                                        value={this.state.currentTransaction.transferToAccount}
-                                        fullWidth={true} defaultValue={this.state.currentTransaction.transferToAccount}>
-                                            <MenuItem value=""><em>None</em></MenuItem>
-                                            { this.props.accounts.map(acct => (
-                                                <MenuItem key={acct.id} value={acct.id}
-                                                    disabled={(acct.id == this.state.currentTransaction.transferFromAccount)}>
-                                                    {acct.name}
-                                                </MenuItem>    
-                                            ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        </>
-                    }
-                    <Grid item xs={12} sm={12}>
-                        <Divider />
-                    </Grid>
-                    <Grid container item xs={12} justify="space-between">
-                        <Grid item xs={4}>
-                            {this.state.currentTransaction.transactionId ? 
-                                <DestructiveButton onClick={() => console.log("Delete Transaction")}>Delete</DestructiveButton> :
-                                <Typography>&nbsp;</Typography>
-                            }
-                        </Grid>                                
-                        <Grid container xs={8} item justify="flex-end">
-                            <Grid item>
-                                <Button color="primary" variant="outlined" onClick={this.toggleTransactionModal.bind(this)}>Cancel</Button>
-                            </Grid>
-                            <Grid item>&nbsp;</Grid>
-                            <Grid item>
-                                <Button color="primary" variant="contained" disabled={!this.state.currentTransaction.isValid} onClick={this.saveTransaction.bind(this)}>Save</Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </BasicModal>
-        );
-    }
-
     transactionList(styleClasses) {
         if (this.props.accountTransactions.length > 0) {
             return (
@@ -389,7 +150,7 @@ class AccountOverview extends React.Component {
                     { this.props.accountTransactions.map(trns => (
                         <div key={trns.id}>
                             <ListItem button className={styleClasses.transactionSummary} 
-                                onClick={() => this.editTransaction(trns)}>
+                                onClick={() => this.toggleTransactionModal(trns)}>
                                 <Grid container spacing={1} justify="space-between">
                                     <Grid container item spacing={0} xs={12} justify="space-between">
                                         <Grid item xs={8} sm={6}>
@@ -515,7 +276,9 @@ class AccountOverview extends React.Component {
                         onClick={() => this.props.history.push("/financial/accountinfo")}
                     >Edit Account</MenuItem>
                 </Menu>
-                { this.transactionModal(classes) }
+                <TransactionModal id="transactionModal" name="transactionModal" 
+                    open={this.state.transactionModalOpen} transaction={this.state.currentTransaction}
+                    onClose={this.toggleTransactionModal.bind(this)} />
             </Container>
         );
     }
