@@ -1,5 +1,6 @@
 .vscode
 .pylitrc
+/ProjectNotes
 manage.py
 homedb.sqlite3
 settings.py
