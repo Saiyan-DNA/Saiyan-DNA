@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import AutoComplete from '@material-ui/lab/AutoComplete'
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -35,9 +36,9 @@ class AccountInfo extends React.Component {
         organization: null,
         financialInstitutions: [],
         accountType: null,
-        currentBalance: "",
-        creditLimit: "",
-        interestRate: "",
+        currentBalance: null,
+        creditLimit: null,
+        interestRate: null,
         owner: null,
 
     }
@@ -53,7 +54,7 @@ class AccountInfo extends React.Component {
     }
 
     componentDidMount() {
-        if(this.props.account && this.props.financialInstitutions) {
+        if(this.props.account.id && this.props.financialInstitutions) {
             this.props.setTitle("Edit Account");
 
             this.setState({
@@ -66,45 +67,47 @@ class AccountInfo extends React.Component {
                 interestRate: this.props.account.interest_rate,
                 owner: this.props.account.owner,
             })
-
         } else {
             this.props.setTitle("Add Account");
         }
     } 
 
     onChange = (e) => {
-        if (e.target.name == "financialInstitution") {
-            this.props.financialInstitutions.forEach(inst => {
-                if (inst.id == e.target.value) {
-                    this.setState({organization: inst});
-                }
-            })
-        } else {
-            this.setState({[e.target.name]: e.target.value});
+        this.setState({[e.target.name]: e.target.value});
+    }
+
+    accountTypeSelected = (option, selection) => {
+        if (selection && option.value == selection.value) {
+            return true;
         }
+        return false;
+    }
+
+    institutionSelected = (option, selection) => {
+        if (selection && option.id == selection.id) {
+            return true;
+        }
+        return false;
     }
 
     creditFields = (classes) => {
         return (
             <>
-            <Grid item xs={6}>
-                <FormControl fullWidth={true}>
-                    <InputLabel htmlFor="creditLimit">Credit Limit</InputLabel>
-                    <Input id="creditLimit" name="creditLimit" classes={{input: classes.numberInput}}
-                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                        onChange={this.onChange} value={this.state.creditLimit}
-                        fullWidth={true} type="number" />
-                </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-                <FormControl fullWidth={true}>
-                    <InputLabel htmlFor="interestRate">Interest Rate</InputLabel>
-                    <Input id="interestRate" name="interestRate" classes={{input: classes.numberInput}}
-                        endAdornment={<InputAdornment position="end">%</InputAdornment>}
-                        onChange={this.onChange} value={this.state.interestRate}
-                        fullWidth={true} type="number" />
-                </FormControl>
-            </Grid>
+                <Grid item xs={6}>
+                    <TextField id="creditLimit" name="creditLimit"
+                        label="Credit Limit"
+                        className={classes.numberInput}
+                        onChange={this.onChange.bind(this)} 
+                        value={this.state.creditLimit}
+                        fullWidth={true} InputProps={{inputComponent: this.currencyFormat,}} /> 
+                </Grid>
+                <Grid item xs={6}>
+                    <TextField id="interestRate" name="interestRate"
+                        label="Interest Rate"
+                        onChange={this.onChange.bind(this)}
+                        value={this.state.interestRate}
+                        fullWidth={true} InputProps={{inputComponent: this.percentageFormat,}} />
+                </Grid>
             </>
         );
     }
@@ -118,13 +121,14 @@ class AccountInfo extends React.Component {
     }
 
     saveAccountDetails = () => {
+
         let accountObject = {
             "name": this.state.accountName,
             "account_type": this.state.accountType,
             "organization": this.state.organization.id,
             "current_balance": parseFloat(this.state.currentBalance) || 0.00,
             "credit_limit": parseFloat(this.state.creditLimit) || 0.00,
-            "interest_rate": (parseFloat(this.state.interestRate) || 0)/100,
+            "interest_rate": (parseFloat(this.state.interestRate) || 0),
             "owner": this.props.currentUser.id
         }
 
@@ -143,7 +147,7 @@ class AccountInfo extends React.Component {
         this.props.history.push("/financial/accounts");
     }
 
-    amountFormat(props) {
+    currencyFormat(props) {
         const { inputRef, onChange, ...other } = props;
       
         return (
@@ -172,15 +176,44 @@ class AccountInfo extends React.Component {
         );
       }
 
+      percentageFormat(props) {
+        const { inputRef, onChange, ...other } = props;
+      
+        return (
+          <NumberFormat
+            {...other}
+            getInputRef={inputRef}
+            style={{"textAlign": "right"}}
+            onValueChange={(values) => {
+              onChange({
+                target: {
+                  name: props.name,
+                  value: values.value,
+                },
+              });
+            }}
+            onClick={(e) => {
+                e.target.select();
+            }}
+            onBlur={props.onBlur}
+            decimalScale={2}
+            fixedDecimalScale={true}
+            thousandSeparator
+            isNumericString
+            suffix="%"
+          />
+        );
+      }
+
     render() {
         const { classes } = this.props;
 
         const accountTypes = [
-            "Checking",
-            "Savings",
-            "Credit Card",
-            "Investment",
-            "Loan"
+            {value: "CK", label: "Checking"},
+            {value: "SV", label: "Savings"},
+            {value: "CR", label: "Credit Card"},
+            {value: "IV", label: "Investment"},
+            {value: "LN", label: "Loan"}
         ];
 
         return (
@@ -209,49 +242,36 @@ class AccountInfo extends React.Component {
                                                 </FormControl>
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                                <FormControl fullWidth={true}>
-                                                    <InputLabel htmlFor="accountType">Account Type</InputLabel>
-                                                    <Select id="accountType" name="accountType"
-                                                        onChange={this.onChange} value={this.state.accountType ? this.state.accountType : "None"}
-                                                        fullWidth={true} defaultValue={this.state.accountType}>
-                                                            <MenuItem value="None"><em>None</em></MenuItem>
-                                                            <MenuItem value={"CK"}>Checking</MenuItem>
-                                                            <MenuItem value={"SV"}>Savings</MenuItem>
-                                                            <MenuItem value={"CR"}>Credit Card</MenuItem>
-                                                            <MenuItem value={"IN"}>Investment</MenuItem>
-                                                            <MenuItem value={"LN"}>Loan</MenuItem>
-                                                    </Select>
-                                                </FormControl>
+                                                <AutoComplete id="accountType" name="accountType"
+                                                    fullWidth={true} 
+                                                    options={accountTypes}
+                                                    getOptionLabel={(option) => option.label}
+                                                    getOptionSelected={(option, value) => this.accountTypeSelected(option, value)}
+                                                    value={accountTypes.filter(acctType => {return acctType.value == this.state.accountType})[0] || null}
+                                                    onChange={(event, selection) => {if (selection) this.onChange({target: {name: "accountType", value: selection.value}})}}
+                                                    renderInput={(params) => <TextField {...params} label="Account Type" variant="standard" />}>
+                                                </AutoComplete>
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                                <FormControl fullWidth={true}>
-                                                    <InputLabel htmlFor="financialInstitution">Financial Institution</InputLabel>
-                                                    <Select id="financialInstitution" name="financialInstitution"
-                                                        onChange={this.onChange} value={this.state.organization ? this.state.organization.id : "None"}
-                                                        fullWidth={true} defaultValue={0}>
-                                                            <MenuItem value="None"><em>None</em></MenuItem>
-                                                            { this.props.financialInstitutions.map(institution => (
-                                                                <MenuItem key={institution.id} value={institution.id}>{institution.name}</MenuItem>    
-                                                            ))}
-                                                    </Select>
-                                                </FormControl>
+                                                <AutoComplete id="organization" name="organization"
+                                                    fullWidth={true} 
+                                                    options={this.props.financialInstitutions ? this.props.financialInstitutions : []}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionSelected={(option, value) => this.institutionSelected(option, value)}
+                                                    value={this.state.organization || null}
+                                                    onChange={(event, value) => this.onChange({target: {name: "organization", value: value}})}
+                                                    renderInput={(params) => <TextField {...params} label="Financial Institution" variant="standard" />}>
+                                                </AutoComplete>
                                             </Grid>
                                             <Grid item xs={6}>
-                                                {/* <FormControl fullWidth={true}>      
-                                                    <InputLabel htmlFor="currentBalance">Balance</InputLabel>                                            
-                                                    <Input id="currentBalance" name="currentBalance" classes={{input: classes.numberInput}}
-                                                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                                        onChange={this.onChange} value={this.state.currentBalance}
-                                                        fullWidth={true} type="number" />
-                                                </FormControl> */}
                                                 <TextField id="currentBalance" name="currentBalance"
                                                     label="Balance"
                                                     className={classes.numberInput}
                                                     onChange={this.onChange.bind(this)} 
                                                     value={this.state.currentBalance}
-                                                    fullWidth={true} InputProps={{inputComponent: this.amountFormat,}}/> 
+                                                    fullWidth={true} InputProps={{inputComponent: this.currencyFormat,}}/> 
                                             </Grid>
-                                            { this.state.accountType === "Credit Card" ? this.creditFields(classes) : null }
+                                            { this.state.accountType === "CR" ? this.creditFields(classes) : null }
                                         </Grid>
                                     </Container>
                                 </CardContent>
