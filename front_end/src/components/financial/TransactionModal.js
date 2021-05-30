@@ -229,7 +229,7 @@ class TransactionModal extends React.Component {
                             getOptionSelected={(option, value) => this.categorySelected(option, value)}
                             value={this.state.transaction.transactionCategory}
                             onChange={(event, value) => this.onChange({target: {name: "transactionCategory", value: value}})}
-                            renderInput={(params) => <TextField {...params} label="Category" variant="outlined" />}>
+                            renderInput={(params) => <TextField {...params} label="Category" variant="standard" />}>
                         </AutoComplete>
 
                     </Grid>
