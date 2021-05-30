@@ -1,11 +1,17 @@
 .vscode
 .pylitrc
+__pycache__
 /ProjectNotes
 manage.py
 homedb.sqlite3
 settings.py
 migrations
+Pipfile
 Pipfile.lock
 package-lock.json
 node_modules
 *main.js
+.gcloudignore
+app.yaml
+main.py
+/static

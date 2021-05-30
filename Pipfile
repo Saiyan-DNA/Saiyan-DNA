@@ -13,6 +13,8 @@ djangorestframework-jwt = "*"
 djangorestframework-recursive = "*"
 django-filter = "*"
 django-extensions = "*"
+pymysql = "*"
+cryptography = "*"
 
 [requires]
 python_version = "3.8"
