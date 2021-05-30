@@ -20,7 +20,7 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 accounts: state.accounts.filter(account => account.id !== action.payload),
-                currentAccount: null
+                currentAccount: {}
             };
         case CREATE_ACCOUNT:
             return {
