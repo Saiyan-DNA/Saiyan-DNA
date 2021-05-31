@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
 import Container from '@material-ui/core/Container';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
@@ -86,7 +85,8 @@ class RegisterUser extends React.Component {
         this.setState({passwordMismatchMessageVisible: mismatch});
     }
 
-    registerUser = () => {
+    registerUser = (e) => {
+        e.preventDefault();
         this.props.registerUser({
             "first_name": this.state.userInfo.firstName,
             "last_name": this.state.userInfo.lastName,
@@ -109,113 +109,117 @@ class RegisterUser extends React.Component {
                     <Grid item xs={12} sm={8} md={6} lg={4}>
                         <Card elevation={4}>
                             <CardContent>
-                                <Grid container spacing={2} justify="space-between">
-                                    <Grid item container xs={12} sm={12} justify="center">
-                                        <Typography variant="h5">Register a New Account</Typography>
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <FormControl fullWidth={true}>
-                                            <InputLabel htmlFor="firstName">First Name</InputLabel>
-                                            <Input
-                                                type="text"
-                                                className="form-control"
-                                                id="firstName"
-                                                name="firstName"
-                                                inputProps={{autoCapitalize: "none", autoCorrect: "none"}}
-                                                onChange={this.onChange}
-                                                value={userInfo.firstName}
-                                            />
-                                        </FormControl>    
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <FormControl fullWidth={true}>
-                                            <InputLabel htmlFor="lastName">Last Name</InputLabel>
-                                            <Input
-                                                type="text"
-                                                className="form-control"
-                                                id="lastName"
-                                                name="lastName"
-                                                inputProps={{autoCapitalize: "none", autoCorrect: "none"}}
-                                                onChange={this.onChange}
-                                                value={userInfo.lastName}
-                                            />
-                                        </FormControl>    
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <FormControl fullWidth={true}>
-                                            <InputLabel htmlFor="email">E-Mail Address</InputLabel>
-                                            <Input
-                                                type="text"
-                                                className="form-control"
-                                                id="email"
-                                                name="email"
-                                                inputProps={{autoCapitalize: "none", autoCorrect: "none"}}
-                                                onChange={this.onChange}
-                                                value={userInfo.email}
-                                            />
-                                        </FormControl>    
-                                    </Grid>
-                                    <Grid item container xs={12} sm={12} spacing={0} justify="flex-start">
+                                <form onSubmit={this.registerUser}>
+                                    <Grid container spacing={2} justify="space-between">
+                                        <Grid item container xs={12} sm={12} justify="center">
+                                            <Typography variant="h5">Register a New Account</Typography>
+                                        </Grid>
                                         <Grid item xs={12} sm={6}>
                                             <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="userName">Username</InputLabel>
+                                                <InputLabel htmlFor="firstName">First Name</InputLabel>
                                                 <Input
                                                     type="text"
                                                     className="form-control"
-                                                    id="userName"
-                                                    name="userName"
-                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none"}}
+                                                    id="firstName"
+                                                    name="firstName"
+                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
                                                     onChange={this.onChange}
-                                                    value={userInfo.userName}
+                                                    value={userInfo.firstName}
                                                 />
-                                            </FormControl>
-                                            {this.state.userNameInUseMessageVisible &&
-                                                <Typography variant="caption" color="error">Username is already in use</Typography>
-                                            }    
+                                            </FormControl>    
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <FormControl fullWidth={true}>
+                                                <InputLabel htmlFor="lastName">Last Name</InputLabel>
+                                                <Input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="lastName"
+                                                    name="lastName"
+                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
+                                                    onChange={this.onChange}
+                                                    value={userInfo.lastName}
+                                                />
+                                            </FormControl>    
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <FormControl fullWidth={true}>
+                                                <InputLabel htmlFor="email">E-Mail Address</InputLabel>
+                                                <Input
+                                                    type="text"
+                                                    className="form-control"
+                                                    id="email"
+                                                    name="email"
+                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
+                                                    onChange={this.onChange}
+                                                    value={userInfo.email}
+                                                />
+                                            </FormControl>    
+                                        </Grid>
+                                        <Grid item container xs={12} sm={12} spacing={0} justify="flex-start">
+                                            <Grid item xs={12} sm={6}>
+                                                <FormControl fullWidth={true}>
+                                                    <InputLabel htmlFor="userName">Username</InputLabel>
+                                                    <Input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="userName"
+                                                        name="userName"
+                                                        inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-username"}}
+                                                        autoComplete="new-username"
+                                                        onChange={this.onChange}
+                                                        value={userInfo.userName}
+                                                    />
+                                                </FormControl>
+                                                {this.state.userNameInUseMessageVisible &&
+                                                    <Typography variant="caption" color="error">Username is already in use</Typography>
+                                                }    
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <FormControl fullWidth={true}>
+                                                <InputLabel htmlFor="password">Password</InputLabel>
+                                                <Input
+                                                    type="password"
+                                                    className="form-control"
+                                                    id="password"
+                                                    name="password"
+                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
+                                                    autoComplete="new-password"
+                                                    onChange={this.onChange}
+                                                    value={userInfo.password}
+                                                />
+                                            </FormControl>    
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <FormControl fullWidth={true}>
+                                                <InputLabel htmlFor="password">Re-Enter Password</InputLabel>
+                                                <Input
+                                                    type="password"
+                                                    className="form-control"
+                                                    id="password2"
+                                                    name="password2"
+                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
+                                                    autoComplete="new-password"
+                                                    onChange={this.onChange}
+                                                    value={userInfo.password2}
+                                                />
+                                            </FormControl>    
+                                        </Grid>
+                                        <Grid item container xs={12} sm={12} spacing={0} justify="flex-start">
+                                            {passwordMismatchMessageVisible ?
+                                                <Typography variant="caption" color="error">Passwords must match</Typography> : 
+                                                <Typography variant="caption" color="primary">&nbsp;</Typography>
+                                            }
+                                        </Grid>
+                                        <Grid item container xs={12} sm={12} justify="center">
+                                            <Button variant="contained" color="primary" disabled={!formValid} type="submit">Register</Button>    
+                                        </Grid>      
+                                        <Grid item container xs={12} sm={12} justify="center">
+                                            <Typography variant="body1">Already have an Account? <Link to="/login">Log In</Link></Typography>
                                         </Grid>
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <FormControl fullWidth={true}>
-                                            <InputLabel htmlFor="password">Password</InputLabel>
-                                            <Input
-                                                type="password"
-                                                className="form-control"
-                                                id="password"
-                                                name="password"
-                                                inputProps={{autoCapitalize: "none", autoCorrect: "none"}}
-                                                onChange={this.onChange}
-                                                value={userInfo.password}
-                                            />
-                                        </FormControl>    
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <FormControl fullWidth={true}>
-                                            <InputLabel htmlFor="password">Re-Enter Password</InputLabel>
-                                            <Input
-                                                type="password"
-                                                className="form-control"
-                                                id="password2"
-                                                name="password2"
-                                                inputProps={{autoCapitalize: "none", autoCorrect: "none"}}
-                                                onChange={this.onChange}
-                                                value={userInfo.password2}
-                                            />
-                                        </FormControl>    
-                                    </Grid>
-                                    <Grid item container xs={12} sm={12} spacing={0} justify="flex-start">
-                                        {passwordMismatchMessageVisible ?
-                                            <Typography variant="caption" color="error">Passwords must match</Typography> : 
-                                            <Typography variant="caption" color="primary">&nbsp;</Typography>
-                                        }
-                                    </Grid>
-                                    <Grid item container xs={12} sm={12} justify="center">
-                                        <Button variant="contained" color="primary" disabled={!formValid}
-                                            onClick={this.registerUser.bind(this)}>Register</Button>    
-                                    </Grid>      
-                                    <Grid item container xs={12} sm={12} justify="center">
-                                        <Typography variant="body1">Already have an Account? <Link to="/login">Log In</Link></Typography>
-                                    </Grid>
-                                </Grid>
+                                </form>
                             </CardContent>
                         </Card>
                     </Grid>
