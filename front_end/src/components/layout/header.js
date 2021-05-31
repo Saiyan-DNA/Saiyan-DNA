@@ -126,7 +126,13 @@ class Header extends React.Component {
 
     componentDidUpdate() {
         if (this.props.isAuthenticated && !this.props.currentHome.id && this.state.homeModalOpen === false) {
-            this.setState({...this.state, homeModalOpen: true});
+            if (this.props.userHomes.length == 1) {
+                this.props.setHome(this.props.userHomes[0]);
+                this.setState({homeModalOpen: false});    
+                return;
+            }
+
+            this.setState({homeModalOpen: true});
         }    
     }
 

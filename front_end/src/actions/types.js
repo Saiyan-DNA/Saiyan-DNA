@@ -6,6 +6,8 @@ export const USER_HOME = "USER_HOME"
 export const CREATE_MESSAGE = 'CREATE_MESSAGE'
 
 // Auth ACTIONS
+export const REGISTER_USER = 'REGISTER_USER'
+export const REGISTRATION_ERROR = 'REGISTRATION_ERROR'
 export const USER_LOADING = 'USER_LOADING'
 export const USER_LOADED = 'USER_LOADED'
 export const AUTH_ERROR = 'AUTH_ERROR'

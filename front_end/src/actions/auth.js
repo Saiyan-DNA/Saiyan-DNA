@@ -1,8 +1,38 @@
 import axios from 'axios';
 // import { returnErrors } from './messages';
 
-import { USER_LOADED, USER_LOADING, AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, USER_HOME, CLEAR_HOME } from './types';
+import { REGISTER_USER, REGISTRATION_ERROR, USER_LOADED, USER_LOADING, AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, USER_HOME, CLEAR_HOME } from './types';
 
+
+// Attempt Regisration of a new user
+export const registerUser = (userInfo) => (dispatch, getState) => {
+    // Headers
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    const body = JSON.stringify(userInfo);
+
+    axios.post('/api/auth/register', body, config)
+    .then(res => {
+        if (res.data.token) {
+            dispatch({
+                type: REGISTER_USER,
+                payload: res.data
+            });
+        }
+        if (res.data.errors) {
+            dispatch({type: REGISTRATION_ERROR, payload: res.data.errors});
+        }
+
+    }).catch(err => {
+        dispatch({
+            type: AUTH_ERROR
+        });
+    });    
+}
 
 // CHECK TOKEN & LOAD USER
 export const loadUser = () => (dispatch, getState) => {

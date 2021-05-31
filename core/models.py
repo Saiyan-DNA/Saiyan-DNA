@@ -73,7 +73,10 @@ class Home(models.Model):
     owner = models.ForeignKey(to=User, related_name="homes", on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.owner.username})"
+
+    class Meta:
+        ordering = ['name']
 
 
 class HomeAccessChoice(Enum):
@@ -141,6 +144,7 @@ class Person(models.Model):
     first_name = models.CharField("First Name", max_length=200)
     middle_name = models.CharField("Middle Name", max_length=200, blank=True)
     last_name = models.CharField("Last Name", max_length=200)
+    email_verified = models.BooleanField("E-Mail Verified", default=False)
 
     home = models.ForeignKey(to=Home, on_delete=models.PROTECT)
     user_account = models.ForeignKey(to=User, on_delete=models.PROTECT, null=True, blank=True)

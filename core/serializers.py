@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
-from .models import Home, Organization
+from .models import Home, Organization, Person
 
 class HomeSerializer(serializers.ModelSerializer):
     """
@@ -44,8 +44,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
         extra_kwargs = {'password': {'write_only': True}}
 
-    def create(self, validated_data):
-        user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'], first_name=validated_data['first_name'], last_name=validated_data['last_name'])
+    def create(self):
+        user = User.objects.create_user(self.validated_data['username'], self.validated_data['email'], self.validated_data['password'], first_name=self.validated_data['first_name'], last_name=self.validated_data['last_name'])
+        home = None
+        person = None
+
+        if (user):
+            home = Home.objects.create(name="My Home", owner=user)
+
+        if (home):
+            person = Person.objects.create(home=home, first_name=user.first_name, last_name=user.last_name, user_account=user)
 
         return user
 
