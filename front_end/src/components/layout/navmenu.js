@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 import { toggleNavMenu } from '../../actions/menu';
 import { userNav } from '../../actions/navigation';
+import { userHasPermission } from '../../actions/auth';
 
 import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
@@ -59,6 +60,7 @@ class NavMenu extends React.Component {
         menuOpened: PropTypes.bool.isRequired,
         toggleNavMenu: PropTypes.func.isRequired,
         userNav: PropTypes.func.isRequired,
+        userHasPermission: PropTypes.func.isRequired,
         isAuthenticated: PropTypes.bool
     }
 
@@ -67,7 +69,7 @@ class NavMenu extends React.Component {
         manageInventoryMenuAnchor: null,
         manageGroupOpen: false,
         inventoryGroupOpen: false,
-        financialGroupOpen: false,
+        financialGroupOpen: false
     }
 
     navigateTo(url, e) {
@@ -159,17 +161,21 @@ class NavMenu extends React.Component {
                             onClick={this.navigateTo.bind(this, "/financial")}
                             selected = {this.activeRoute("/financial")}>
                                 Overview
+                        </ListItem>
+                        {this.props.userHasPermission("view_account") && 
+                            <ListItem button dense className={this.classes.subMenuItem}
+                                onClick={this.navigateTo.bind(this, "/financial/accounts")}
+                                selected = {this.activeRoute("/financial/accounts")}>
+                                    Accounts
                             </ListItem>
-                        <ListItem button dense className={this.classes.subMenuItem}
-                            onClick={this.navigateTo.bind(this, "/financial/accounts")}
-                            selected = {this.activeRoute("/financial/accounts")}>
-                                Accounts
-                        </ListItem>
-                        <ListItem button dense className={this.classes.subMenuItem}
-                            onClick={this.navigateTo.bind(this, "/financial/assets")}
-                            selected = {this.activeRoute("/financial/assets")}>
-                                Assets
-                        </ListItem>
+                        }
+                        {this.props.userHasPermission("view_asset") &&
+                            <ListItem button dense className={this.classes.subMenuItem}
+                                onClick={this.navigateTo.bind(this, "/financial/assets")}
+                                selected = {this.activeRoute("/financial/assets")}>
+                                    Assets
+                            </ListItem>
+                        }
                         <ListItem button dense className={this.classes.subMenuItem}>Budgets</ListItem>
                     </List>
                 </Collapse>
@@ -242,4 +248,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default withRouter(connect(mapStateToProps, { toggleNavMenu, userNav })(withStyles(styles, { withTheme: true })(NavMenu)));
+export default withRouter(connect(mapStateToProps, { toggleNavMenu, userNav, userHasPermission })(withStyles(styles, { withTheme: true })(NavMenu)));

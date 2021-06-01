@@ -113,3 +113,22 @@ export const userLogout = () => (dispatch) => {
     dispatch({type: LOGOUT_SUCCESS});
     dispatch({type: CLEAR_HOME});
 }
+
+
+// Check if User has specified permission
+export const userHasPermission = (permName) => (dispatch, getState) => {
+    const user = getState().auth.user;
+    var hasPermission = false;
+
+    if (user.groups) {
+        user.groups.forEach(group => {
+            group.permissions.forEach(perm => {
+                if (perm.codename == permName) {
+                    hasPermission = true;
+                }
+            });
+        });
+
+        return hasPermission;
+    }
+}
