@@ -2,11 +2,23 @@
 Serializers for models within the 'Base' module.
 """
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from .models import Home, Organization, Person
+
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = '__all__'
+
+class GroupSerializer(serializers.ModelSerializer):
+    permissions = PermissionSerializer(many=True, required=False)
+    
+    class Meta:
+        model = Group
+        fields = '__all__'
 
 class HomeSerializer(serializers.ModelSerializer):
     """
@@ -31,11 +43,11 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for Django's Auth User Model's API
     """
     homes = HomeSerializer(many=True, required=False)
-
+    groups = GroupSerializer(many=True, required=False)
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'homes']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'homes', 'groups']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
