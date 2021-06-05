@@ -210,7 +210,9 @@ class NavMenu extends React.Component {
                             selected = {this.activeRoute("/manage/homes")}>
                                 Homes
                         </ListItem>
-                        <ListItem button dense onClick={this.showManageInventoryMenu} className={this.classes.subMenuItem}>Inventory</ListItem>
+                        {this.props.userHasPermission("inventory") &&
+                            <ListItem button dense onClick={this.showManageInventoryMenu} className={this.classes.subMenuItem}>Inventory</ListItem>
+                        }
                         <ListItem button dense className={this.classes.subMenuItem}
                             onClick={this.navigateTo.bind(this, "/manage/people")} 
                             selected={this.activeRoute("/manage/people")}>
