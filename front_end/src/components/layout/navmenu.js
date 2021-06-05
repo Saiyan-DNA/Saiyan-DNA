@@ -213,11 +213,13 @@ class NavMenu extends React.Component {
                         {this.props.userHasPermission("inventory") &&
                             <ListItem button dense onClick={this.showManageInventoryMenu} className={this.classes.subMenuItem}>Inventory</ListItem>
                         }
-                        <ListItem button dense className={this.classes.subMenuItem}
-                            onClick={this.navigateTo.bind(this, "/manage/people")} 
-                            selected={this.activeRoute("/manage/people")}>
-                                People
-                        </ListItem>
+                        {this.props.userHasPermission("people") && 
+                            <ListItem button dense className={this.classes.subMenuItem}
+                                onClick={this.navigateTo.bind(this, "/manage/people")} 
+                                selected={this.activeRoute("/manage/people")}>
+                                    People
+                            </ListItem>
+                        }
                     </List>
                 </Collapse>
 
