@@ -121,8 +121,8 @@ class CategoryManager(models.Manager):
         Provides Category Choices available, formatted for a Select2 Dropdown-List
         """
 
-        categories = Category.objects.all()
-        levels = max([x.level for x in Category.objects.filter(parent_category_id__isnull=False)])
+        categories = FinancialCategory.objects.all()
+        levels = max([x.level for x in FinancialCategory.objects.filter(parent_category_id__isnull=False)])
 
         tree = {}
 
