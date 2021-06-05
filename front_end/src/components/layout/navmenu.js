@@ -179,20 +179,24 @@ class NavMenu extends React.Component {
                         <ListItem button dense className={this.classes.subMenuItem}>Budgets</ListItem>
                     </List>
                 </Collapse>
-                <ListItem button className={this.classes.menuItem}
-                    onClick={this.toggleInventoryGroup}
-                    selected={this.state.inventoryGroupOpen}>
-                    <ListItemText primary="Inventory" />
-                    {Boolean(this.state.inventoryGroupOpen) ? <ExpandLess /> : <ExpandMore />}
-                </ListItem>
-                <Collapse in={this.state.inventoryGroupOpen} unmountOnExit>
-                    <List className={this.classes.subMenu} dense>
-                        <ListItem button dense className={this.classes.subMenuItem}>Overview</ListItem>
-                        <ListItem button dense className={this.classes.subMenuItem}>Count</ListItem>
-                        <ListItem button dense className={this.classes.subMenuItem}>Receive</ListItem>
-                        <ListItem button dense className={this.classes.subMenuItem}>Use</ListItem>
-                    </List>
-                </Collapse>
+                {this.props.userHasPermission("inventory") &&
+                    <>
+                        <ListItem button className={this.classes.menuItem}
+                            onClick={this.toggleInventoryGroup}
+                            selected={this.state.inventoryGroupOpen}>
+                            <ListItemText primary="Inventory" />
+                            {Boolean(this.state.inventoryGroupOpen) ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                        <Collapse in={this.state.inventoryGroupOpen} unmountOnExit>
+                            <List className={this.classes.subMenu} dense>
+                                <ListItem button dense className={this.classes.subMenuItem}>Overview</ListItem>
+                                <ListItem button dense className={this.classes.subMenuItem}>Count</ListItem>
+                                <ListItem button dense className={this.classes.subMenuItem}>Receive</ListItem>
+                                <ListItem button dense className={this.classes.subMenuItem}>Use</ListItem>
+                            </List>
+                        </Collapse>
+                    </>
+                }
                 <ListItem button className={this.classes.menuItem}
                     onClick={this.toggleManageGroup}
                     selected={this.state.manageGroupOpen}>
