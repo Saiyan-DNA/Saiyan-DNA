@@ -110,6 +110,10 @@ class FinancialAccounts extends React.Component {
         this.props.history.push("/financial/accountoverview");
     }
 
+    accountTypeFilter(acct) {
+        return acct.account_type == this;        
+    }
+
     goToBankingURL(url, e) {
         e.stopPropagation();
         window.open(url,"target=_blank");
@@ -117,6 +121,9 @@ class FinancialAccounts extends React.Component {
 
     accountSummaryList(styleClasses, accountType, cardTitle) {
         var accountList = [];
+        var checkingAccounts = null;
+        var savingsAccounts = null;
+
         var totalBalance = 0.00;
         var totalLimit = 0.00;
         var totalAvailable = 0.00;
@@ -124,6 +131,8 @@ class FinancialAccounts extends React.Component {
         switch (accountType) {
             case AccountTypes.BANKING:
                 accountList = this.props.accounts.filter(account => account.account_type.includes('CK') || account.account_type.includes('SV'));
+                checkingAccounts = accountList.filter(this.accountTypeFilter, "CK").sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));;
+                savingsAccounts = accountList.filter(this.accountTypeFilter, "SV").sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));;
                 break;
             case AccountTypes.CREDIT:
                 accountList = this.props.accounts.filter(account => account.account_type.includes("CR"));
@@ -138,6 +147,9 @@ class FinancialAccounts extends React.Component {
             default:
                 break;
         }
+
+        // Sort by account balance (descending) then by account name
+        accountList.sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));      
         
         totalBalance = accountList.reduce((cnt, acct) => cnt + acct.current_balance, 0);
         totalAvailable = totalLimit - totalBalance;
@@ -178,48 +190,129 @@ class FinancialAccounts extends React.Component {
                         </Grid>
                     }
                     { accountType == AccountTypes.BANKING &&
-                        <Typography variant="body1" className={styleClasses.listCardSubHeader}>Checking</Typography>
+                        <>
+                            { checkingAccounts.length &&
+                                <>
+                                    <Typography variant="body1" className={styleClasses.listCardSubHeader}>Checking</Typography>
+                                    <List>
+                                        {
+                                            accountList.filter(this.accountTypeFilter, "CK").map(acct => (
+                                                <div key={acct.id}>
+                                                    <ListItem button className={styleClasses.accountSummary} 
+                                                        onClick={() => {this.viewAccount(acct.id)}}>
+                                                        <Grid container spacing={0} justify="space-between">
+                                                            <Grid container item spacing={0} xs={12} justify="space-between">
+                                                                <Grid item>
+                                                                    <Typography variant="body1">{acct.name}</Typography>
+                                                                </Grid>
+                                                                <Grid item xs={"auto"}>
+                                                                    <Typography variant="body1">
+                                                                        <NumberFormat value={acct.current_balance} displayType={'text'}
+                                                                            thousandSeparator={true} prefix={'$'} decimalScale={2} fixedDecimalScale={true} />
+                                                                    </Typography>
+                                                                </Grid>
+                                                            </Grid>
+                                                            <Grid container item spacing={0} xs={12} justify="space-between">
+                                                                <Grid item>
+                                                                    <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
+                                                                        {acct.organization.website_url != null ?
+                                                                            <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, acct.organization.website_url)}>{acct.organization.name}</Link> :
+                                                                            acct.financial_institution.name
+                                                                        }
+                                                                    </Typography>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Grid>                                
+                                                    </ListItem>
+                                                </div>       
+                                            ))
+                                        }
+                                    </List>
+                                </>
+                            }
+                            { savingsAccounts.length &&
+                                <>
+                                    <Typography variant="body1" className={styleClasses.listCardSubHeader}>Savings</Typography>
+                                    <List>
+                                        {
+                                            accountList.filter(this.accountTypeFilter, "SV").map(acct => (
+                                                <div key={acct.id}>
+                                                    <ListItem button className={styleClasses.accountSummary} 
+                                                        onClick={() => {this.viewAccount(acct.id)}}>
+                                                        <Grid container spacing={0} justify="space-between">
+                                                            <Grid container item spacing={0} xs={12} justify="space-between">
+                                                                <Grid item>
+                                                                    <Typography variant="body1">{acct.name}</Typography>
+                                                                </Grid>
+                                                                <Grid item xs={"auto"}>
+                                                                    <Typography variant="body1">
+                                                                        <NumberFormat value={acct.current_balance} displayType={'text'}
+                                                                            thousandSeparator={true} prefix={'$'} decimalScale={2} fixedDecimalScale={true} />
+                                                                    </Typography>
+                                                                </Grid>
+                                                            </Grid>
+                                                            <Grid container item spacing={0} xs={12} justify="space-between">
+                                                                <Grid item>
+                                                                    <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
+                                                                        {acct.organization.website_url != null ?
+                                                                            <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, acct.organization.website_url)}>{acct.organization.name}</Link> :
+                                                                            acct.financial_institution.name
+                                                                        }
+                                                                    </Typography>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Grid>                                
+                                                    </ListItem>
+                                                </div>       
+                                            ))
+                                        }
+                                    </List>
+                                </>
+                            }    
+                        </>
                     }
-                    <List>
-                        { accountList.map(acct => (
-                            <div key={acct.id}>
-                                <ListItem button className={styleClasses.accountSummary} 
-                                    onClick={() => {this.viewAccount(acct.id)}}>
-                                    <Grid container spacing={0} justify="space-between">
-                                        <Grid container item spacing={0} xs={12} justify="space-between">
-                                            <Grid item>
-                                                <Typography variant="body1">{acct.name}</Typography>
-                                            </Grid>
-                                            <Grid item xs={"auto"}>
-                                                <Typography variant="body1">
-                                                    <NumberFormat value={acct.current_balance} displayType={'text'}
-                                                        thousandSeparator={true} prefix={'$'} decimalScale={2} fixedDecimalScale={true} />
-                                                </Typography>
-                                            </Grid>
-                                        </Grid>
-                                        <Grid container item spacing={0} xs={12} justify="space-between">
-                                            <Grid item>
-                                                <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
-                                                    {acct.organization.website_url != null ?
-                                                        <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, acct.organization.website_url)}>{acct.organization.name}</Link> :
-                                                        acct.financial_institution.name
-                                                    }
-                                                </Typography>
-                                            </Grid>
-                                            { accountType == AccountTypes.CREDIT &&
+                    {accountType != AccountTypes.BANKING && 
+                        <List>
+                            { accountList.map(acct => (
+                                <div key={acct.id}>
+                                    <ListItem button className={styleClasses.accountSummary} 
+                                        onClick={() => {this.viewAccount(acct.id)}}>
+                                        <Grid container spacing={0} justify="space-between">
+                                            <Grid container item spacing={0} xs={12} justify="space-between">
+                                                <Grid item>
+                                                    <Typography variant="body1">{acct.name}</Typography>
+                                                </Grid>
                                                 <Grid item xs={"auto"}>
-                                                    <Typography variant="caption"  style={{verticalAlign: "text-top", fontStyle: "italic"}}>
-                                                        <NumberFormat value={acct.credit_limit - acct.current_balance} displayType={'text'}
-                                                            thousandSeparator={true} prefix={'$'} decimalScale={0} fixedDecimalScale={true} />&nbsp;available
+                                                    <Typography variant="body1">
+                                                        <NumberFormat value={acct.current_balance} displayType={'text'}
+                                                            thousandSeparator={true} prefix={'$'} decimalScale={2} fixedDecimalScale={true} />
                                                     </Typography>
                                                 </Grid>
-                                            }
-                                        </Grid>
-                                    </Grid>                                
-                                </ListItem>
-                            </div>                                
-                        ))}
-                    </List>
+                                            </Grid>
+                                            <Grid container item spacing={0} xs={12} justify="space-between">
+                                                <Grid item>
+                                                    <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
+                                                        {acct.organization.website_url != null ?
+                                                            <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, acct.organization.website_url)}>{acct.organization.name}</Link> :
+                                                            acct.financial_institution.name
+                                                        }
+                                                    </Typography>
+                                                </Grid>
+                                                { accountType == AccountTypes.CREDIT &&
+                                                    <Grid item xs={"auto"}>
+                                                        <Typography variant="caption"  style={{verticalAlign: "text-top", fontStyle: "italic"}}>
+                                                            <NumberFormat value={acct.credit_limit - acct.current_balance} displayType={'text'}
+                                                                thousandSeparator={true} prefix={'$'} decimalScale={0} fixedDecimalScale={true} />&nbsp;available
+                                                        </Typography>
+                                                    </Grid>
+                                                }
+                                            </Grid>
+                                        </Grid>                                
+                                    </ListItem>
+                                </div>                                
+                            ))}
+                        </List>
+                    }
                 </CardContent>
             </Card>
         );
