@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import AutoComplete from '@material-ui/lab/AutoComplete'
+import AutoComplete from '@material-ui/lab/Autocomplete'
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';

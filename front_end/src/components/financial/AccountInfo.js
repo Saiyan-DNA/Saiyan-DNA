@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import AutoComplete from '@material-ui/lab/AutoComplete'
+import AutoComplete from '@material-ui/lab/Autocomplete'
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -10,10 +10,7 @@ import Container from '@material-ui/core/Container';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -40,6 +37,7 @@ class AccountInfo extends React.Component {
         creditLimit: null,
         interestRate: null,
         owner: null,
+        isValid: false,
 
     }
 
@@ -72,8 +70,27 @@ class AccountInfo extends React.Component {
         }
     } 
 
+    validateAccount = (accountInfo) => {
+        var isValid = true;
+
+        if (accountInfo.name && accountInfo.name.length == 0) isValid = false;
+        if (!accountInfo.accountType) isValid = false;
+        if (!accountInfo.organization) isValid = false;
+        if (accountInfo.accountType && accountInfo.accountType == "CR") {
+            if (!accountInfo.creditLimit) isValid = false;
+            if (!accountInfo.interestRate) isValid = false;
+        }
+
+        return isValid;
+    }
+
     onChange = (e) => {
-        this.setState({[e.target.name]: e.target.value});
+        var currentState = this.state;
+
+        currentState[e.target.name] = e.target.value;
+        currentState.isValid = this.validateAccount(currentState);
+
+        this.setState(currentState);
     }
 
     accountTypeSelected = (option, selection) => {
@@ -95,7 +112,7 @@ class AccountInfo extends React.Component {
             <>
                 <Grid item xs={6}>
                     <TextField id="creditLimit" name="creditLimit"
-                        label="Credit Limit"
+                        label="Credit Limit*"
                         className={classes.numberInput}
                         onChange={this.onChange.bind(this)} 
                         value={this.state.creditLimit}
@@ -103,7 +120,7 @@ class AccountInfo extends React.Component {
                 </Grid>
                 <Grid item xs={6}>
                     <TextField id="interestRate" name="interestRate"
-                        label="Interest Rate"
+                        label="Interest Rate*"
                         onChange={this.onChange.bind(this)}
                         value={this.state.interestRate}
                         fullWidth={true} InputProps={{inputComponent: this.percentageFormat,}} />
@@ -212,7 +229,7 @@ class AccountInfo extends React.Component {
             {value: "CK", label: "Checking"},
             {value: "SV", label: "Savings"},
             {value: "CR", label: "Credit Card"},
-            {value: "IV", label: "Investment"},
+            {value: "IN", label: "Investment"},
             {value: "LN", label: "Loan"}
         ];
 
@@ -225,7 +242,7 @@ class AccountInfo extends React.Component {
                                 onClick={this.props.history.goBack}>Back</Button>
                         </Grid>
                         <Grid item>
-                            <Button color="primary" variant="contained" size="small"
+                            <Button color="primary" variant="contained" size="small" disabled={!this.state.isValid}
                                 onClick={this.saveAccountDetails}>Save</Button>
                         </Grid>
                         <Grid item xs={12}>
@@ -235,7 +252,7 @@ class AccountInfo extends React.Component {
                                         <Grid container spacing={3}>
                                             <Grid item xs={12} sm={6}>
                                                 <FormControl fullWidth={true}>
-                                                    <InputLabel htmlFor="accountName">Account Name</InputLabel>
+                                                    <InputLabel htmlFor="accountName">Account Name*</InputLabel>
                                                     <Input id="accountName" name="accountName" 
                                                         onChange={this.onChange} value={this.state.accountName ? this.state.accountName : ""} 
                                                         fullWidth={true} />
@@ -249,7 +266,7 @@ class AccountInfo extends React.Component {
                                                     getOptionSelected={(option, value) => this.accountTypeSelected(option, value)}
                                                     value={accountTypes.filter(acctType => {return acctType.value == this.state.accountType})[0] || null}
                                                     onChange={(event, selection) => {if (selection) this.onChange({target: {name: "accountType", value: selection.value}})}}
-                                                    renderInput={(params) => <TextField {...params} label="Account Type" variant="standard" />}>
+                                                    renderInput={(params) => <TextField {...params} label="Account Type*" variant="standard" />}>
                                                 </AutoComplete>
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
@@ -260,7 +277,7 @@ class AccountInfo extends React.Component {
                                                     getOptionSelected={(option, value) => this.institutionSelected(option, value)}
                                                     value={this.state.organization || null}
                                                     onChange={(event, value) => this.onChange({target: {name: "organization", value: value}})}
-                                                    renderInput={(params) => <TextField {...params} label="Financial Institution" variant="standard" />}>
+                                                    renderInput={(params) => <TextField {...params} label="Financial Institution*" variant="standard" />}>
                                                 </AutoComplete>
                                             </Grid>
                                             <Grid item xs={6}>
