@@ -34,6 +34,12 @@ const styles = theme => ({
             borderBottom: "0.5px solid #DCDCDC"
         }
     },
+    listCardSubHeader: {
+        color: "#737373",
+        fontWeight: "bold",
+        fontSize: "smaller",
+        paddingTop: "10px"
+    },
     listCardContent: {
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(0,1,0)
@@ -170,6 +176,9 @@ class FinancialAccounts extends React.Component {
                                 </Typography>
                             </Grid>
                         </Grid>
+                    }
+                    { accountType == AccountTypes.BANKING &&
+                        <Typography variant="body1" className={styleClasses.listCardSubHeader}>Checking</Typography>
                     }
                     <List>
                         { accountList.map(acct => (
