@@ -51,7 +51,6 @@ class RegisterUser extends React.Component {
         var registrationErrors = this.props.registrationErrors;
 
         if (registrationErrors.username && !this.state.usernameInUseMessageVisible) {
-            console.log(this.props.registrationErrors.username);
             this.toggleUsernameInUseMessage(true);
         }
         if (!registrationErrors.username && this.state.usernameInUseMessageVisible) {
