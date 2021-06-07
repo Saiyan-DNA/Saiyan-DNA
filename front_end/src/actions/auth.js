@@ -1,8 +1,9 @@
 import axios from 'axios';
 // import { returnErrors } from './messages';
 
-import { REGISTER_USER, REGISTRATION_ERROR, USER_LOADED, USER_LOADING, AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, USER_HOME, CLEAR_HOME } from './types';
-
+import { REGISTER_USER, REGISTRATION_ERROR, CLEAR_REGISTRATION_ERRORS } from './types';
+import { USER_LOADED, USER_LOADING, USER_HOME, CLEAR_HOME } from './types';
+import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, AUTH_ERROR } from './types';
 
 // Attempt Regisration of a new user
 export const registerUser = (userInfo) => (dispatch, getState) => {
@@ -32,6 +33,10 @@ export const registerUser = (userInfo) => (dispatch, getState) => {
             type: AUTH_ERROR
         });
     });    
+}
+
+export const clearRegistrationErrors = () => (dispatch, getState) => {
+    dispatch({type: CLEAR_REGISTRATION_ERRORS, payload: {}})
 }
 
 // CHECK TOKEN & LOAD USER

@@ -17,7 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import PasswordStrengthMeter from './PasswordStrengthMeter';
 
 import { setTitle } from '../../actions/navigation';
-import { registerUser } from '../../actions/auth';
+import { registerUser, clearRegistrationErrors } from '../../actions/auth';
 
 class RegisterUser extends React.Component {
     state = {
@@ -31,14 +31,16 @@ class RegisterUser extends React.Component {
         },
         formValid: false,
         passwordMismatchMessageVisible: false,
-        userNameInUseMessageVisible: false
+        usernameInUseMessageVisible: false,
+        submittedUsername: ""
     }
 
     static propTypes = {
         registrationErrors: PropTypes.object.isRequired,
         isAuthenticated: PropTypes.bool,
         setTitle: PropTypes.func.isRequired,
-        registerUser: PropTypes.func.isRequired
+        registerUser: PropTypes.func.isRequired,
+        clearRegistrationErrors: PropTypes.func.isRequired
     }
 
     componentDidMount() {
@@ -47,9 +49,15 @@ class RegisterUser extends React.Component {
 
     componentDidUpdate() {
         var registrationErrors = this.props.registrationErrors;
-        if (registrationErrors.username && !this.state.userNameInUseMessageVisible) {
+
+        if (registrationErrors.username && !this.state.usernameInUseMessageVisible) {
             console.log(this.props.registrationErrors.username);
+            this.toggleUsernameInUseMessage(true);
         }
+        if (!registrationErrors.username && this.state.usernameInUseMessageVisible) {
+            this.toggleUsernameInUseMessage(false);
+        }
+
         if (registrationErrors.email) console.log(this.props.registrationErrors.email);
     }
 
@@ -82,6 +90,11 @@ class RegisterUser extends React.Component {
         } else {
             this.togglePasswordMismatchMessage(false);
         }
+
+        // Clear Registration Errors if user has modified username
+        if (userInfo.userName != this.state.submittedUsername && this.state.usernameInUseMessageVisible) {
+            this.props.clearRegistrationErrors();
+        }
         
         // Password Validation - Validate Password Strength (using zxcvbn)
         if (zxcvbn(userInfo.password).score < 3) {
@@ -95,8 +108,14 @@ class RegisterUser extends React.Component {
         this.setState({passwordMismatchMessageVisible: mismatch});
     }
 
+    toggleUsernameInUseMessage = (inuse) => {
+        this.setState({usernameInUseMessageVisible: inuse});
+    }
+
     registerUser = (e) => {
         e.preventDefault();
+
+        this.setState({submittedUsername: this.state.userInfo.userName})
         this.props.registerUser({
             "first_name": this.state.userInfo.firstName,
             "last_name": this.state.userInfo.lastName,
@@ -181,7 +200,7 @@ class RegisterUser extends React.Component {
                                                         value={userInfo.userName}
                                                     />
                                                 </FormControl>
-                                                {this.state.userNameInUseMessageVisible &&
+                                                {this.state.usernameInUseMessageVisible &&
                                                     <Typography variant="caption" color="error">Username is already in use</Typography>
                                                 }    
                                             </Grid>
@@ -245,4 +264,4 @@ const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated 
 });
 
-export default connect(mapStateToProps, { registerUser, setTitle })(RegisterUser);
+export default connect(mapStateToProps, { registerUser, clearRegistrationErrors, setTitle })(RegisterUser);
