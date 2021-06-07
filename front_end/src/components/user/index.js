@@ -1,5 +1,5 @@
-import Login from './login';
-import RegisterUser from './register';
+import Login from './Login';
+import RegisterUser from './RegisterUser';
 
 export {
     Login,
