@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import zxcvbn from 'zxcvbn';
 
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -12,6 +13,8 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Typography from '@material-ui/core/Typography';
+
+import PasswordStrengthMeter from './PasswordStrengthMeter';
 
 import { setTitle } from '../../actions/navigation';
 import { registerUser } from '../../actions/auth';
@@ -69,13 +72,20 @@ class RegisterUser extends React.Component {
         if (userInfo.email == "") isValid =  false;
         if (userInfo.userName == "") isValid = false;
 
-        // Password Validation
+        // Password Validation - Must fill in Password and Password2 (Confirm Password)
         if (userInfo.password == "" || userInfo.password2 == "") isValid = false;
-        if (userInfo.password != userInfo.password2) {
+
+        // Password Validation - Validate Passwords match
+        if (userInfo.password && userInfo.password2 && userInfo.password != userInfo.password2) {
             this.togglePasswordMismatchMessage(true);
             isValid = false;
         } else {
             this.togglePasswordMismatchMessage(false);
+        }
+        
+        // Password Validation - Validate Password Strength (using zxcvbn)
+        if (zxcvbn(userInfo.password).score < 3) {
+            isValid = false;
         }
 
         return isValid;
@@ -189,7 +199,10 @@ class RegisterUser extends React.Component {
                                                     onChange={this.onChange}
                                                     value={userInfo.password}
                                                 />
-                                            </FormControl>    
+                                            </FormControl>
+                                            { userInfo.password &&
+                                                <PasswordStrengthMeter score={zxcvbn(userInfo.password).score} />    
+                                            }
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
                                             <FormControl fullWidth={true}>
@@ -204,13 +217,11 @@ class RegisterUser extends React.Component {
                                                     onChange={this.onChange}
                                                     value={userInfo.password2}
                                                 />
-                                            </FormControl>    
-                                        </Grid>
-                                        <Grid item container xs={12} sm={12} spacing={0} justify="flex-start">
+                                            </FormControl>
                                             {passwordMismatchMessageVisible ?
                                                 <Typography variant="caption" color="error">Passwords must match</Typography> : 
                                                 <Typography variant="caption" color="primary">&nbsp;</Typography>
-                                            }
+                                            }    
                                         </Grid>
                                         <Grid item container xs={12} sm={12} justify="center">
                                             <Button variant="contained" color="primary" disabled={!formValid} type="submit">Register</Button>    
