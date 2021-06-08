@@ -5,7 +5,7 @@ export const USER_NAV = "USER_NAV"
 export const USER_HOME = "USER_HOME"
 export const CREATE_MESSAGE = 'CREATE_MESSAGE'
 
-// Auth ACTIONS
+// Auth Actions
 export const REGISTER_USER = 'REGISTER_USER'
 export const REGISTRATION_ERROR = 'REGISTRATION_ERROR'
 export const CLEAR_REGISTRATION_ERRORS = 'CLEAR_REGISTRATION_ERRORS'
@@ -15,6 +15,11 @@ export const AUTH_ERROR = 'AUTH_ERROR'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_FAIL = 'LOGIN_FAIL'
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS'
+
+// E-Mail Actions
+export const SENDING_EMAIL = 'SENDING_EMAIL'
+export const EMAIL_SUCCESS = 'EMAIL_SUCCESS'
+export const EMAIL_ERROR = 'EMAIL_ERROR'
 
 // Inventory Actions
 export const GET_CATEGORIES = "GET_CATEGORIES"

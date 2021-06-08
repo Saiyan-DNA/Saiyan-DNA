@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import accounts from './accounts';
 import assets from './assets';
 import auth from './auth';
+import email from './email';
 import homes from './homes';
 import inventory from './inventory';
 import items from './items';
@@ -13,6 +14,7 @@ export default combineReducers({
     accounts,
     assets,
     auth,
+    email,
     homes,
     inventory,
     items,
