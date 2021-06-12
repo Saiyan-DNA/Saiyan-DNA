@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import NumberFormat from 'react-number-format';
 
 import AutoComplete from '@material-ui/lab/Autocomplete'
 import Button from '@material-ui/core/Button';
@@ -12,17 +13,27 @@ import Grid from '@material-ui/core/Grid';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
-import NumberFormat from 'react-number-format';
+import BasicModal from '../common/BasicModal';
 
-import { createAccount, updateAccount, deleteAccount, getInstitutions } from '../../actions/accounts';
+import { createAccount, updateAccount, deleteAccount } from '../../actions/accounts';
 import { setTitle } from '../../actions/navigation';
 
 
 const styles = theme => ({
     numberInput: {
         textAlign: "right"
+    },
+    modalMessage: {
+        paddingBottom: "1.5em",
+        marginBottom: "0.5em",
+        borderBottom: "0.1px solid dimgray"
+    },
+    modalMessageIndented: {
+        marginTop: "1em",
+        marginLeft: "2em"
     }
 });
 
@@ -38,7 +49,7 @@ class AccountInfo extends React.Component {
         interestRate: null,
         owner: null,
         isValid: false,
-
+        deleteModalOpen: false
     }
 
     static propTypes = {
@@ -78,7 +89,6 @@ class AccountInfo extends React.Component {
         if (!accountInfo.organization) isValid = false;
         if (accountInfo.accountType && accountInfo.accountType == "CR") {
             if (!accountInfo.creditLimit) isValid = false;
-            if (!accountInfo.interestRate) isValid = false;
         }
 
         return isValid;
@@ -129,12 +139,38 @@ class AccountInfo extends React.Component {
         );
     }
 
-    deleteButton = () => {
+    deleteButton = (styleClasses) => {
         return (
-            <Button variant="contained" size="small" color="primary" 
-                style={{backgroundColor: "#c62828", marginTop: "1em"}}
-                onClick={this.deleteAccount}>Delete Account</Button>
+            <Button variant="contained" size="small" color="primary" style={{backgroundColor: "#c62828", marginTop: "0.5em"}}
+                onClick={this.toggleDeleteModal}>Delete Account</Button>
         );
+    }
+
+    deleteModal = (styleClasses) => {
+        return (
+            <BasicModal open={this.state.deleteModalOpen} onClose={this.toggleDeleteModal} title="Delete Account?">
+                <div className={styleClasses.modalMessage}>
+                    <Typography variant="body1">Are you sure you want to delete this account?</Typography>
+                    <Typography variant="body2" className={styleClasses.modalMessageIndented}>
+                        <>
+                            {this.state.accountName}&nbsp;{this.state.organization && "(" + this.state.organization.name + ")"}
+                        </>
+                    </Typography>
+                </div>
+                <Grid container spacing={2} justify="flex-end">
+                    <Grid item>
+                        <Button variant="outlined" color="primary" size="small" onClick={this.toggleDeleteModal}>Cancel</Button>
+                    </Grid>
+                    <Grid item>
+                        <Button variant="contained" color="primary" size="small" onClick={this.deleteAccount} style={{backgroundColor: "#c62828"}}>Delete</Button>
+                    </Grid>
+                </Grid>
+            </BasicModal>
+        );
+    }
+
+    toggleDeleteModal = () => {
+        this.setState({deleteModalOpen: !this.state.deleteModalOpen});
     }
 
     saveAccountDetails = () => {
@@ -296,7 +332,12 @@ class AccountInfo extends React.Component {
                         </Grid>
                     </Grid>
                 </form>
-                { this.state.id ? this.deleteButton() : null }
+                { this.state.id && 
+                    <>
+                        { this.deleteButton(classes) }
+                        { this.deleteModal(classes) }
+                    </>
+                }
             </Container>
         );
     }

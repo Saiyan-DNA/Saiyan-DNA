@@ -3,5 +3,5 @@ import NavMenu from './navmenu';
 
 export {
     Header,
-    NavMenu
+    NavMenu,
 }

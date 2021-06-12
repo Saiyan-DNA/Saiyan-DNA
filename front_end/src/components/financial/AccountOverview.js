@@ -201,14 +201,15 @@ class AccountOverview extends React.Component {
     }
 
     render() {
-        const { classes, account } = this.props;
+        const { classes, account, history } = this.props;
+        const { actionMenuOpen, menuAnchor, transactionModalOpen, currentTransaction } = this.state;
         
         return (
             <Container>
                 <Grid container spacing={3}>
                     <Grid item container xs={12} justify="space-between">
                         <Button variant="outlined" color="primary" size="small" className={classes.hideForPrint}
-                            onClick={this.props.history.goBack}>Back</Button>
+                            onClick={history.goBack}>Back</Button>
                         <Button id="actionButton" variant="contained" color="primary" size="small"
                             disabled={account.id ? false : true} className={classes.hideForPrint}
                             aria-controls="actionMenu" aria-haspopup={true}
@@ -224,7 +225,7 @@ class AccountOverview extends React.Component {
                                         <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, account.organization.website_url)}>
                                             {account.organization.name}
                                         </Link> :
-                                        this.props.account.organization.name
+                                        account.organization.name
                                     }
                                     </Typography>
                                 </Grid>
@@ -262,9 +263,9 @@ class AccountOverview extends React.Component {
                         }
                     </Grid>
                 </Grid>
-                <Menu id="actionMenu" anchorEl={this.state.menuAnchor} keepMounted
+                <Menu id="actionMenu" anchorEl={menuAnchor} keepMounted
                     getContentAnchorEl={null} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}                        
-                    open={Boolean(this.state.actionMenuOpen)} onClose={this.closeMenu}>
+                    open={Boolean(actionMenuOpen)} onClose={this.closeMenu}>
                     <MenuItem style={{fontSize: "10pt"}} dense button 
                         onClick={() => this.toggleTransactionModal(null)}
                     >Add Transaction</MenuItem>
@@ -273,11 +274,11 @@ class AccountOverview extends React.Component {
                     >Import Transactions</MenuItem>
                     <Divider />                            
                     <MenuItem style={{fontSize: "10pt"}} dense button 
-                        onClick={() => this.props.history.push("/financial/accountinfo")}
+                        onClick={() => history.push("/financial/accountinfo")}
                     >Edit Account</MenuItem>
                 </Menu>
                 <TransactionModal id="transactionModal" name="transactionModal" 
-                    open={this.state.transactionModalOpen} transaction={this.state.currentTransaction}
+                    isOpen={transactionModalOpen} transaction={currentTransaction}
                     onClose={this.toggleTransactionModal.bind(this)} />
             </Container>
         );

@@ -9,6 +9,7 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { loadUser } from '../actions/auth';
 import store from '../store';
 import PrivateRoute from './common/PrivateRoute';
+import SystemMessage from './common/SystemMessage';
 
 const Header = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.Header), {fallback: <h1>Loading Header...</h1>});
 const NavMenu = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.NavMenu), {fallback: <h1>Loading Menu...</h1>});
@@ -75,6 +76,7 @@ class App extends React.Component {
                   <PrivateRoute exact path="/inventory/categoryinfo" component={CategoryInfo} />
                 </Switch>
             </Router>
+            <SystemMessage />
         </MuiThemeProvider>
       </Provider>
     );

@@ -12,7 +12,6 @@ export const getFinancialCategories = () => (dispatch, getState) => {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
-        dispatch(createMessage({categoriesRetrieved: "Categories Retrieved"}));
         dispatch({
             type: GET_FINANCIAL_CATEGORIES,
             payload: res.data

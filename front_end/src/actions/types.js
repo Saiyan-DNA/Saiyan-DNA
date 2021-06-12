@@ -4,6 +4,7 @@ export const SET_TITLE = 'SET_TITLE'
 export const USER_NAV = "USER_NAV"
 export const USER_HOME = "USER_HOME"
 export const CREATE_MESSAGE = 'CREATE_MESSAGE'
+export const CLEAR_MESSAGE = 'CLEAR_MESSAGE'
 
 // Auth Actions
 export const REGISTER_USER = 'REGISTER_USER'
@@ -15,6 +16,7 @@ export const AUTH_ERROR = 'AUTH_ERROR'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_FAIL = 'LOGIN_FAIL'
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS'
+export const CLEAR_LOGIN_ERROR = 'CLEAR_LOGIN_ERROR'
 
 // E-Mail Actions
 export const SENDING_EMAIL = 'SENDING_EMAIL'

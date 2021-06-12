@@ -11,27 +11,52 @@ import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
 
-
-import { userLogin } from '../../actions/auth';
+import { userLogin, clearLoginError } from '../../actions/auth';
 import { setTitle } from '../../actions/navigation';
 
+const styles = theme => ({
+    errorCaption: {
+        marginTop: "0em",
+        paddingTop: "0em",
+        fontStyle: "italic"
+    }
+});
 
 class Login extends React.Component {
     state = {
         username: "",
-        password: ""
+        password: "",
+        showUsernameError: false,
+        showPasswordError: false
     }
 
     static propTypes = {
         userLogin: PropTypes.func.isRequired,
         setTitle: PropTypes.func.isRequired,
+        clearLoginError: PropTypes.func.isRequired,
         currentPath: PropTypes.string.isRequired,
-        isAuthenticated: PropTypes.bool        
+        isAuthenticated: PropTypes.bool,
+        loginError: PropTypes.string       
     }
     
     componentDidMount() {
         this.props.setTitle("Log In");
+    }
+
+    componentDidUpdate() {
+        switch (this.props.loginError) {
+            case "username":
+                if (!this.state.showUsernameError) this.setState({showUsernameError: true});
+                break;
+            case "password":
+                if (!this.state.showPasswordError) this.setState({showPasswordError: true});
+                break;
+            default: 
+                break;
+        }   
     }
 
     onSubmit = e => {
@@ -41,14 +66,25 @@ class Login extends React.Component {
 
     onChange = e => {
         this.setState({[e.target.id]: e.target.value});
+
+        if (e.target.id === "username")  {
+            this.setState({showUsernameError: false});
+            if (this.state.showUsernameError) this.props.clearLoginError();
+        }
+
+        if (e.target.id === "password") {
+            this.setState({showPasswordError: false});
+            if (this.state.showPasswordError) this.props.clearLoginError();
+        }
     }
 
     render() {
-        if (this.props.isAuthenticated) {
-            return <Redirect to={this.props.currentPath} />;
-        }
+        const { classes, isAuthenticated, currentPath } = this.props
+        const { username, password, showUsernameError, showPasswordError } = this.state
 
-        const { username, password } = this.state
+        if (isAuthenticated) {
+            return <Redirect to={currentPath} />;
+        } 
 
         return (
             <Container>
@@ -71,6 +107,9 @@ class Login extends React.Component {
                                                     value={username}
                                                 />
                                             </FormControl>
+                                            { showUsernameError &&
+                                                <Typography variant="caption" color="error" className={classes.errorCaption}>Unknown Username</Typography>
+                                            }
                                         </Grid>
                                         <Grid item xs={10}>
                                             <FormControl fullWidth={true}>
@@ -83,6 +122,9 @@ class Login extends React.Component {
                                                     value={password}
                                                 />
                                             </FormControl>
+                                            { showPasswordError &&
+                                                <Typography variant="caption" color="error" className={classes.errorCaption}>Incorrect Password</Typography>
+                                            }
                                         </Grid>
                                         <Grid item xs={10}>
                                             <div align="center" style={{marginTop: "1em"}}>
@@ -107,7 +149,8 @@ class Login extends React.Component {
 
 const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated,
-    currentPath: state.navigation.currentPath
+    currentPath: state.navigation.currentPath,
+    loginError: state.auth.loginError
 });
 
-export default connect(mapStateToProps, { userLogin, setTitle })(Login);
+export default connect(mapStateToProps, { userLogin, clearLoginError, setTitle })(withStyles(styles, { withTheme: true })(Login));
