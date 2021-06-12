@@ -1,15 +1,17 @@
 import { REGISTER_USER, REGISTRATION_ERROR, CLEAR_REGISTRATION_ERRORS } from '../actions/types';
-import { USER_LOADED, USER_LOADING, AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS } from '../actions/types';
+import { USER_LOADED, USER_LOADING, AUTH_ERROR } from '../actions/types';
+import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, CLEAR_LOGIN_ERROR } from '../actions/types';
 
 const initialState = {
     token: localStorage.getItem('token'),
     isAuthenticated: null,
     isLoading: false,
     user: {},
+    loginError: null,
     registrationErrors: {}
 }
 
-export default function(state = initialState, action) {
+export default function(state = initialState, action, dispatch) {
     switch(action.type) {
         case REGISTER_USER:
             localStorage.setItem('token', action.payload.token);
@@ -66,6 +68,16 @@ export default function(state = initialState, action) {
                 isLoading: false
             }
         case LOGIN_FAIL:
+            localStorage.removeItem('token');
+            localStorage.removeItem('home');
+            return {
+                ...state,
+                token: null,
+                isAuthenticated: false,
+                isLoading: false,
+                loginError: action.payload.field,
+                user: {}
+            }
         case LOGOUT_SUCCESS:
             localStorage.removeItem('token');
             localStorage.removeItem('home');
@@ -74,7 +86,13 @@ export default function(state = initialState, action) {
                 token: null,
                 user: {},
                 isAuthenticated: null,
-                isLoading: false
+                isLoading: false,
+                loginError: null
+            }
+        case CLEAR_LOGIN_ERROR:
+            return {
+                ...state,
+                loginError: null
             }
         default:
             return state;

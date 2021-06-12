@@ -50,7 +50,8 @@ class TransactionModal extends React.Component {
         isAuthenticated: PropTypes.bool.isRequired,
         currentUser: PropTypes.object.isRequired,
         accounts: PropTypes.array.isRequired,
-        getFinancialCategories: PropTypes.func.isRequired
+        getFinancialCategories: PropTypes.func.isRequired,
+        financialCategories: PropTypes.array
     }
 
     componentDidMount() {
@@ -79,7 +80,7 @@ class TransactionModal extends React.Component {
         } 
 
         // Clear Transaction details for modal (if any exist) on close.
-        if (!this.props.open && (this.state.transaction.transactionId || this.state.transaction.isEdited)) {
+        if (!this.props.isOpen && (this.state.transaction.transactionId || this.state.transaction.isEdited)) {
             this.setState({transaction: {
                 transactionId: null,
                 transactionType: "",
@@ -172,10 +173,11 @@ class TransactionModal extends React.Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, isAuthenticated, currentUser, accounts, financialCategories, isOpen, onClose } = this.props;
+        const { transaction, transferDetailsVisible } = this.state;
 
         return (
-            <BasicModal open={this.props.open} onClose={this.props.onClose} title={this.state.transaction.transactionId ? "Edit Transaction" : "Add Transaction"}>
+            <BasicModal open={isOpen} onClose={onClose} title={transaction.transactionId ? "Edit Transaction" : "Add Transaction"}>
                 <Grid container spacing={2} justify="space-between">
                     <Grid item xs={6} sm={6}>
                         <FormControl fullWidth={true}>
@@ -183,8 +185,8 @@ class TransactionModal extends React.Component {
                             <Select id="transactionType" name="transactionType" fullWidth={true} 
                                 onChange={this.onChange.bind(this)} 
                                 onBlur={this.validateTransaction.bind(this)}
-                                value={this.state.transaction.transactionType ? this.state.transaction.transactionType : ""}
-                                defaultValue={this.state.transaction.transactionType}>
+                                value={transaction.transactionType ? transaction.transactionType : ""}
+                                defaultValue={transaction.transactionType}>
                                     <MenuItem value=""><em>None</em></MenuItem>
                                     <MenuItem value={"CRD"}>Credit</MenuItem>
                                     <MenuItem value={"DBT"}>Debit</MenuItem>
@@ -198,7 +200,7 @@ class TransactionModal extends React.Component {
                             className="numberFormat"
                             onChange={this.onChange.bind(this)} 
                             onBlur={this.validateTransaction.bind(this)}
-                            value={this.state.transaction.transactionAmount}
+                            value={transaction.transactionAmount}
                             fullWidth={true} InputProps={{inputComponent: this.amountFormat,}}/>                                
                     </Grid>
                     <Grid item xs={12} sm={12}>
@@ -207,7 +209,7 @@ class TransactionModal extends React.Component {
                             <Input id="transactionSummary" name="transactionSummary" 
                                 onChange={this.onChange.bind(this)} 
                                 onBlur={this.validateTransaction.bind(this)}
-                                value={this.state.transaction.transactionSummary} 
+                                value={transaction.transactionSummary} 
                                 fullWidth={true} />
                         </FormControl>
                     </Grid>
@@ -217,23 +219,23 @@ class TransactionModal extends React.Component {
                             <Input id="transactionDescription" name="transactionDescription" 
                                 onChange={this.onChange.bind(this)} 
                                 onBlur={this.validateTransaction.bind(this)}
-                                value={this.state.transaction.transactionDescription} 
+                                value={transaction.transactionDescription} 
                                 fullWidth={true} />
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={12}>
                         <AutoComplete id="transactionCategory" name="transactionCategory"
                             fullWidth={true} 
-                            options={this.props.financialCategories ? this.props.financialCategories.sort((a, b) => a.path_name.localeCompare(b.path_name)) : []}
+                            options={financialCategories ? financialCategories.sort((a, b) => a.path_name.localeCompare(b.path_name)) : []}
                             getOptionLabel={(option) => option.path_name}
                             getOptionSelected={(option, value) => this.categorySelected(option, value)}
-                            value={this.state.transaction.transactionCategory}
+                            value={transaction.transactionCategory}
                             onChange={(event, value) => this.onChange({target: {name: "transactionCategory", value: value}})}
                             renderInput={(params) => <TextField {...params} label="Category" variant="standard" />}>
                         </AutoComplete>
 
                     </Grid>
-                    { this.state.transferDetailsVisible &&
+                    { transferDetailsVisible &&
                         <>
                             <Grid item xs={12} sm={12}>
                                 <FormControl fullWidth={true}>
@@ -241,12 +243,12 @@ class TransactionModal extends React.Component {
                                     <Select id="transferFromAccount" name="transferFromAccount"
                                         onChange={this.onChange.bind(this)} 
                                         onBlur={this.validateTransaction.bind(this)}
-                                        value={this.state.transferFromAccount}
-                                        fullWidth={true} defaultValue={this.state.transaction.transferFromAccount}>
+                                        value={transaction.transferFromAccount}
+                                        fullWidth={true} defaultValue={transaction.transferFromAccount}>
                                         <MenuItem value=""><em>None</em></MenuItem>
-                                        { this.props.accounts.filter(acct => acct.account_type == "CK" || acct.account_type == "SV").sort((a, b) => a.name > b.name ? 1 : -1).map(acct => (
+                                        { accounts.filter(acct => acct.account_type == "CK" || acct.account_type == "SV").sort((a, b) => a.name > b.name ? 1 : -1).map(acct => (
                                             <MenuItem key={acct.id} value={acct.id}
-                                                disabled={acct.id == this.state.transaction.transferToAccount}>
+                                                disabled={acct.id == transaction.transferToAccount}>
                                                 {acct.name}
                                             </MenuItem>    
                                         ))}
@@ -259,12 +261,12 @@ class TransactionModal extends React.Component {
                                     <Select id="transferToAccount" name="transferToAccount"
                                         onChange={this.onChange.bind(this)} 
                                         onBlur={this.validateTransaction.bind(this)}
-                                        value={this.state.transaction.transferToAccount}
-                                        fullWidth={true} defaultValue={this.state.transaction.transferToAccount}>
+                                        value={transaction.transferToAccount}
+                                        fullWidth={true} defaultValue={transaction.transferToAccount}>
                                             <MenuItem value=""><em>None</em></MenuItem>
                                             { this.props.accounts.sort((a, b) => a.name > b.name ? 1 : -1).map(acct => (
                                                 <MenuItem key={acct.id} value={acct.id}
-                                                    disabled={(acct.id == this.state.transaction.transferFromAccount)}>
+                                                    disabled={(acct.id == transaction.transferFromAccount)}>
                                                     {acct.name}
                                                 </MenuItem>    
                                             ))}
@@ -278,18 +280,18 @@ class TransactionModal extends React.Component {
                     </Grid>
                     <Grid container item xs={12} justify="space-between">
                         <Grid item xs={4}>
-                            {this.state.transaction.transactionId ? 
+                            {transaction.transactionId ? 
                                 <DestructiveButton onClick={() => console.log("Delete Transaction")}>Delete</DestructiveButton> :
                                 <Typography>&nbsp;</Typography>
                             }
                         </Grid>                                
                         <Grid container xs={8} item justify="flex-end">
                             <Grid item>
-                                <Button color="primary" variant="outlined" onClick={this.props.onClose}>Cancel</Button>
+                                <Button color="primary" variant="outlined" onClick={onClose}>Cancel</Button>
                             </Grid>
                             <Grid item>&nbsp;</Grid>
                             <Grid item>
-                                <Button color="primary" variant="contained" disabled={!this.state.transaction.isValid} onClick={this.saveTransaction.bind(this)}>Save</Button>
+                                <Button color="primary" variant="contained" disabled={!transaction.isValid} onClick={this.saveTransaction.bind(this)}>Save</Button>
                             </Grid>
                         </Grid>
                     </Grid>

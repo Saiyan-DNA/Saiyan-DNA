@@ -13,13 +13,10 @@ export const getAccounts = () => (dispatch, getState) => {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
-        dispatch(createMessage({accountsRetrieved: "Accounts Retrieved"}));
-
-        dispatch({
-            type: GET_ACCOUNTS,
-            payload: res.data
-        });
-    }).catch(err => console.log(err));
+            dispatch({type: GET_ACCOUNTS, payload: res.data});
+        }).catch(err => {
+            dispatch(createMessage({type: "error", title: "Error Loading Accounts!", detail: err}));
+    });
 };
 
 // CREATE ACCOUNT
@@ -39,7 +36,15 @@ export const createAccount = (acct) => (dispatch, getState) => {
             type: CREATE_ACCOUNT,
             payload: res.data
         });
-    }).catch(err => console.log(err));
+
+        var successMessage = "Added Account '" + acct.name + "'";
+
+        getAccounts();
+
+        dispatch(createMessage({type: "success", title: successMessage}));
+    }).catch(err => {
+        dispatch(createMessage({type: "error", title: "Error Adding Account!", detail: err}));
+    });
 };
 
 // UPDATE ACCOUNT
@@ -59,7 +64,13 @@ export const updateAccount = (id, acct) => (dispatch, getState) => {
             type: UPDATE_ACCOUNT,
             payload: res.data
         });
-    }).catch(err => console.log(err));
+
+        getAccounts();
+
+        var successMessage = "Updated Account '" + acct.name + "'";
+        dispatch(createMessage({type: "success", title: successMessage}));
+
+    }).catch(err => dispatch(createMessage({type: "error", title: "Error Updating Account!", detail: err})));
 };
 
 // DELETE_ACCOUNT
@@ -79,7 +90,11 @@ export const deleteAccount = (id) => (dispatch, getState) => {
             type: DELETE_ACCOUNT,
             payload: id
         });
-    }).catch(err => console.log(err));
+
+        getAccounts();
+
+        dispatch(createMessage({type: "success", title: "Account Deleted"}));
+    }).catch(err => dispatch(createMessage({type: "error", title: "Unable to Delete Account!", detail: err})));
 };
 
 // GET ACCOUNT DETAILS
@@ -145,11 +160,11 @@ export const getInstitutions = () => (dispatch, getState) => {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
-        dispatch(createMessage({institutionsRetrieved: "Financial Institutions Retrieved"}));
-
         dispatch({
             type: GET_FINANCIAL_INSTITUTIONS,
             payload: res.data
         });
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        dispatch(createMessage({type: "error", title: "Error Obtaining Financial Institutions!", detail: err}));
+    });
 };

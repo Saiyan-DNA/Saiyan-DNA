@@ -11,7 +11,6 @@ export const getAssets = () => (dispatch, getState) => {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
-        dispatch(createMessage({assetsRetrieved: "Assets Retrieved"}));
 
         dispatch({
             type: GET_ASSETS,

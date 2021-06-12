@@ -45,17 +45,31 @@ class LoginAPI(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
 
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        payload = jwt_payload_handler(user)
+        if (serializer.is_valid(raise_exception=False)):
+
+            user = serializer.validated_data
+
+            jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+            jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+            payload = jwt_payload_handler(user)
+
+            return Response({
+                "user": UserSerializer(user, context=self.get_serializer_context()).data,
+                "token": jwt_encode_handler(payload)
+            })
+        
+        if (not User.objects.filter(username=request.data["username"]).exists()):
+            return Response({
+                "field": "username",
+                "message": "Invalid Username!"
+            })
 
         return Response({
-            "user": UserSerializer(user, context=self.get_serializer_context()).data,
-            "token": jwt_encode_handler(payload)
+            "field": "password",
+            "message": "Invalid Password!"
         })
+        
 
 class UserAPI(generics.RetrieveAPIView):
     """

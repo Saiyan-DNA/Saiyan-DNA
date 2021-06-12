@@ -1,9 +1,11 @@
 import axios from 'axios';
-// import { returnErrors } from './messages';
 
 import { REGISTER_USER, REGISTRATION_ERROR, CLEAR_REGISTRATION_ERRORS } from './types';
 import { USER_LOADED, USER_LOADING, USER_HOME, CLEAR_HOME } from './types';
 import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, AUTH_ERROR } from './types';
+import { CLEAR_LOGIN_ERROR } from './types';
+
+import { createMessage } from './messages';
 
 // Attempt Regisration of a new user
 export const registerUser = (userInfo) => (dispatch, getState) => {
@@ -68,6 +70,7 @@ export const loadUser = () => (dispatch, getState) => {
             dispatch({
                 type: AUTH_ERROR
             });
+            dispatch(createMessage({type: "error", title: "Autorization Error!", detail: err}));
         });
     } else {
         dispatch({
@@ -93,23 +96,32 @@ export const userLogin = (username, password) => (dispatch) => {
     axios.post('/api/auth/login', body, config)
         .then(res => {
             // If Logged-In user has only one, automatically select it.
-            let homes = res.data.user.homes
-            if (homes.length == 1) {
+            if (res.data.user) {
+                let homes = res.data.user.homes
+                if (homes.length == 1) {
+                    dispatch({
+                            type: USER_HOME,
+                            payload: homes[0]
+                    });
+                }
+
                 dispatch({
-                        type: USER_HOME,
-                        payload: homes[0]
+                    type: LOGIN_SUCCESS,
+                    payload: res.data
+                });
+            } else {
+                dispatch({
+                    type: LOGIN_FAIL,
+                    payload: res.data
                 });
             }
-
-            dispatch({
-                type: LOGIN_SUCCESS,
-                payload: res.data
-            });
         }).catch(err => {
             console.log(err);
             dispatch({
-                type: LOGIN_FAIL
+                type: LOGIN_FAIL,
+                payload: err
             });
+            dispatch(createMessage({type: "error", title: "Login Failed!", detail: err}));
         });
 }
 
@@ -119,6 +131,10 @@ export const userLogout = () => (dispatch) => {
     dispatch({type: CLEAR_HOME});
 }
 
+// Clear Login Error State
+export const clearLoginError = () => (dispatch) => {
+    dispatch({type: CLEAR_LOGIN_ERROR});
+}
 
 // Check if User has specified permission
 export const userHasPermission = (permName) => (dispatch, getState) => {
