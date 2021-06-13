@@ -2,20 +2,22 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
 import zxcvbn from 'zxcvbn';
 
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Container from '@material-ui/core/Container';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
-import PasswordStrengthMeter from './PasswordStrengthMeter';
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */));
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
+
+const PasswordStrengthMeter = loadable(() => import('./PasswordStrengthMeter' /*webpackChunkName: "General" */));
 
 import { setTitle } from '../../actions/navigation';
 import { registerUser, clearRegistrationErrors } from '../../actions/auth';
