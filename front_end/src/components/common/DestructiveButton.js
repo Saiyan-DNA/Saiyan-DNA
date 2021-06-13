@@ -1,7 +1,9 @@
 import React from 'react';
+import loadable from '@loadable/component';
 
-import Button from '@material-ui/core/Button'
 import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
 
 const theme = createMuiTheme({
     typography: {

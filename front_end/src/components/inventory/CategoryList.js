@@ -1,23 +1,26 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
 
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Collapse from '@material-ui/core/Collapse';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import ArrowRight from '@material-ui/icons/ArrowRight';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import Edit from '@material-ui/icons/Edit';
 import { withStyles } from '@material-ui/core/styles';
+
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */));
+const Collapse = loadable(() => import('@material-ui/core/Collapse' /* webpackChunkName: "Material" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */));
+const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
+const ListItemIcon = loadable(() => import('@material-ui/core/ListItemIcon' /* webpackChunkName: "Material" */));
+const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material" */));
+
+const ArrowRight = loadable(() => import('@material-ui/icons/ArrowRight' /* webpackChunkName: "Icons" */));
+const ArrowDropDown = loadable(() => import('@material-ui/icons/ArrowDropDown' /* webpackChunkName: "Icons" */));
+const Edit = loadable(() => import('@material-ui/icons/Edit' /* webpackChunkName: "Icons" */));
+
 
 import { getCategories, getCategory, clearCategory } from '../../actions/categories';
 import { setTitle } from '../../actions/navigation';

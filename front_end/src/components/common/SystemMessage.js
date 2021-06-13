@@ -1,10 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
 
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+// import Snackbar from '@material-ui/core/Snackbar';
+// import MuiAlert from '@material-ui/lab/Alert';
 import { withStyles } from '@material-ui/core/styles';
+
+const MuiAlert = loadable(() => import('@material-ui/lab/Alert' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Snackbar = loadable(() => import('@material-ui/core/Snackbar' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
 
 import { clearMessage } from '../../actions/messages';
 
