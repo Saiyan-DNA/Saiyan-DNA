@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { GET_ACCOUNTS, CREATE_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT, GET_ACCOUNT, CLEAR_ACCOUNT } from './types';
+import { ACCOUNTS_LOADING, ACCOUNTS_LOADED } from './types';
 import { GET_TRANSACTIONS, CLEAR_TRANSACTIONS } from './types';
 import { GET_FINANCIAL_INSTITUTION, GET_FINANCIAL_INSTITUTIONS } from './types';
 import { createMessage } from './messages';
@@ -9,11 +10,13 @@ import { createMessage } from './messages';
 export const getAccounts = () => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
 
+    dispatch({type: ACCOUNTS_LOADING});
+
     axios.get('/api/financial/account/', {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
-            dispatch({type: GET_ACCOUNTS, payload: res.data});
+            dispatch({type: ACCOUNTS_LOADED, payload: res.data});
         }).catch(err => {
             dispatch(createMessage({type: "error", title: "Error Loading Accounts!", detail: err}));
     });
@@ -39,8 +42,6 @@ export const createAccount = (acct) => (dispatch, getState) => {
 
         var successMessage = "Added Account '" + acct.name + "'";
 
-        getAccounts();
-
         dispatch(createMessage({type: "success", title: successMessage}));
     }).catch(err => {
         dispatch(createMessage({type: "error", title: "Error Adding Account!", detail: err}));
@@ -65,8 +66,6 @@ export const updateAccount = (id, acct) => (dispatch, getState) => {
             payload: res.data
         });
 
-        getAccounts();
-
         var successMessage = "Updated Account '" + acct.name + "'";
         dispatch(createMessage({type: "success", title: successMessage}));
 
@@ -90,8 +89,6 @@ export const deleteAccount = (id) => (dispatch, getState) => {
             type: DELETE_ACCOUNT,
             payload: id
         });
-
-        getAccounts();
 
         dispatch(createMessage({type: "success", title: "Account Deleted"}));
     }).catch(err => dispatch(createMessage({type: "error", title: "Unable to Delete Account!", detail: err})));

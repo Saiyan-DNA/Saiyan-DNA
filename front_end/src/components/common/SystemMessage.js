@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-// import Snackbar from '@material-ui/core/Snackbar';
-// import MuiAlert from '@material-ui/lab/Alert';
 import { withStyles } from '@material-ui/core/styles';
 
 const MuiAlert = loadable(() => import('@material-ui/lab/Alert' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
@@ -14,7 +12,10 @@ import { clearMessage } from '../../actions/messages';
 
 const styles = theme => ({
     systemMessage: {
-        marginTop: "2em"
+        marginTop: "2.75em",
+        marginBottom: "1em",
+        opacity: "0.8",
+        filter: "alpha(opacity=80)"
     }
 });
 
@@ -26,7 +27,15 @@ function Alert(props) {
 
 class SystemMessage extends React.Component {
     state = {
-        isVisible: false
+        isVisible: false,
+        width: null,
+        height: null,
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = { width: 0, height: 0 };
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     }
 
     static propTypes = {
@@ -44,19 +53,44 @@ class SystemMessage extends React.Component {
     };
 
     componentDidUpdate() {
-        if (this.props.message && !this.state.isVisible) {
+        const { message } = this.props;
+        const { isVisible } = this.state;
+
+        if (message && !isVisible) {
             this.setState({isVisible: true});
         }
-        if (!this.props.message && this.state.isVisible) {
+        if (!message && isVisible) {
             this.setState({isVisible: false});
         }
     }
 
+    componentDidMount() {
+        this.updateWindowDimensions();
+        window.addEventListener('resize', this.updateWindowDimensions);
+    }
+      
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+      
+    updateWindowDimensions() {
+        this.setState({ width: window.innerWidth, height: window.innerHeight });
+    }
+
     render() {
         const { classes, message } = this.props;
+        const { isVisible, width, height } = this.state;
+
+        var anchor = null
+
+        if (width < 600) {
+            anchor = {vertical: "bottom", horizontal: "center"}
+        } else {
+            anchor = {vertical: "top", horizontal: "center"}
+        }
 
         return ( 
-            <Snackbar className={classes.systemMessage} open={this.state.isVisible} autoHideDuration={3000} onClose={this.handleClose} anchorOrigin={{vertical: "top", horizontal: "center"}}>
+            <Snackbar className={classes.systemMessage} open={isVisible} autoHideDuration={3000} onClose={this.handleClose} anchorOrigin={anchor}>
                 { message && 
                     <Alert onClose={this.handleClose} severity={message.type}>
                         { message.title } 

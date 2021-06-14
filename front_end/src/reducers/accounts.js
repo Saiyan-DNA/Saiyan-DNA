@@ -1,7 +1,11 @@
 import { GET_ACCOUNTS, GET_ACCOUNT, CREATE_ACCOUNT, UPDATE_ACCOUNT, CLEAR_ACCOUNT, DELETE_ACCOUNT } from '../actions/types.js';
 import { GET_TRANSACTIONS, CLEAR_TRANSACTIONS, GET_FINANCIAL_CATEGORIES, GET_FINANCIAL_INSTITUTIONS } from '../actions/types.js'
+import { ACCOUNTS_LOADING, ACCOUNTS_LOADED } from '../actions/types.js'
+
 
 const initialState = {
+    accountsLoading: false,
+    accountsLoaded: false,
     accounts: [],
     currentAccount: {},
     accountTransactions: [],
@@ -11,21 +15,32 @@ const initialState = {
 
 export default function(state = initialState, action) {
     switch(action.type) {
-        case GET_ACCOUNTS:
+        case ACCOUNTS_LOADING:
             return {
                 ...state,
-                accounts: action.payload
+                accounts: [],
+                accountsLoading: true,
+                accountsLoaded: false
+            }
+        case ACCOUNTS_LOADED:
+            return {
+                ...state,
+                accounts: action.payload,
+                accountsLoading: false,
+                accountsLoaded: true
             };
         case DELETE_ACCOUNT:
             return {
                 ...state,
                 accounts: state.accounts.filter(account => account.id !== action.payload),
-                currentAccount: {}
+                currentAccount: {},
+                accountsLoaded: false
             };
         case CREATE_ACCOUNT:
             return {
                 ...state,
-                currentAccount: {}
+                currentAccount: action.payload,
+                accountsLoaded: false
             };
         case UPDATE_ACCOUNT:
             return {

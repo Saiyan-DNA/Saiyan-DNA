@@ -6,19 +6,20 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material" */));
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
-const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
+const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
 
-import BasicModal from '../common/BasicModal';
+const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
 
 import { createAccount, updateAccount, deleteAccount } from '../../actions/accounts';
 import { setTitle } from '../../actions/navigation';
@@ -36,6 +37,9 @@ const styles = theme => ({
     modalMessageIndented: {
         marginTop: "1em",
         marginLeft: "2em"
+    },
+    deleteButton: {
+        marginTop: "0.5em"
     }
 });
 
@@ -141,21 +145,16 @@ class AccountInfo extends React.Component {
         );
     }
 
-    deleteButton = (styleClasses) => {
-        return (
-            <Button variant="contained" size="small" color="primary" style={{backgroundColor: "#c62828", marginTop: "0.5em"}}
-                onClick={this.toggleDeleteModal}>Delete Account</Button>
-        );
-    }
-
     deleteModal = (styleClasses) => {
+        const { deleteModalOpen, accountName, organization } = this.state;
+
         return (
-            <BasicModal open={this.state.deleteModalOpen} onClose={this.toggleDeleteModal} title="Delete Account?">
+            <BasicModal open={deleteModalOpen} onClose={this.toggleDeleteModal} title="Delete Account?">
                 <div className={styleClasses.modalMessage}>
                     <Typography variant="body1">Are you sure you want to delete this account?</Typography>
                     <Typography variant="body2" className={styleClasses.modalMessageIndented}>
                         <>
-                            {this.state.accountName}&nbsp;{this.state.organization && "(" + this.state.organization.name + ")"}
+                            {accountName}&nbsp;{organization && "(" + organization.name + ")"}
                         </>
                     </Typography>
                 </div>
@@ -164,7 +163,7 @@ class AccountInfo extends React.Component {
                         <Button variant="outlined" color="primary" size="small" onClick={this.toggleDeleteModal}>Cancel</Button>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" color="primary" size="small" onClick={this.deleteAccount} style={{backgroundColor: "#c62828"}}>Delete</Button>
+                        <DestructiveButton onClick={this.deleteAccount}>Delete</DestructiveButton>
                     </Grid>
                 </Grid>
             </BasicModal>
@@ -176,30 +175,34 @@ class AccountInfo extends React.Component {
     }
 
     saveAccountDetails = () => {
+        const { currentUser, createAccount, updateAccount, history } = this.props;
+        const { id, accountName, accountType, organization, currentBalance, creditLimit, interestRate } = this.state
 
         let accountObject = {
-            "name": this.state.accountName,
-            "account_type": this.state.accountType,
-            "organization": this.state.organization.id,
-            "current_balance": parseFloat(this.state.currentBalance) || 0.00,
-            "credit_limit": parseFloat(this.state.creditLimit) || 0.00,
-            "interest_rate": (parseFloat(this.state.interestRate) || 0),
-            "owner": this.props.currentUser.id
+            "name": accountName,
+            "account_type": accountType,
+            "organization": organization.id,
+            "current_balance": parseFloat(currentBalance) || 0.00,
+            "credit_limit": parseFloat(creditLimit) || 0.00,
+            "interest_rate": (parseFloat(interestRate) || 0),
+            "owner": currentUser.id
         }
 
-        if (this.state.id) {
-            this.props.updateAccount(this.state.id, accountObject);
-
+        if (id) {
+            updateAccount(id, accountObject);
+            history.goBack();
         } else {
-            this.props.createAccount(accountObject);
+            createAccount(accountObject);
+            // history.push("/financial/accounts");
+            history.push("/financial/accountoverview");
         }
-
-        this.props.history.goBack();
     }
 
     deleteAccount = () => {
-        this.props.deleteAccount(this.state.id);
-        this.props.history.push("/financial/accounts");
+        const { deleteAccount, history } = this.props;
+
+        deleteAccount(this.state.id);
+        history.push("/financial/accounts");
     }
 
     currencyFormat(props) {
@@ -336,7 +339,8 @@ class AccountInfo extends React.Component {
                 </form>
                 { this.state.id && 
                     <>
-                        { this.deleteButton(classes) }
+                        <DestructiveButton className={classes.deleteButton}
+                            onClick={this.toggleDeleteModal}>Delete Account</DestructiveButton>
                         { this.deleteModal(classes) }
                     </>
                 }

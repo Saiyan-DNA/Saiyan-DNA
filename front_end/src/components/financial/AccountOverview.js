@@ -143,6 +143,11 @@ class AccountOverview extends React.Component {
         window.open(url,"target=_blank");
     }
 
+    goToList = (e) => {
+        e.stopPropagation();
+        this.props.history.push("/financial/accounts")
+    }
+
     transactionList(styleClasses) {
         if (this.props.accountTransactions.length > 0) {
             return (
@@ -209,7 +214,7 @@ class AccountOverview extends React.Component {
                 <Grid container spacing={3}>
                     <Grid item container xs={12} justify="space-between">
                         <Button variant="outlined" color="primary" size="small" className={classes.hideForPrint}
-                            onClick={history.goBack}>Back</Button>
+                            onClick={this.goToList}>Back</Button>
                         <Button id="actionButton" variant="contained" color="primary" size="small"
                             disabled={account.id ? false : true} className={classes.hideForPrint}
                             aria-controls="actionMenu" aria-haspopup={true}

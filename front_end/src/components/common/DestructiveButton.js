@@ -32,10 +32,10 @@ const styles = theme => ({
 });
 
 
-const DestructiveButton = ({classes, children, onClick}) => {
+const DestructiveButton = ({classes, className, children, onClick}) => {
     return (
         <MuiThemeProvider theme={theme}>
-            <Button variant="contained" color="primary" onClick={onClick}>
+            <Button variant="contained" color="primary" size="small" className={className} onClick={onClick}>
                 {children}
             </Button>
         </MuiThemeProvider>
