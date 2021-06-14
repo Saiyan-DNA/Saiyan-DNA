@@ -10,22 +10,24 @@ import { loadUser } from '../actions/auth';
 import store from '../store';
 import PrivateRoute from './common/PrivateRoute';
 
+const LoadingMessage = loadable(() => import('./common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
+
 const Header = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.Header));
 const NavMenu = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.NavMenu));
 const SystemMessage = loadable(() => import('./common/SystemMessage' /* webpackChunkName: "General" */));
-const Login = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.Login), {fallback: <h1>Loading Login...</h1>});
-const RegisterUser = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.RegisterUser), {fallback: <h1>Loading Register...</h1>});
-const Dashboard = loadable(() => import('./Dashboard' /* webpackChunkName: "General" */), {fallback: <h1>Loading Dashboard...</h1>});
+const Login = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.Login), {fallback: <LoadingMessage message="Loading Login..." />});
+const RegisterUser = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.RegisterUser), {fallback: <LoadingMessage message="Loading Registration Form..." />});
+const Dashboard = loadable(() => import('./Dashboard' /* webpackChunkName: "General" */), {fallback: <LoadingMessage message="Loading Dashboard..." />});
 
-const FinancialAccounts = loadable(() => import('./financial/FinancialAccounts' /* webpackChunkName: "Financial" */), {fallback: <h1>Loading Accounts...</h1>});
-const AccountInfo = loadable(() => import('./financial/AccountInfo' /* webpackChunkName: "Financial" */), {fallback: <h1>Loading Account Info...</h1>});
-const AccountOverview = loadable(() => import('./financial/AccountOverview' /* webpackChunkName: "Financial" */), {fallback: <h1>Loading Account...</h1>});
-const AssetsList = loadable(() => import('./financial/Assets' /*webpackChunkName: "Financial" */), {fallback: <h1>Loading Assets...</h1>});
+const FinancialAccounts = loadable(() => import('./financial/FinancialAccounts' /* webpackChunkName: "Financial" */), {fallback: <LoadingMessage message="Loading Accounts..." />});
+const AccountInfo = loadable(() => import('./financial/AccountInfo' /* webpackChunkName: "Financial" */), {fallback: <LoadingMessage message="Loading Account Information..." />});
+const AccountOverview = loadable(() => import('./financial/AccountOverview' /* webpackChunkName: "Financial" */), {fallback:<LoadingMessage message="Loading Account..." />});
+const AssetsList = loadable(() => import('./financial/Assets' /*webpackChunkName: "Financial" */), {fallback: <LoadingMessage message="Loading Assets..." />});
 
-const HomeList = loadable(() => import('./manage/HomeList' /* webpackChunkName: "Manage" */), {fallback: <h1>Loading Homes...</h1>});
-const PeopleList = loadable(() => import('./manage/PeopleList' /* webpackChunkName: "Manage" */), {fallback: <h1>Loading People...</h1>});
-const CategoryList = loadable(() => import('./inventory/CategoryList' /* webpackChunkName: "Manage" */), {fallback: <h1>Loading Categories...</h1>})
-const CategoryInfo = loadable(() => import('./inventory/CategoryInfo' /* webpackChunkName: "Manage" */), {fallback: <h1>Loading Category...</h1>})
+const HomeList = loadable(() => import('./manage/HomeList' /* webpackChunkName: "Manage" */), {fallback: <LoadingMessage message="Loading Homes..." />});
+const PeopleList = loadable(() => import('./manage/PeopleList' /* webpackChunkName: "Manage" */), {fallback: <LoadingMessage message="Loading People..." />});
+const CategoryList = loadable(() => import('./inventory/CategoryList' /* webpackChunkName: "Manage" */), {fallback: <LoadingMessage message="Loading Categories..." />})
+const CategoryInfo = loadable(() => import('./inventory/CategoryInfo' /* webpackChunkName: "Manage" */), {fallback: <LoadingMessage message="Loading Category Detail..." />})
 
 
 const theme = createMuiTheme({
