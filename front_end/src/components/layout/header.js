@@ -2,24 +2,27 @@ import React from 'react';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
 
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import Container from '@material-ui/core/Container';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Modal from '@material-ui/core/Modal';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
-import MenuRounded from '@material-ui/icons/MenuRounded';
-import PersonRounded from '@material-ui/icons/PersonRounded';
+const AppBar = loadable(() => import('@material-ui/core/AppBar' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
+const FormControlLabel = loadable(() => import('@material-ui/core/FormControlLabel' /* webpackChunkName: "Material" */));
+const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material" */));
+const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Material" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material" */));
+const Modal = loadable(() => import('@material-ui/core/Modal' /* webpackChunkName: "Material" */));
+const Radio = loadable(() => import('@material-ui/core/Radio' /* webpackChunkName: "Material" */));
+const RadioGroup = loadable(() => import('@material-ui/core/RadioGroup' /* webpackChunkName: "Material" */));
+const Toolbar = loadable(() => import('@material-ui/core/Toolbar' /* webpackChunkName: "Material" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
+
+const MenuRounded = loadable(() => import('@material-ui/icons/MenuRounded' /* webpackChunkName: "Icons" */));
+const PersonRounded = loadable(() => import('@material-ui/icons/PersonRounded' /* webpackChunkName: "Icons" */));
+
 
 import { userLogout } from '../../actions/auth';
 import { setHome } from '../../actions/navigation';

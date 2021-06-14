@@ -2,22 +2,24 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
+
+import { withStyles } from '@material-ui/core/styles';
+
+const Collapse = loadable(() => import('@material-ui/core/Collapse' /* webpackChunkName: "Material" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
+const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material" */));
+const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Material" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material" */));
+const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Material" */));
+
+const ExpandLess = loadable(() => import('@material-ui/icons/ExpandLess' /* webpackChunkName: "Icons" */));
+const ExpandMore = loadable(() => import('@material-ui/icons/ExpandMore' /* webpackChunkName: "Icons" */));
 
 import { toggleNavMenu } from '../../actions/menu';
 import { userNav } from '../../actions/navigation';
 import { userHasPermission } from '../../actions/auth';
-
-import Collapse from '@material-ui/core/Collapse';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { withStyles } from '@material-ui/core/styles';
-
-import ExpandLess from '@material-ui/icons/ExpandLess'
-import ExpandMore from '@material-ui/icons/ExpandMore'
 
 const styles = (theme) => ({
     menuItem: {

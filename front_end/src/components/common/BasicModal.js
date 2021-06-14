@@ -1,12 +1,14 @@
 import React from 'react';
+import loadable from '@loadable/component';
 
-import Modal from '@material-ui/core/Modal';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import CloseSharp from '@material-ui/icons/CloseSharp';
-import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
+
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */));
+const CardHeader = loadable(() => import('@material-ui/core/CardHeader' /* webpackChunkName: "Material" */));
+const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material" */));
+const Modal = loadable(() => import('@material-ui/core/Modal' /* webpackChunkName: "Material" */));
+const CloseSharp = loadable(() => import('@material-ui/icons/CloseSharp' /* webpackChunkName: "Icons" */));
 
 const styles = theme => ({
     modalWindow: {

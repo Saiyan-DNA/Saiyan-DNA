@@ -1,27 +1,27 @@
 import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
-import AutoComplete from '@material-ui/lab/Autocomplete'
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import loadable from '@loadable/component';
 
 import NumberFormat from 'react-number-format';
 import { withStyles } from '@material-ui/core/styles';
 
-import DestructiveButton from '../common/DestructiveButton';
-import BasicModal from '../common/BasicModal';
+const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */));
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material" */));
+const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material" */));
+const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
+
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */));
+const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "General" */));
 
 import { getFinancialCategories } from '../../actions/financial_categories';
-
 
 const styles = theme => ({
     numberFormat: {

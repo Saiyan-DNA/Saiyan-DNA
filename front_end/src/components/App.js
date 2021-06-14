@@ -9,10 +9,10 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { loadUser } from '../actions/auth';
 import store from '../store';
 import PrivateRoute from './common/PrivateRoute';
-import SystemMessage from './common/SystemMessage';
 
-const Header = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.Header), {fallback: <h1>Loading Header...</h1>});
-const NavMenu = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.NavMenu), {fallback: <h1>Loading Menu...</h1>});
+const Header = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.Header));
+const NavMenu = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.NavMenu));
+const SystemMessage = loadable(() => import('./common/SystemMessage' /* webpackChunkName: "General" */));
 const Login = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.Login), {fallback: <h1>Loading Login...</h1>});
 const RegisterUser = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.RegisterUser), {fallback: <h1>Loading Register...</h1>});
 const Dashboard = loadable(() => import('./Dashboard' /* webpackChunkName: "General" */), {fallback: <h1>Loading Dashboard...</h1>});
@@ -76,7 +76,7 @@ class App extends React.Component {
                   <PrivateRoute exact path="/inventory/categoryinfo" component={CategoryInfo} />
                 </Switch>
             </Router>
-            <SystemMessage />
+            {SystemMessage && <SystemMessage />}
         </MuiThemeProvider>
       </Provider>
     );
