@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/core/email_username', EmailUsernameAPI.as_view()),
     path('', IndexView.as_view(), name="index"),    
     # path(r'api/auth/api-token-auth/', obtain_jwt_token),
-    # path(r'api/auth/api-token-refresh/', refresh_jwt_token),
+    path('api/auth/token_refresh', refresh_jwt_token),
     # url(r"^$", IndexView.as_view(), name="base-index"),
     # url(r"^(?P<path>.*)/$", IndexView.as_view(), name='index'),
 ]

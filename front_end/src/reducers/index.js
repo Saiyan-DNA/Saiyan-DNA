@@ -10,7 +10,9 @@ import menu from './menu';
 import messages from './messages';
 import navigation from './navigation';
 
-export default combineReducers({
+import { LOGOUT_SUCCESS, LOGIN_FAIL } from '../actions/types';
+
+const appReducer = combineReducers({
     accounts,
     assets,
     auth,
@@ -22,3 +24,13 @@ export default combineReducers({
     messages,
     navigation    
 });
+
+const rootReducer = (state, action) => {
+    if (action.type === LOGOUT_SUCCESS || action.type === LOGIN_FAIL ) {
+        state = undefined;
+    }
+
+    return appReducer(state, action);
+}
+
+export default rootReducer;

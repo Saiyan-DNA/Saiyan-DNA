@@ -33,6 +33,7 @@
     "@material-ui/lab": "^4.0.0-alpha.58",
     "@redux-devtools/core": "^3.9.0",
     "axios": "^0.21.1",
+    "jwt-decode": "^3.1.2",
     "mini-create-react-context": "^0.4.1",
     "react-number-format": "^4.5.5",
     "react-redux": "^7.2.4",

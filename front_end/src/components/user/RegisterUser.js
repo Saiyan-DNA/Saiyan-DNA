@@ -7,15 +7,16 @@ import zxcvbn from 'zxcvbn';
 
 import { withStyles } from '@material-ui/core/styles';
 
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+
 const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
 const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */));
 const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
 const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
 
 const PasswordStrengthMeter = loadable(() => import('./PasswordStrengthMeter' /*webpackChunkName: "General" */));
 

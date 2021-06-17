@@ -4,17 +4,19 @@ import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
-import NumberFormat from 'react-number-format';
+
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
 const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
 const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */));
 const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
 const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
+
+import { CurrencyFormat } from '../common/NumberFormats';
 
 import { createMessage } from '../../actions/messages';
 import { getAssets, getAsset, clearAsset } from '../../actions/assets';
@@ -84,8 +86,7 @@ class AssetsList extends React.Component {
                         </Grid>
                         <Grid item xs={"auto"}>
                             <Typography variant="h5">
-                                <NumberFormat value={total} displayType={'text'} 
-                                    thousandSeparator={true} prefix={'$'} decimalScale={2} fixedDecimalScale={true} />
+                                <CurrencyFormat value={total} displayType={'text'} />
                             </Typography>
                         </Grid>
                     </Grid>
@@ -100,8 +101,7 @@ class AssetsList extends React.Component {
                                     </Grid>
                                     <Grid item xs={"auto"}>
                                         <Typography variant="body1">
-                                            <NumberFormat value={asset.current_value} displayType={'text'}
-                                                thousandSeparator={true} prefix={'$'} decimalScale={2} fixedDecimalScale={true} />
+                                            <CurrencyFormat value={asset.current_value} displayType={'text'} />
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12}>

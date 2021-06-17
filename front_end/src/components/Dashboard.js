@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
 import { setTitle } from '../actions/navigation';
 

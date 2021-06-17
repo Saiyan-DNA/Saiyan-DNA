@@ -10,10 +10,11 @@ const Container = loadable(() => import('@material-ui/core/Container' /* webpack
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
 
 const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
-const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>})
+const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
+const BankingList = loadable(() => import('./BankingList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
+const CreditList = loadable(() => import('./CreditList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
 
-import { createMessage } from '../../actions/messages';
-import { getAccounts, clearAccount, clearTransactions, getInstitutions } from '../../actions/accounts';
+import { getAccounts, clearAccount, clearTransactions } from '../../actions/accounts';
 import { setTitle } from '../../actions/navigation';
 
 const styles = theme => ({
@@ -27,84 +28,54 @@ const styles = theme => ({
     }
 });
 
-const AccountTypes = {
-    BANKING: 'Banking',
-    CREDIT: 'Credit',
-    LOAN: 'Loan',
-    INVESTMENT: 'Investment'       
-}
-
 class FinancialAccounts extends React.Component {
     state = {
-        localAccounts: [],
-        bankingList: null,
-        creditList: null,
-        loanList: null,
-        investmentList: null
+
     }
 
-    constructor(props) {
-        super(props);
-        this.actionAddAccount = this.actionAddAccount.bind(this);
-    }   
-
     static propTypes = {
-        accounts: PropTypes.array.isRequired,
+        bankAccounts: PropTypes.array.isRequired,
+        creditAccounts: PropTypes.array.isRequired,
+        loanAccounts: PropTypes.array.isRequired,
+        investmentAccounts: PropTypes.array.isRequired,
         getAccounts: PropTypes.func.isRequired,
         accountsLoading: PropTypes.bool.isRequired,
         accountsLoaded: PropTypes.bool.isRequired,
-        getInstitutions: PropTypes.func.isRequired,
         clearAccount: PropTypes.func.isRequired,
         clearTransactions: PropTypes.func.isRequired,
-        createMessage: PropTypes.func.isRequired,
         setTitle: PropTypes.func.isRequired
     }
 
-    generateView = () => {
-        const { accounts, accountsLoading, accountsLoaded, getAccounts, history } = this.props;
-        const { localAccounts } = this.state;
-
-        var banking, credit, loans, investments = null;
+    componentDidMount() {
+        const { clearAccount, clearTransactions, setTitle, getAccounts, accountsLoaded, accountsLoading } = this.props;
+        
+        setTitle("Accounts");
+        clearAccount();
+        clearTransactions();
 
         if (!accountsLoaded && !accountsLoading) {
             getAccounts();
         }
+    }
 
-        if (localAccounts.length != accounts.length && !accountsLoading && accountsLoaded) {
-            banking = <AccountList accountType={AccountTypes.BANKING} cardTitle="Banking" history={history} />;
-            credit = <AccountList accountType={AccountTypes.CREDIT} cardTitle="Credit Cards" history={history} />;
-            loans = <AccountList accountType={AccountTypes.LOAN} cardTitle="Loans" history={history} />;
-            investments = <AccountList accountType={AccountTypes.INVESTMENT} cardTitle="Investments" history={history} />;
-            this.setState({localAccounts: accounts, bankingList: banking, creditList: credit, loanList: loans, investmentList: investments});
+    componentDidUpdate() {
+        const { accountsLoading, accountsLoaded, getAccounts } = this.props;
+        
+        if (!accountsLoaded && !accountsLoading) {
+            getAccounts();
         }
     }
 
-    componentDidMount() {
-        const { clearAccount, getInstitutions, clearTransactions, setTitle } = this.props;
-        
-        setTitle("Accounts");
-        clearAccount();
-        getInstitutions();
-        clearTransactions();
-
-        this.generateView();
-
-    }
-
-    componentDidUpdate() {       
-        this.generateView();
-    }
-
-    actionAddAccount() {
+    actionAddAccount = () => {
         this.props.clearAccount();
         this.props.history.push("/financial/accountinfo");
     }
 
     render() {
-        const { classes, accountsLoading, accountsLoaded } = this.props;
-        const {bankingList, creditList, loanList, investmentList } = this.state;
+        const { classes, accountsLoading, accountsLoaded, history } = this.props;
+        const { bankAccounts, creditAccounts, loanAccounts, investmentAccounts } = this.props;
 
-        if (!accountsLoaded && (accountsLoading || !bankingList || !creditList || !loanList || !investmentList)) {
+        if (!accountsLoaded || accountsLoading) {
             return <LoadingMessage message="Loading Accounts..." />
         }
 
@@ -115,10 +86,28 @@ class FinancialAccounts extends React.Component {
                         <Button variant={"contained"} color={"primary"} size="small" 
                             onClick={this.actionAddAccount}>Add Account</Button>
                     </Grid>
-                    <Grid item xs={12} sm={6} className={classes.inlineGrid}>{bankingList}</Grid>
-                    <Grid item xs={12} sm={6} className={classes.inlineGrid}>{creditList}</Grid>
-                    <Grid item xs={12} sm={6} className={classes.inlineGrid}>{loanList}</Grid>
-                    <Grid item xs={12} sm={6} className={classes.inlineGrid}>{investmentList}</Grid>
+                    { !!bankAccounts.length &&
+                        <Grid item xs={12} sm={6} className={classes.inlineGrid}>
+                            <BankingList history={history} accountList={bankAccounts} />
+                        </Grid>
+                    }
+                    { !!creditAccounts.length &&
+                        <Grid item xs={12} sm={6} className={classes.inlineGrid}>
+                            <CreditList history={history} accountList={creditAccounts}/>
+                        </Grid>
+                    }
+                    { !!loanAccounts.length &&
+                        <Grid item xs={12} sm={6} className={classes.inlineGrid}>
+                            <AccountList cardTitle="Loans" history={history} accountList={loanAccounts} 
+                                totalBalance={loanAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0)} />
+                        </Grid>
+                    }
+                    { !!investmentAccounts.length > 0 &&
+                        <Grid item xs={12} sm={6} className={classes.inlineGrid}>
+                            <AccountList cardTitle="Investments" history={history} accountList={investmentAccounts} 
+                                totalBalance={investmentAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0)} />
+                        </Grid>
+                    }
                 </Grid>
             </Container>            
         )
@@ -126,10 +115,12 @@ class FinancialAccounts extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    accounts: state.accounts.accounts,
+    bankAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("CK") || acct.account_type.includes("SV")),
+    creditAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("CR")),
+    loanAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("LN")),
+    investmentAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("IN")),
     accountsLoading: state.accounts.accountsLoading,
-    accountsLoaded: state.accounts.accountsLoaded,
-    message: state.message
+    accountsLoaded: state.accounts.accountsLoaded
 });
 
-export default connect(mapStateToProps, { getAccounts, clearAccount, clearTransactions, getInstitutions, createMessage, setTitle })(withStyles(styles, { withTheme: true })(FinancialAccounts));
+export default connect(mapStateToProps, { getAccounts, clearAccount, clearTransactions, setTitle })(withStyles(styles, { withTheme: true })(FinancialAccounts));

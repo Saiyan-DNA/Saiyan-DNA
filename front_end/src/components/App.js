@@ -10,9 +10,9 @@ import { loadUser } from '../actions/auth';
 import store from '../store';
 import PrivateRoute from './common/PrivateRoute';
 
-const LoadingMessage = loadable(() => import('./common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
+const LoadingMessage = loadable(() => import('./common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 
-const Header = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.Header));
+const Header = loadable(() => import('./layout' /* webpackChunkName: "Layout" */).then(m => m.Header));
 const NavMenu = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.NavMenu));
 const SystemMessage = loadable(() => import('./common/SystemMessage' /* webpackChunkName: "General" */));
 const Login = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.Login), {fallback: <LoadingMessage message="Loading Login..." />});
@@ -86,7 +86,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  message: state.message
+  message: state.message,
 });
 
 export default withRouter(connect(mapStateToProps, { loadUser })(App));

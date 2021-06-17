@@ -1,9 +1,10 @@
-import { SET_TITLE, USER_NAV, USER_HOME, CLEAR_HOME } from '../actions/types.js';
+import { SET_TITLE, USER_NAV, USER_HOME, CLEAR_HOME, TOGGLE_HOME_MODAL } from '../actions/types.js';
 
 const initialState = {
     headerTitle: "Home Central",
     currentPath: localStorage.getItem("path") || "/",
-    currentHome: JSON.parse(localStorage.getItem("home")) || { name: "" }
+    currentHome: JSON.parse(localStorage.getItem("home")) || { name: "" },
+    homeModalOpen: false
 }
 
 export default function(state = initialState, action) {
@@ -30,6 +31,11 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 currentHome: { name: ""}
+            };
+        case TOGGLE_HOME_MODAL:
+            return {
+                ...state,
+                homeModalOpen: !state.homeModalOpen
             };
         default:
             return state;

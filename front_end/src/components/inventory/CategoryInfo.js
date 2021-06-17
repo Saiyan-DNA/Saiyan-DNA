@@ -6,14 +6,14 @@ import loadable from '@loadable/component';
 import { withStyles } from '@material-ui/core/styles';
 
 const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
 const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
 const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
 const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material" */));
 
 import { setTitle } from '../../actions/navigation';

@@ -6,27 +6,19 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const AppBar = loadable(() => import('@material-ui/core/AppBar' /* webpackChunkName: "Material" */));
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
-const FormControlLabel = loadable(() => import('@material-ui/core/FormControlLabel' /* webpackChunkName: "Material" */));
-const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material" */));
-const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Material" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material" */));
-const Modal = loadable(() => import('@material-ui/core/Modal' /* webpackChunkName: "Material" */));
-const Radio = loadable(() => import('@material-ui/core/Radio' /* webpackChunkName: "Material" */));
-const RadioGroup = loadable(() => import('@material-ui/core/RadioGroup' /* webpackChunkName: "Material" */));
-const Toolbar = loadable(() => import('@material-ui/core/Toolbar' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
+const AppBar = loadable(() => import('@material-ui/core/AppBar' /* webpackChunkName: "Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Layout" */));
+const Toolbar = loadable(() => import('@material-ui/core/Toolbar' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
-const MenuRounded = loadable(() => import('@material-ui/icons/MenuRounded' /* webpackChunkName: "Icons" */));
-const PersonRounded = loadable(() => import('@material-ui/icons/PersonRounded' /* webpackChunkName: "Icons" */));
+const MenuRounded = loadable(() => import('@material-ui/icons/MenuRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const PersonRounded = loadable(() => import('@material-ui/icons/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
+const UserMenu = loadable(() => import('./UserMenu' /* webpackChunkName: "Navigation" */));
 
-import { userLogout } from '../../actions/auth';
-import { setHome } from '../../actions/navigation';
-import { toggleNavMenu } from '../../actions/menu';
+import { userLogout, refreshToken } from '../../actions/auth';
+import { toggleNavMenu, toggleUserMenu } from '../../actions/menu';
 
 
 const styles = (theme) => ({
@@ -74,69 +66,70 @@ const styles = (theme) => ({
         },
         ['@media print']: {
             display: "none",
-        },
-        
+        }, 
       },
-      modal: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      modalContent: {
-          position: "absolute",
-          padding: "8px 12px 8px 12px",
-          marginLeft: "auto",
-          marginRight: "auto",
-          fontSize: "8pt",
-          top: "64px",
-          "&:focus": {
-              outline: "none",
-          },
-      },
-      radioGroup: {
-          border: "0.5px solid rgb(0,0,0,0.2)",
-          margin: "2px",
-          padding: "8px",
-      },
-      radioOption: {
-          paddingLeft: "6px",
-          fontSize: "12pt",
+      sessionInfo: {
+            textAlign: "right !important",
+            opacity: "0.7 !important",
+            filter: "alpha(opacity=70) !important"
       }
   });
 
 class Header extends React.Component {
-    constructor(props) {
-        super(props);
-        this.doLogout = this.doLogout.bind(this);
-        this.classes = null;
-    }
-
     static propTypes = {
-        menuOpened: PropTypes.bool.isRequired,
+        navMenuOpen: PropTypes.bool.isRequired,
+        userMenuOpen: PropTypes.bool.isRequired,
         toggleNavMenu: PropTypes.func.isRequired,
-        setHome: PropTypes.func.isRequired,
+        toggleUserMenu: PropTypes.func.isRequired,
         headerTitle: PropTypes.string.isRequired,
         currentHome: PropTypes.object.isRequired,
-        userHomes: PropTypes.array.isRequired
+        user: PropTypes.object.isRequired,
+        userHomes: PropTypes.array.isRequired,
     }
 
     state = {
-        userMenuOpen: false,
         menuAnchor: null,
-        homeModalOpen: false,
-        homeModalSelection: this.props.currentHome.id ? this.props.currentHome.id.toString() : "",
+        localRemaining: 30
     };
 
     componentDidUpdate() {
-        if (this.props.isAuthenticated && !this.props.currentHome.id && this.state.homeModalOpen === false) {
-            if (this.props.userHomes.length == 1) {
-                this.props.setHome(this.props.userHomes[0]);
-                this.setState({homeModalOpen: false});    
-                return;
+        this.checkTokenExpiration();            
+    }
+
+    checkTokenExpiration() {
+        const { tokenExpires, refreshToken, userLogout } = this.props;
+        const { localRemaining } = this.state;
+
+        const current_time = new Date();        
+
+        if (tokenExpires) {
+            // Determine if the token is expired
+            let remaining = (tokenExpires - current_time.getTime())/60000;
+
+            console.log("Remaining: " + remaining + " / Local: " + localRemaining);
+
+            if (remaining < 0) {
+                console.log("Token expired at: " + new Date(0).setUTCSeconds(tokenExpires))
+                userLogout();
+                return -1;
+            }
+    
+            // If time remaining is less than 5 minutes, attempt to refresh the token.
+            if (remaining < 5) {
+                refreshToken();
+                return 0;
             }
 
-            this.setState({homeModalOpen: true});
-        }    
+            let difference = localRemaining - remaining;
+            if (difference > 1) {
+                this.setState({localRemaining: remaining});
+                return 0;
+            }
+
+            if (difference < 0) {
+                this.setState({localRemaining: 30});
+            }
+        }
     }
 
     toggleUserMenu = (event) => {
@@ -145,140 +138,58 @@ class Header extends React.Component {
         }
 
         this.setState({...this.state,
-            userMenuOpen: !this.state.userMenuOpen, 
             menuAnchor: (this.state.userMenuOpen ? null : event.currentTarget)
         });
-    }
 
-    menuButton() {
-        return(
-            <IconButton edge="start" className={this.classes.menuButton} color="inherit" 
-                onClick={this.props.toggleNavMenu} aria-label="menu">
-                <MenuRounded />
-            </IconButton>
-        );
+        this.props.toggleUserMenu();
     }
 
     homeSubtitle() {
+        const { classes, currentHome } = this.props;
+
         return(
-            <Typography variant="caption" className={this.classes.subTitle} paragraph={false}>{ this.props.currentHome.name}</Typography>
+            <Typography variant="caption" className={classes.subTitle} paragraph={false}>{ currentHome.name}</Typography>
         );
-    }
-
-    userButton() {
-        return(
-            <IconButton edge="end" className={this.classes.profileButton} color="inherit" onClick={this.toggleUserMenu}><PersonRounded /></IconButton>
-        );
-    }
-
-    selectHomeButton() {
-        return(
-            <MenuItem style={{fontSize: "10pt"}} dense button 
-                onClick={() => this.showHomeSelectionModal()}
-                >Change Home</MenuItem>
-        );
-    }
-
-    doLogout() {
-        this.props.userLogout();
-        this.toggleUserMenu();
-    }
-
-    showHomeSelectionModal = () => {
-        this.setState({
-            ...this.state, 
-            homeModalOpen: true, 
-            homeModalSelection: this.props.currentHome.id ? this.props.currentHome.id.toString() : "",
-        }, this.toggleUserMenu);
-    }
-
-    closeHomeModal = () => {
-        this.setState({...this.state, homeModalOpen: false});
-    }
-
-    goEditProfile = () => {
-        this.toggleUserMenu();
-        console.log("Edit Profile");
-    }
-
-    selectHomeOption = (event) => {
-        this.setState({...this.state, homeModalSelection: event.target.value});
-    }
-
-    setCurrentHome = () => {
-        this.props.setHome(this.props.userHomes.find( ({ id }) => id === parseInt(this.state.homeModalSelection)));
-        this.closeHomeModal();
-    }
-
-
-    modalForm = () => {       
-        return(
-            <Card className={this.classes.modalContent}>
-                <form onSubmit={this.selectHome}>
-                    <Typography variant="h6" id="home-modal-title" style={{textAlign: "Center"}}>Select a Home</Typography>
-                    <RadioGroup aria-label="home" name="home" value={this.state.homeModalSelection} 
-                        className={this.classes.radioGroup} onChange={this.selectHomeOption.bind(this)}>
-                        {this.props.userHomes.map(home => {
-                            return(
-                                <FormControlLabel key={home.id} classes={{label: this.classes.radioOption}} value={home.id.toString()} control={<Radio />} label={home.name} />
-                            );
-                        })}
-                    </RadioGroup>
-                    <Button variant="contained" size="small" color="primary" 
-                        style={{float: "right", marginTop: "1em", marginLeft: "1em"}} 
-                        onClick={this.setCurrentHome}>Select</Button>
-                    <Button variant="outlined" size="small" color="primary" 
-                        style={{float: "right", marginTop: "1em", marginLeft: "1em"}} 
-                        onClick={this.closeHomeModal}>Cancel</Button>
-                </form>
-            </Card>
-        )
     }
 
     render() {
-        const { classes } = this.props;
-        this.classes = classes;
+        const { classes, isAuthenticated, currentHome, headerTitle, toggleNavMenu } = this.props;
+        const { localRemaining, menuAnchor } = this.state;
 
         return (
-            <>
-            <AppBar position="sticky" color="primary" className={this.classes.homeBar} style={{marginBottom: "16px"}}>
-                <Toolbar className={this.classes.toolBar}>
-                    {this.props.isAuthenticated ? this.menuButton() : null}
-                    <Container className={this.classes.headerText}>
-                            <Typography variant="h5" className={this.classes.title} paragraph={false}>{this.props.headerTitle}</Typography>
-                            {this.props.currentHome ? this.homeSubtitle() : null}
-                    </Container>                        
-                    {this.props.isAuthenticated ? this.userButton() : null}                        
-                </Toolbar>
-            </AppBar>
-            <Menu id="userMenu" anchorEl={this.state.menuAnchor} keepMounted
-                getContentAnchorEl={null} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}                        
-                open={Boolean(this.state.userMenuOpen)} onClose={this.toggleUserMenu}>
-                {this.props.userHomes.length > 1 ? this.selectHomeButton() : null }
-                <MenuItem style={{fontSize: "10pt"}} dense button onClick={this.goEditProfile} id="editProfileOption">
-                    Edit Profile
-                </MenuItem>
-                <MenuItem style={{fontSize: "10pt"}} dense button 
-                    onClick={this.doLogout} id="logoutOption">
-                    Logout
-                </MenuItem>
-            </Menu>
-            <Modal open={Boolean(this.state.homeModalOpen)} onClose={this.closeHomeModal} 
-                disableAutoFocus={true} className={this.classes.modal}>
-                {this.modalForm()}
-            </Modal>
-            </>
+            <React.Fragment>
+                <AppBar position="sticky" color="primary" className={classes.homeBar} style={{marginBottom: "16px"}}>
+                    <Toolbar className={classes.toolBar}>
+                        {!isAuthenticated ? null :
+                            <IconButton edge="start" className={classes.menuButton} color="inherit" 
+                                onClick={toggleNavMenu} aria-label="menu">
+                                <MenuRounded />
+                            </IconButton>
+                        }
+                        <Container className={classes.headerText}>
+                                <Typography variant="h5" className={classes.title} paragraph={false}>{headerTitle}</Typography>
+                                {currentHome ? this.homeSubtitle() : null}
+                        </Container>                        
+                        {!isAuthenticated ? null :
+                            <IconButton edge="end" className={classes.profileButton} color="inherit" onClick={this.toggleUserMenu}><PersonRounded /></IconButton>
+                        }                        
+                    </Toolbar>
+                </AppBar>
+                <UserMenu menuAnchor={menuAnchor} timeRemaining={localRemaining} />
+            </React.Fragment>
         );
     }
 }
 
 const mapStateToProps = state => ({
-    menuOpened: state.menu.opened,
+    navMenuOpen: state.menu.navMenuOpen,
+    userMenuOpen: state.menu.userMenuOpen,
     isAuthenticated: state.auth.isAuthenticated,
     headerTitle: state.navigation.headerTitle,
     currentHome: state.navigation.currentHome,
-    userHomes: state.auth.user.homes || []
-
+    user: state.auth.user,
+    userHomes: state.auth.user.homes || [],
+    tokenExpires: state.auth.tokenExpires,
 });
 
-export default connect(mapStateToProps, { toggleNavMenu, userLogout, setHome })(withStyles(styles, { withTheme: true })(Header))
+export default connect(mapStateToProps, { toggleNavMenu, toggleUserMenu, userLogout, refreshToken, userLogout })(withStyles(styles, { withTheme: true })(Header))

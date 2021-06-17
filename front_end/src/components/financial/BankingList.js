@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-
 import { withStyles } from '@material-ui/core/styles';
 
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
@@ -14,16 +13,24 @@ const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName:
 const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
 const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
 
-const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
 
 import { CurrencyFormat } from '../common/NumberFormats'
 
 import { getAccount } from '../../actions/accounts';
 
 const styles = theme => ({
+    listCardSubHeader: {
+        color: "#737373",
+        fontWeight: "bold",
+        fontSize: "smaller",
+        paddingTop: "10px"
+    },
     accountSummary: {
         margin: 0,
-        padding: theme.spacing(1,0,1),
+        padding: "2px",
+        paddingTop: "8px",
+        paddingBottom: "8px",
         borderBottom: "0.5px solid #DCDCDC",
         ['@media print']: {
             paddingTop: "4px",
@@ -35,12 +42,15 @@ const styles = theme => ({
     },
 });
 
-class AccountList extends React.Component {
+class BankingList extends React.Component {
     static propTypes = {
         classes: PropTypes.object.isRequired,
-        getAccount: PropTypes.func.isRequired,
-        overviewContent: PropTypes.object,
-        accountList: PropTypes.array
+        accountList: PropTypes.array.isRequired,
+        getAccount: PropTypes.func.isRequired
+    }
+
+    accountTypeFilter(acct) {
+        return acct.account_type == this;        
     }
 
     goToBankingURL(url, e) {
@@ -49,8 +59,10 @@ class AccountList extends React.Component {
     }
 
     viewAccount(id) {
-        this.props.getAccount(id);
-        this.props.history.push("/financial/accountoverview");
+        const { history, getAccount } = this.props;
+        
+        getAccount(id);
+        history.push("/financial/accountoverview");
     }
 
     accountSummary = (acct, classes) => {
@@ -78,13 +90,6 @@ class AccountList extends React.Component {
                                     }
                                 </Typography>
                             </Grid>
-                            { acct.account_type == "CR" &&
-                                <Grid item xs={"auto"}>
-                                    <Typography variant="caption"  style={{verticalAlign: "text-top", fontStyle: "italic"}}>
-                                        <CurrencyFormat value={acct.credit_limit - acct.current_balance} displayType={'text'} />&nbsp;available
-                                    </Typography>
-                                </Grid>
-                            }
                         </Grid>
                     </Grid>                                
                 </ListItem>
@@ -93,31 +98,39 @@ class AccountList extends React.Component {
     }
 
     render() {
-        const { classes, cardTitle, totalBalance, overviewContent, accountList, children } = this.props;
+        const { classes, accountList } = this.props;
+        
+        var checkingAccounts = accountList.filter(this.accountTypeFilter, "CK").sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));
+        var savingsAccounts = accountList.filter(this.accountTypeFilter, "SV").sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));
+
+        var totalBalance = 0.00;
+       
+        totalBalance += checkingAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0);
+        totalBalance += savingsAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0);
 
         return (
-            <SummaryCard header={
-                <Grid container spacing={0} justify={"space-between"}>
-                    <Grid item>
-                        <Typography variant="h5">{cardTitle}</Typography>
-                    </Grid>
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={totalBalance} displayType={'text'} />
-                        </Typography>
-                    </Grid>                        
-                </Grid>
-            }>
-                {overviewContent}
-                {accountList &&
-                    <List>
-                        {accountList.map(acct => this.accountSummary(acct, classes))}
-                    </List>
-                }
-                {children}
-            </SummaryCard>
+            <AccountList cardTitle="Banking" totalBalance={totalBalance}>
+                <React.Fragment>
+                    { !!checkingAccounts.length &&
+                        <React.Fragment>
+                            <Typography variant="body1" className={classes.listCardSubHeader}>Checking</Typography>
+                            <List>
+                                {checkingAccounts.map(acct => this.accountSummary(acct, classes))}
+                            </List>
+                        </React.Fragment>
+                    }
+                    { !!savingsAccounts.length &&
+                        <React.Fragment>
+                        <Typography variant="body1" className={classes.listCardSubHeader}>Savings</Typography>
+                        <List>
+                            {savingsAccounts.map(acct => this.accountSummary(acct, classes))}
+                        </List>
+                    </React.Fragment>
+                    }
+                </React.Fragment>
+            </AccountList>
         );
     }
 }
 
-export default connect(null, { getAccount })(withRouter(withStyles(styles, {withTheme: true})(AccountList)));
+export default connect(null, { getAccount })(withRouter(withStyles(styles, {withTheme: true})(BankingList)));

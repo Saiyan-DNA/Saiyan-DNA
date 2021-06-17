@@ -1,5 +1,7 @@
 // Front-End Application Actions
-export const TOGGLE_MENU = 'TOGGLE_MENU'
+export const TOGGLE_NAV_MENU = 'TOGGLE_NAV_MENU'
+export const TOGGLE_USER_MENU = 'TOGGLE_USER_MENU'
+export const TOGGLE_HOME_MODAL = 'TOGGLE_HOME_MODAL'
 export const SET_TITLE = 'SET_TITLE'
 export const USER_NAV = "USER_NAV"
 export const USER_HOME = "USER_HOME"

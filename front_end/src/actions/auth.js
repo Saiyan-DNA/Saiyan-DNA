@@ -41,6 +41,63 @@ export const clearRegistrationErrors = () => (dispatch, getState) => {
     dispatch({type: CLEAR_REGISTRATION_ERRORS, payload: {}})
 }
 
+export const refreshToken = () => (dispatch, getState) => {
+    const token = getState().auth.token;
+
+    // Headers
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    config.headers['Authorization'] = `Bearer ${token}`;
+
+    const body = { "token": token };
+
+    axios.post('/api/auth/token_refresh', body, config)
+    .then(res => {
+        dispatch({
+            type: LOGIN_SUCCESS,
+            payload: res.data
+        });
+    }).catch(err => {
+        dispatch({
+            type: AUTH_ERROR
+        });
+        dispatch(createMessage({type: "error", title: "Autorization Error!", detail: err}));
+    });
+
+}
+
+export const checkTokenExpiration = () => (dispatch, getState) => {
+
+    console.log("Checking Token Expiration...");
+
+    const expires = getState().auth.tokenExpires;
+
+    if (expires) {
+        // Determine if the token is expired
+        const current_time = new Date();
+        let remaining = (expires - current_time.getTime())/60000;
+
+        if (remaining < 0) {
+            console.log("Token expired at: " + expires)
+            dispatch(createMessage({type: "warning", title: "Logged out due to inactivity.", detail: err}));
+            dispatch(userLogout());
+            return -1;
+        }
+
+        // If time remaining is less than 5 minutes, attempt to refresh the token.
+        if (remaining < 5) {
+            dispatch(refreshToken());
+            return 0;
+        }
+    }
+
+    return 0;
+}
+
 // CHECK TOKEN & LOAD USER
 export const loadUser = () => (dispatch, getState) => {
     // User Loading
@@ -57,7 +114,7 @@ export const loadUser = () => (dispatch, getState) => {
     }
 
     // If token, add to headers config & get user data
-    if(token) {
+    if(token && (checkTokenExpiration() != -1)) {
         config.headers['Authorization'] = `Bearer ${token}`;
 
         axios.get('/api/auth/user', config)
@@ -73,9 +130,7 @@ export const loadUser = () => (dispatch, getState) => {
             dispatch(createMessage({type: "error", title: "Autorization Error!", detail: err}));
         });
     } else {
-        dispatch({
-            type: AUTH_ERROR
-        })
+        userLogout();
     }
 
     

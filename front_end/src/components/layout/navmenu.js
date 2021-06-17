@@ -9,13 +9,15 @@ import { withStyles } from '@material-ui/core/styles';
 const Collapse = loadable(() => import('@material-ui/core/Collapse' /* webpackChunkName: "Material" */));
 const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
 const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
+const ListItemIcon = loadable(() => import('@material-ui/core/ListItemIcon' /* webpackChunkName: "Material" */));
 const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material" */));
-const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Material" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material" */));
-const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Material" */));
+const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
+const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
 
-const ExpandLess = loadable(() => import('@material-ui/icons/ExpandLess' /* webpackChunkName: "Icons" */));
-const ExpandMore = loadable(() => import('@material-ui/icons/ExpandMore' /* webpackChunkName: "Icons" */));
+const HomeSharp = loadable(() => import('@material-ui/icons/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const ExpandLess = loadable(() => import('@material-ui/icons/ExpandLess' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const ExpandMore = loadable(() => import('@material-ui/icons/ExpandMore' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
 import { toggleNavMenu } from '../../actions/menu';
 import { userNav } from '../../actions/navigation';
@@ -59,7 +61,7 @@ class NavMenu extends React.Component {
     }
 
     static propTypes = {
-        menuOpened: PropTypes.bool.isRequired,
+        navMenuOpen: PropTypes.bool.isRequired,
         toggleNavMenu: PropTypes.func.isRequired,
         userNav: PropTypes.func.isRequired,
         userHasPermission: PropTypes.func.isRequired,
@@ -149,6 +151,7 @@ class NavMenu extends React.Component {
                 <ListItem button className={this.classes.menuItem}
                     onClick={this.navigateTo.bind(this, "/")}
                     selected = {this.activeRoute("/")}>
+                    <ListItemIcon><HomeSharp /></ListItemIcon>
                     <ListItemText primary="Home" />
                 </ListItem>
                 <ListItem button className={this.classes.menuItem}
@@ -230,14 +233,14 @@ class NavMenu extends React.Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, navMenuOpen, toggleNavMenu, isAuthenticated } = this.props;
         this.classes = classes;
 
         return(
             <>
-                <SwipeableDrawer anchor={"left"} open={this.props.menuOpened} style={{zIndex: "1"}} onClose={this.props.toggleNavMenu} onOpen={this.props.toggleNavMenu}>
+                <SwipeableDrawer anchor={"left"} open={navMenuOpen} style={{zIndex: "1"}} onClose={toggleNavMenu} onOpen={toggleNavMenu}>
                     <div style={{height: "54px"}}>&nbsp;</div>
-                    { this.props.isAuthenticated ? this.userMenuOptions() : this.guestMenuOptions() }
+                    { isAuthenticated ? this.userMenuOptions() : this.guestMenuOptions() }
                 </SwipeableDrawer>
                 <Menu open={Boolean(this.state.manageInventoryMenuOpen)} anchorEl={this.state.manageInventoryMenuAnchor} anchorOrigin={{ vertical: "top", horizontal: "right" }} 
                     onClose={this.closeManageInventoryMenu}>
@@ -253,8 +256,8 @@ class NavMenu extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    menuOpened: state.menu.opened,
-    isAuthenticated: state.auth.isAuthenticated
+    navMenuOpen: state.menu.navMenuOpen,
+    isAuthenticated: state.auth.isAuthenticated,
 });
 
 

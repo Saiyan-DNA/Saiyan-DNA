@@ -31,7 +31,10 @@ class RegisterAPI(generics.GenericAPIView):
             
             return Response({
                 "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                "token": jwt_encode_handler(payload)
+                "token": jwt_encode_handler(payload),
+                "deviceFamily": self.request.user_agent.device.family,
+                "isMobile": self.request.user_agent.is_mobile,
+                "isTablet": self.request.user_agent.is_tablet
             })
 
         return Response({
@@ -56,7 +59,10 @@ class LoginAPI(generics.GenericAPIView):
 
             return Response({
                 "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                "token": jwt_encode_handler(payload)
+                "token": jwt_encode_handler(payload),
+                "deviceFamily": self.request.user_agent.device.family,
+                "isMobile": self.request.user_agent.is_mobile,
+                "isTablet": self.request.user_agent.is_tablet
             })
         
         if (not User.objects.filter(username=request.data["username"]).exists()):
@@ -81,7 +87,15 @@ class UserAPI(generics.RetrieveAPIView):
     ]
 
     serializer_class = UserSerializer
-    
+
+    def get(self, request, *args, **kwargs):
+        return Response({
+            "user": UserSerializer(self.request.user).data,
+            "deviceFamily": self.request.user_agent.device.family,
+            "isMobile": self.request.user_agent.is_mobile,
+            "isTablet": self.request.user_agent.is_tablet
+        })
+
     def get_object(self):
         return self.request.user
     

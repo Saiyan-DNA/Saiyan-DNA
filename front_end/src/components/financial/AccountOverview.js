@@ -4,23 +4,29 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import NumberFormat from 'react-number-format';
 import { withStyles } from '@material-ui/core/styles';
 
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+
 const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material" */));
-const CardHeader = loadable(() => import('@material-ui/core/CardHeader' /* webpackChunkName: "Material" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
+const CardHeader = loadable(() => import('@material-ui/core/CardHeader' /* webpackChunkName: "Layout" */));
+const Chip = loadable(() => import('@material-ui/core/Chip' /* webpackChunkName: "Material" */));
 const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */));
-const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Material" */));
+const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Navigation" */));
 const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
 const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
-const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Material" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material" */));
+const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
 
+const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "General" */));
+import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
+
+const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
+const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "General" */));
 const TransactionModal = loadable(() => import('./TransactionModal' /* webpackChunkName: "Financial" */));
 
 import { setTitle } from '../../actions/navigation';
@@ -148,6 +154,30 @@ class AccountOverview extends React.Component {
         this.props.history.push("/financial/accounts")
     }
 
+    creditInfo() {
+        const { account } = this.props;
+
+        if (account.account_type == "CR") {
+            let utilization = account.current_balance/account.credit_limit*100;
+            let available = account.credit_limit - account.current_balance;
+
+            return (
+                <Grid container spacing={2} justify={"center"} style={{padding: "0em 0.5em 0.5em 0.5em"}}>
+                    <Grid item xs={4}>
+                        <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} />} />
+                    </Grid>
+                    <Grid item xs={"auto"}>
+                        <Divider orientation="vertical" light={true} />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <InfoTile title="Available" content={<CurrencyFormat value={available} displayType={'text'} />}
+                            caption={<center>Limit: <CurrencyFormat value={account.credit_limit} displayType={'text'} /></center>} />
+                    </Grid>
+                </Grid>
+            );
+        }
+    }
+
     transactionList(styleClasses) {
         if (this.props.accountTransactions.length > 0) {
             return (
@@ -221,7 +251,7 @@ class AccountOverview extends React.Component {
                             onClick={this.toggleActionMenu.bind(this)}>Actions</Button>
                     </Grid>
                     <Grid item xs={12}>
-                        { account.id &&
+                        { account.id ?
                         <>
                             <Grid container spacing={2} justify="flex-start">
                                 <Grid item>
@@ -259,12 +289,13 @@ class AccountOverview extends React.Component {
                                                 onClick={() => this.toggleTransactionModal(null)}>Add Transaction</Button>
                                         </Grid>
                                     </Grid>
+                                    {account.id ? this.creditInfo() : null }
                                     { account.id ? this.transactionList(classes) :
                                         <Typography color="primary" variant="caption">Loading Account Details...</Typography>
                                     }
                                 </CardContent>
                             </Card>
-                        </>
+                        </> : <LoadingMessage message="Loading Account Details" />
                         }
                     </Grid>
                 </Grid>
