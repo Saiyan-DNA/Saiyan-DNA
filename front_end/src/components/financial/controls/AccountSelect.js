@@ -6,9 +6,14 @@ import loadable from '@loadable/component';
 const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material" */));
 const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material" */));
 
+import { getAccounts } from '../../../actions/accounts';
+
 class AccountSelect extends React.Component {
     static propTypes = {
         accounts: PropTypes.array.isRequired,
+        accountsLoading: PropTypes.bool.isRequired,
+        accountsLoaded: PropTypes.bool.isRequired,
+        getAccounts: PropTypes.func.isRequired,
         id: PropTypes.string,
         name: PropTypes.string,
         label: PropTypes.string,        
@@ -19,6 +24,9 @@ class AccountSelect extends React.Component {
     }
 
     componentDidMount() {
+        const { accountsLoading, accountsLoaded, getAccounts } = this.props;
+
+        if (!accountsLoading && !accountsLoaded) getAccounts();
 
     }
 
@@ -52,7 +60,9 @@ class AccountSelect extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    accounts: state.accounts.accounts
+    accounts: state.accounts.accounts,
+    accountsLoading: state.accounts.accountsLoading,
+    accountsLoaded: state.accounts.accountsLoaded
 });
 
-export default connect(mapStateToProps, {  })(AccountSelect);
+export default connect(mapStateToProps, { getAccounts })(AccountSelect);

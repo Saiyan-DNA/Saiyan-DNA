@@ -49,8 +49,10 @@ class AccountList extends React.Component {
     }
 
     viewAccount(id) {
-        this.props.getAccount(id);
-        this.props.history.push("/financial/accountoverview");
+        const { history, getAccount, accountLoading } = this.props;
+        
+        if (!accountLoading) getAccount(id);
+        history.push("/financial/accountoverview");
     }
 
     accountSummary = (acct, classes) => {
@@ -120,4 +122,9 @@ class AccountList extends React.Component {
     }
 }
 
-export default connect(null, { getAccount })(withRouter(withStyles(styles, {withTheme: true})(AccountList)));
+const mapStateToProps = state => ({
+    accountLoading: state.accounts.accountLoading,
+    accountLoaded: state.accounts.accountLoaded
+});
+
+export default connect(mapStateToProps, { getAccount })(withRouter(withStyles(styles, {withTheme: true})(AccountList)));

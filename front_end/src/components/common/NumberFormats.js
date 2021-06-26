@@ -11,7 +11,7 @@ export const CurrencyFormat = (props) => {
       {...other}
       getInputRef={inputRef}
       style={{"textAlign": "right"}}
-      onValueChange={(values) => {
+      onValueChange={(values) => {!onChange ? null : 
         onChange({
           target: {
             name: props.name,
@@ -40,7 +40,7 @@ export const PercentageFormat = (props) => {
         {...other}
         getInputRef={inputRef}
         style={{"textAlign": "right"}}
-        onValueChange={(values) => {
+        onValueChange={(values) => {!onChange ? null : 
           onChange({
             target: {
               name: props.name,

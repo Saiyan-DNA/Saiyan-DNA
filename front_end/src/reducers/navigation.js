@@ -3,7 +3,7 @@ import { SET_TITLE, USER_NAV, USER_HOME, CLEAR_HOME, TOGGLE_HOME_MODAL } from '.
 const initialState = {
     headerTitle: "Home Central",
     currentPath: localStorage.getItem("path") || "/",
-    currentHome: JSON.parse(localStorage.getItem("home")) || { name: "" },
+    currentHome: {},
     homeModalOpen: false
 }
 
@@ -21,7 +21,7 @@ export default function(state = initialState, action) {
                 currentPath: action.payload
             };
         case USER_HOME:
-            localStorage.setItem("home", JSON.stringify(action.payload))
+            localStorage.setItem("homeId", action.payload.id)
             return {
                 ...state,
                 currentHome: action.payload

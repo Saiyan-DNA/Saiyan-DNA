@@ -248,7 +248,7 @@ class TransactionLog(models.Model):
 
     summary = models.CharField(max_length=100, verbose_name="Summary")
     description = models.CharField(max_length=255, verbose_name="Description", blank=True)
-    transaction_date = models.DateTimeField(auto_now_add=True, verbose_name="Transaction Time")
+    transaction_date = models.DateTimeField(auto_now_add=True, verbose_name="Transaction Date")
     transaction_type = models.CharField(max_length=3, choices=TransactionType.choices, default=TransactionType.DEBIT, verbose_name="Transaction Type")
     amount = models.FloatField(verbose_name="Amount")
     

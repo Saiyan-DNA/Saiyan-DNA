@@ -15,7 +15,8 @@ export default function(state = initialState, action) {
         case TOGGLE_USER_MENU:
             return {
                 ...state,
-                userMenuOpen: !state.userMenuOpen
+                userMenuOpen: !state.userMenuOpen,
+                userMenuTarget: action.payload
             };            
         default:
             return state;

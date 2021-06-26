@@ -9,9 +9,12 @@ import { withStyles } from '@material-ui/core/styles';
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
 const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Layout" */));
+const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Navigation" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Navigation" */));
+const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Navigation" */));
 const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
 
 const ExitToAppSharp = loadable(() => import('@material-ui/icons/ExitToAppSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const HomeSharp = loadable(() => import('@material-ui/icons/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
@@ -25,44 +28,77 @@ import { toggleUserMenu } from '../../actions/menu';
 
 const styles = (theme) => ({
     sessionInfo: {
-        textAlign: "right !important",
-        opacity: "0.7 !important",
-        filter: "alpha(opacity=70) !important"
+        textAlign: "right !important"
+    },
+    userDrawer: {
+        zIndex: "1 !important",
+    },
+    drawerContainer: {
+        maxHeight: "216px",
+        Height: "216px"
+    },
+    drawerContainerTall: {
+        maxHeight: "248px",
+        Height: "248px"
+    },
+    userMenu: {
+        marginTop: "64px !important"
+    },
+    userMenuItem: {
+        display: "flex !important",
+        justifyContent: "flex-end !important",
+        textAlign: "right !important"
+    },
+    userMenuIcon: {
+        paddingLeft: "8px !important",
+        paddingRight: "0px !important",
     }
 });
 
 class UserMenu extends React.Component {
-    state = {
-    }
-
     static propTypes = {
         isAuthenticated: PropTypes.bool.isRequired,
         userMenuOpen: PropTypes.bool.isRequired,
         user: PropTypes.object.isRequired,
-        userHomes: PropTypes.array.isRequired,
         homeModalOpen: PropTypes.bool.isRequired,
         toggleUserMenu: PropTypes.func.isRequired,
         toggleHomeModal: PropTypes.func.isRequired,
         userLogout: PropTypes.func.isRequired,
         setHome: PropTypes.func.isRequired,
-        menuAnchor: PropTypes.object,
         currentHome: PropTypes.object,
     }
 
-    componentDidUpdate() {
-        const { isAuthenticated, currentHome, userHomes, setHome, homeModalOpen, toggleHomeModal } = this.props;
+    componentDidMount() {
+        this.homeSelection();
+    }
 
-        if (isAuthenticated && !currentHome.id && homeModalOpen === false) {
-            if (userHomes.length == 1) {
-                setHome(userHomes[0]);
+    componentDidUpdate() {
+        this.homeSelection();
+    }
+
+    homeSelection() {
+        const { isAuthenticated, currentHome, user, setHome, homeModalOpen, toggleHomeModal } = this.props;
+
+        if (isAuthenticated && !currentHome.id && user.homes && homeModalOpen === false) {
+            if (user.homes.length == 1) {
+                setHome(user.homes[0]);
                 return;
             }
+            
+            let storedHomeId = localStorage.getItem("homeId");
+            let foundHome = user.homes.find(({id}) => id === parseInt(storedHomeId))
+
+            if (foundHome) {
+                setHome(foundHome);
+                return;
+            }
+
+            localStorage.removeItem("homeId");
             
             if (!homeModalOpen) {
                 toggleHomeModal();
             }
         }
-
     }
 
     doLogout = () => {
@@ -87,36 +123,43 @@ class UserMenu extends React.Component {
     }
 
     render() {
-        const { classes, menuAnchor, userMenuOpen, toggleUserMenu, timeRemaining, userHomes, user } = this.props;
+        const { classes, toggleUserMenu, userMenuOpen, timeRemaining, user } = this.props;
+
+        let drawerContainerClass = classes.drawerContainer;
+
+        if (user.homes && user.homes.length > 1) {
+            drawerContainerClass = classes.drawerContainerTall;
+        }
 
         return (
             <React.Fragment>
-                <Menu id="userMenu" anchorEl={menuAnchor} keepMounted
-                    getContentAnchorEl={null} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}                        
-                    open={Boolean(userMenuOpen)} onClose={toggleUserMenu}>
-                    <MenuItem className={classes.sessionInfo} disabled >
-                        <Grid container spacing={0} direction="column">
-                            <Grid item>
-                                <Typography variant="body2">{user.first_name + " " + user.last_name}</Typography>
-                            </Grid>
-                            <Grid item>
-                                <Typography variant="caption">{Math.round(timeRemaining)} Minutes Remaining</Typography>
-                            </Grid>
-                        </Grid>                        
-                    </MenuItem>
-                    <Divider />
-                    {userHomes.length < 2 ? null : 
-                        <MenuItem dense button onClick={this.showHomeSelectionModal}>
-                            <HomeSharp fontSize="small" />&nbsp;&nbsp;Change Home
-                        </MenuItem>
-                    }
-                    <MenuItem dense button onClick={this.goEditProfile} id="editProfileOption">
-                        <PersonRounded fontSize="small" />&nbsp;&nbsp;Edit Profile
-                    </MenuItem>
-                    <MenuItem dense button onClick={this.doLogout} id="logoutOption">
-                        <ExitToAppSharp fontSize="small" />&nbsp;&nbsp;Logout
-                    </MenuItem>
-                </Menu>
+                <SwipeableDrawer anchor="right" open={Boolean(userMenuOpen)} onClose={toggleUserMenu} onOpen={toggleUserMenu}
+                className={classes.userDrawer} classes={{paper: drawerContainerClass}}>
+                    <List component="nav" className={classes.userMenu}>
+                        <ListItem className={classes.sessionInfo}>
+                            <Grid container spacing={0} direction="column">
+                                <Grid item>
+                                    <Typography variant="body2">{user.first_name + " " + user.last_name}</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography variant="caption">{Math.round(timeRemaining)} Minutes Remaining</Typography>
+                                </Grid>
+                            </Grid>  
+                        </ListItem>
+                        <Divider />
+                        {user.homes && user.homes.length < 2 ? null : 
+                            <ListItem button dense onClick={this.showHomeSelectionModal} className={classes.userMenuItem}>
+                                <ListItemText primary="Change Home" /><HomeSharp fontSize="small" className={classes.userMenuIcon}/>
+                            </ListItem>
+                        }
+                        <ListItem button dense onClick={this.goEditProfile} className={classes.userMenuItem}>
+                            <ListItemText primary="Edit Profile" /><PersonRounded fontSize="small" className={classes.userMenuIcon} />
+                        </ListItem>
+                        <ListItem button dense onClick={this.doLogout} className={classes.userMenuItem}>
+                            <ListItemText primary="Log Out" /><ExitToAppSharp fontSize="small" className={classes.userMenuIcon} />
+                        </ListItem>
+                    </List>
+                </SwipeableDrawer>
                 <HomeSelectModal />
             </React.Fragment>
         );
@@ -125,12 +168,19 @@ class UserMenu extends React.Component {
 
 const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated,
+    user: state.auth.user,
+    isLoading: state.auth.isLoading,
+    timeRemaining: state.auth.timeRemaining,
     userMenuOpen: state.menu.userMenuOpen,
     homeModalOpen: state.navigation.homeModalOpen,
-    user: state.auth.user,
     currentHome: state.navigation.currentHome,
-    userHomes: state.auth.user.homes || []
 });
 
+const mapDispatchToProps = {
+    userLogout,
+    toggleUserMenu,
+    setHome,
+    toggleHomeModal
+}
 
-export default withRouter(connect(mapStateToProps, { userLogout, toggleUserMenu, setHome, toggleHomeModal })(withStyles(styles, { withTheme: true })(UserMenu)));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(UserMenu)));

@@ -14,7 +14,8 @@ const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "
 const BankingList = loadable(() => import('./BankingList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
 const CreditList = loadable(() => import('./CreditList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
 
-import { getAccounts, clearAccount, clearTransactions } from '../../actions/accounts';
+import { getAccounts, clearAccount } from '../../actions/accounts';
+import { clearTransactions } from '../../actions/transactions';
 import { setTitle } from '../../actions/navigation';
 
 const styles = theme => ({
@@ -29,10 +30,6 @@ const styles = theme => ({
 });
 
 class FinancialAccounts extends React.Component {
-    state = {
-
-    }
-
     static propTypes = {
         bankAccounts: PropTypes.array.isRequired,
         creditAccounts: PropTypes.array.isRequired,
@@ -123,4 +120,11 @@ const mapStateToProps = state => ({
     accountsLoaded: state.accounts.accountsLoaded
 });
 
-export default connect(mapStateToProps, { getAccounts, clearAccount, clearTransactions, setTitle })(withStyles(styles, { withTheme: true })(FinancialAccounts));
+const mapDispatchToProps = {
+    getAccounts,
+    clearAccount,
+    clearTransactions,
+    setTitle
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(FinancialAccounts));

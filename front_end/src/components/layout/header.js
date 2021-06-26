@@ -15,9 +15,7 @@ const Typography = loadable(() => import('@material-ui/core/Typography' /* webpa
 const MenuRounded = loadable(() => import('@material-ui/icons/MenuRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const PersonRounded = loadable(() => import('@material-ui/icons/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
-const UserMenu = loadable(() => import('./UserMenu' /* webpackChunkName: "Navigation" */));
-
-import { userLogout, refreshToken } from '../../actions/auth';
+import { checkTokenExpiration } from '../../actions/auth';
 import { toggleNavMenu, toggleUserMenu } from '../../actions/menu';
 
 
@@ -76,72 +74,23 @@ const styles = (theme) => ({
   });
 
 class Header extends React.Component {
+    tokenCheckInterval = null;
+
     static propTypes = {
-        navMenuOpen: PropTypes.bool.isRequired,
-        userMenuOpen: PropTypes.bool.isRequired,
         toggleNavMenu: PropTypes.func.isRequired,
         toggleUserMenu: PropTypes.func.isRequired,
+        checkTokenExpiration: PropTypes.func.isRequired,
         headerTitle: PropTypes.string.isRequired,
         currentHome: PropTypes.object.isRequired,
         user: PropTypes.object.isRequired,
         userHomes: PropTypes.array.isRequired,
     }
 
-    state = {
-        menuAnchor: null,
-        localRemaining: 30
-    };
-
-    componentDidUpdate() {
-        this.checkTokenExpiration();            
-    }
-
-    checkTokenExpiration() {
-        const { tokenExpires, refreshToken, userLogout } = this.props;
-        const { localRemaining } = this.state;
-
-        const current_time = new Date();        
-
-        if (tokenExpires) {
-            // Determine if the token is expired
-            let remaining = (tokenExpires - current_time.getTime())/60000;
-
-            console.log("Remaining: " + remaining + " / Local: " + localRemaining);
-
-            if (remaining < 0) {
-                console.log("Token expired at: " + new Date(0).setUTCSeconds(tokenExpires))
-                userLogout();
-                return -1;
-            }
-    
-            // If time remaining is less than 5 minutes, attempt to refresh the token.
-            if (remaining < 5) {
-                refreshToken();
-                return 0;
-            }
-
-            let difference = localRemaining - remaining;
-            if (difference > 1) {
-                this.setState({localRemaining: remaining});
-                return 0;
-            }
-
-            if (difference < 0) {
-                this.setState({localRemaining: 30});
-            }
-        }
-    }
-
     toggleUserMenu = (event) => {
         if (event) {
             event.preventDefault();
-        }
-
-        this.setState({...this.state,
-            menuAnchor: (this.state.userMenuOpen ? null : event.currentTarget)
-        });
-
-        this.props.toggleUserMenu();
+            this.props.toggleUserMenu(event.currentTarget.id);
+        }        
     }
 
     homeSubtitle() {
@@ -152,9 +101,20 @@ class Header extends React.Component {
         );
     }
 
+    componentDidMount() {
+        const { checkTokenExpiration, isAuthenticated } = this.props;
+        if (isAuthenticated) {
+            checkTokenExpiration()            
+            this.tokenCheckInterval = setInterval(checkTokenExpiration, 60000);
+        }
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.tokenCheckInterval);
+    }
+
     render() {
-        const { classes, isAuthenticated, currentHome, headerTitle, toggleNavMenu } = this.props;
-        const { localRemaining, menuAnchor } = this.state;
+        const { classes, isAuthenticated, currentHome, headerTitle, toggleNavMenu, toggleUserMenu } = this.props;
 
         return (
             <React.Fragment>
@@ -171,25 +131,28 @@ class Header extends React.Component {
                                 {currentHome ? this.homeSubtitle() : null}
                         </Container>                        
                         {!isAuthenticated ? null :
-                            <IconButton edge="end" className={classes.profileButton} color="inherit" onClick={this.toggleUserMenu}><PersonRounded /></IconButton>
+                            <IconButton edge="end" className={classes.profileButton} id="userButton" name="userButton" 
+                                color="inherit" onClick={toggleUserMenu}><PersonRounded /></IconButton>
                         }                        
                     </Toolbar>
                 </AppBar>
-                <UserMenu menuAnchor={menuAnchor} timeRemaining={localRemaining} />
             </React.Fragment>
         );
     }
 }
 
 const mapStateToProps = state => ({
-    navMenuOpen: state.menu.navMenuOpen,
-    userMenuOpen: state.menu.userMenuOpen,
     isAuthenticated: state.auth.isAuthenticated,
     headerTitle: state.navigation.headerTitle,
     currentHome: state.navigation.currentHome,
     user: state.auth.user,
     userHomes: state.auth.user.homes || [],
-    tokenExpires: state.auth.tokenExpires,
 });
 
-export default connect(mapStateToProps, { toggleNavMenu, toggleUserMenu, userLogout, refreshToken, userLogout })(withStyles(styles, { withTheme: true })(Header))
+const mapDispatchToProps = {
+    toggleNavMenu,
+    toggleUserMenu,
+    checkTokenExpiration
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Header))

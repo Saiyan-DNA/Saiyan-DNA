@@ -312,4 +312,11 @@ const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated 
 });
 
-export default connect(mapStateToProps, { registerUser, clearRegistrationErrors, requestUsernameEmail, setTitle })(withStyles(styles, {withTheme: true})(RegisterUser));
+const mapDispatchToProps = {
+    registerUser,
+    clearRegistrationErrors,
+    requestUsernameEmail,
+    setTitle
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})(RegisterUser));

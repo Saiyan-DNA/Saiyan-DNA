@@ -171,4 +171,11 @@ const mapStateToProps = state => ({
     categories: state.inventory.categories || []
 });
 
-export default connect(mapStateToProps, { getCategories, getCategory, clearCategory, setTitle })(withStyles(styles, { withTheme: true })(CategoryList));
+const mapDispatchToProps = {
+    getCategories,
+    getCategory,
+    clearCategory,
+    setTitle
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(CategoryList));

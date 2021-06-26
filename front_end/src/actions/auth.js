@@ -3,9 +3,10 @@ import axios from 'axios';
 import { REGISTER_USER, REGISTRATION_ERROR, CLEAR_REGISTRATION_ERRORS } from './types';
 import { USER_LOADED, USER_LOADING, USER_HOME, CLEAR_HOME } from './types';
 import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, AUTH_ERROR } from './types';
-import { CLEAR_LOGIN_ERROR } from './types';
+import { CLEAR_LOGIN_ERROR, TOKEN_EXPIRATION_CHECK, TOKEN_EXPIRED } from './types';
 
 import { createMessage } from './messages';
+import { getAccount } from './accounts';
 
 // Attempt Regisration of a new user
 export const registerUser = (userInfo) => (dispatch, getState) => {
@@ -71,40 +72,36 @@ export const refreshToken = () => (dispatch, getState) => {
 }
 
 export const checkTokenExpiration = () => (dispatch, getState) => {
+    const { tokenExpires, tokenIsExpired } = getState().auth;
 
-    console.log("Checking Token Expiration...");
-
-    const expires = getState().auth.tokenExpires;
-
-    if (expires) {
+    if (tokenExpires && !tokenIsExpired) {
         // Determine if the token is expired
         const current_time = new Date();
-        let remaining = (expires - current_time.getTime())/60000;
+        let remaining = (tokenExpires - current_time.getTime())/60000;
 
+        // If expired, notify the user and automatically log the user out.
         if (remaining < 0) {
-            console.log("Token expired at: " + expires)
-            dispatch(createMessage({type: "warning", title: "Logged out due to inactivity.", detail: err}));
-            dispatch(userLogout());
-            return -1;
+            dispatch({type: TOKEN_EXPIRED});
+            dispatch(createMessage({type: "warning", title: "Logged out due to inactivity."}));
+            return;
         }
 
         // If time remaining is less than 5 minutes, attempt to refresh the token.
         if (remaining < 5) {
             dispatch(refreshToken());
-            return 0;
         }
-    }
 
-    return 0;
+        dispatch({
+            type: TOKEN_EXPIRATION_CHECK,
+            payload: remaining
+        });
+    }
 }
 
 // CHECK TOKEN & LOAD USER
 export const loadUser = () => (dispatch, getState) => {
-    // User Loading
-    dispatch({type: USER_LOADING });
-
     // Get token from state
-    const token = getState().auth.token;
+    const { token, isAuthenticated } = getState().auth;
 
     // Headers
     const config = {
@@ -114,7 +111,11 @@ export const loadUser = () => (dispatch, getState) => {
     }
 
     // If token, add to headers config & get user data
-    if(token && (checkTokenExpiration() != -1)) {
+    if(token && isAuthenticated) {
+        dispatch({type: USER_LOADING });
+
+        // If token has not expired, retrieve user details from the API       
+
         config.headers['Authorization'] = `Bearer ${token}`;
 
         axios.get('/api/auth/user', config)
@@ -123,12 +124,18 @@ export const loadUser = () => (dispatch, getState) => {
                 type: USER_LOADED,
                 payload: res.data
             });
+
+            let storedAccountId = localStorage.getItem("accountId");
+            if (storedAccountId) {
+                dispatch(getAccount(storedAccountId));
+            }
         }).catch(err => {
             dispatch({
                 type: AUTH_ERROR
             });
-            dispatch(createMessage({type: "error", title: "Autorization Error!", detail: err}));
+            dispatch(createMessage({type: "error", title: "Autorization Error!"}));
         });
+
     } else {
         userLogout();
     }

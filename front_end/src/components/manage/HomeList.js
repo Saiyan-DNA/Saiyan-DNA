@@ -74,4 +74,9 @@ const mapStateToProps = state => ({
     homes: state.homes.homes || [],
 });
 
-export default connect(mapStateToProps, { setTitle, getHomes })(withStyles(styles, { withTheme: true })(HomeList));
+const mapDispatchToProps = {
+    setTitle,
+    getHomes
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(HomeList));

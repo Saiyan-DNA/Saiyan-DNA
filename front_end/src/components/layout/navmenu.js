@@ -7,15 +7,18 @@ import loadable from '@loadable/component';
 import { withStyles } from '@material-ui/core/styles';
 
 const Collapse = loadable(() => import('@material-ui/core/Collapse' /* webpackChunkName: "Material" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
-const ListItemIcon = loadable(() => import('@material-ui/core/ListItemIcon' /* webpackChunkName: "Material" */));
-const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Navigation" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Navigation" */));
+const ListItemIcon = loadable(() => import('@material-ui/core/ListItemIcon' /* webpackChunkName: "Navigation" */));
+const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Navigation" */));
 const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
 const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
 const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
 
 const HomeSharp = loadable(() => import('@material-ui/icons/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const AccountBalanceSharp = loadable(() => import('@material-ui/icons/AccountBalanceSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const LocalGroceryStoreSharp = loadable(() => import('@material-ui/icons/LocalGroceryStoreSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const StorageSharp = loadable(() => import('@material-ui/icons/StorageSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const ExpandLess = loadable(() => import('@material-ui/icons/ExpandLess' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const ExpandMore = loadable(() => import('@material-ui/icons/ExpandMore' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
@@ -77,10 +80,12 @@ class NavMenu extends React.Component {
     }
 
     navigateTo(url, e) {
+        const { toggleNavMenu, history, userNav } = this.props;
+
         this.closeManageInventoryMenu();
-        this.props.toggleNavMenu();
-        this.props.history.push(url);
-        this.props.userNav(url);
+        toggleNavMenu();
+        history.push(url);
+        userNav(url);
     }
 
     activeRoute = (routePath) => {
@@ -157,6 +162,7 @@ class NavMenu extends React.Component {
                 <ListItem button className={this.classes.menuItem}
                     onClick={this.toggleFinancialGroup}
                     selected={this.state.financialGroupOpen}>
+                    <ListItemIcon><AccountBalanceSharp /></ListItemIcon>
                     <ListItemText primary="Financials" />
                     {Boolean(this.state.financialGroupOpen) ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
@@ -189,6 +195,7 @@ class NavMenu extends React.Component {
                         <ListItem button className={this.classes.menuItem}
                             onClick={this.toggleInventoryGroup}
                             selected={this.state.inventoryGroupOpen}>
+                            <ListItemIcon><LocalGroceryStoreSharp /></ListItemIcon>
                             <ListItemText primary="Inventory" />
                             {Boolean(this.state.inventoryGroupOpen) ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
@@ -205,6 +212,7 @@ class NavMenu extends React.Component {
                 <ListItem button className={this.classes.menuItem}
                     onClick={this.toggleManageGroup}
                     selected={this.state.manageGroupOpen}>
+                    <ListItemIcon><StorageSharp /></ListItemIcon>
                     <ListItemText primary="Manage" />
                     {Boolean(this.state.manageGroupOpen) ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
@@ -260,5 +268,11 @@ const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated,
 });
 
+const mapDispatchToProps = {
+    toggleNavMenu,
+    userNav,
+    userHasPermission
+}
 
-export default withRouter(connect(mapStateToProps, { toggleNavMenu, userNav, userHasPermission })(withStyles(styles, { withTheme: true })(NavMenu)));
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(NavMenu)));

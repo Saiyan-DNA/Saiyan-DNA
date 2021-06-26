@@ -9,6 +9,7 @@ import items from './items';
 import menu from './menu';
 import messages from './messages';
 import navigation from './navigation';
+import transactions from './transactions';
 
 import { LOGOUT_SUCCESS, LOGIN_FAIL } from '../actions/types';
 
@@ -22,7 +23,8 @@ const appReducer = combineReducers({
     items,
     menu,
     messages,
-    navigation    
+    navigation,
+    transactions    
 });
 
 const rootReducer = (state, action) => {

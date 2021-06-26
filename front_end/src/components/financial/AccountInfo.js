@@ -237,15 +237,17 @@ class AccountInfo extends React.Component {
                                 </CardContent>
                             </Card>
                         </Grid>
+                        {!id ? null : 
+                            <Grid item xs={6}>
+                                <DestructiveButton
+                                    onClick={this.toggleDeleteModal}>Delete Account</DestructiveButton>
+                            </Grid>
+                        }
                     </Grid>
                 </form>
-                { id && 
-                    <>
-                        <DestructiveButton className={classes.deleteButton}
-                            onClick={this.toggleDeleteModal}>Delete Account</DestructiveButton>
-                        <DeleteAccountModal open={deleteModalOpen} onClose={this.toggleDeleteModal} 
-                            id={id} accountName={accountName} organization={organization} />
-                    </>
+                {!id ? null :
+                    <DeleteAccountModal open={deleteModalOpen} onClose={this.toggleDeleteModal} 
+                        id={id} accountName={accountName} organization={organization} />
                 }
             </Container>
         );
@@ -259,4 +261,11 @@ const mapStateToProps = state => ({
     financialInstitutions: state.accounts.financialInstitutions
 });
 
-export default connect(mapStateToProps, { createAccount, updateAccount, getInstitutions, setTitle })(withStyles(styles, { withTheme: true })(AccountInfo));
+const mapDispatchToProps = {
+    createAccount,
+    updateAccount,
+    getInstitutions,
+    setTitle,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(AccountInfo));

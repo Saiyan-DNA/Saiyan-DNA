@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-import { GET_ACCOUNTS, CREATE_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT, GET_ACCOUNT, CLEAR_ACCOUNT } from './types';
+import { ACCOUNT_LOADING, ACCOUNT_LOADED, ACCOUNT_LOAD_ERROR, CLEAR_ACCOUNT } from './types';
+import { CREATE_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT } from './types';
 import { ACCOUNTS_LOADING, ACCOUNTS_LOADED } from './types';
-import { GET_TRANSACTIONS, CLEAR_TRANSACTIONS } from './types';
+
 import { GET_FINANCIAL_INSTITUTION, GET_FINANCIAL_INSTITUTIONS } from './types';
 import { createMessage } from './messages';
 
@@ -19,6 +20,7 @@ export const getAccounts = () => (dispatch, getState) => {
             dispatch({type: ACCOUNTS_LOADED, payload: res.data});
         }).catch(err => {
             dispatch(createMessage({type: "error", title: "Error Loading Accounts!", detail: err}));
+            dispatch({type: ACCOUNTS_LOAD_ERROR, payload: err})
     });
 };
 
@@ -96,6 +98,8 @@ export const deleteAccount = (id) => (dispatch, getState) => {
 
 // GET ACCOUNT DETAILS
 export const getAccount = (id) => (dispatch, getState) => {
+    dispatch({type: ACCOUNT_LOADING});
+
     const jwt_token = getState().auth.token
 
     const config = {
@@ -106,40 +110,12 @@ export const getAccount = (id) => (dispatch, getState) => {
 
     axios.get(`/api/financial/account/${id}/`, config)
     .then(res => {
-        dispatch({
-            type: GET_ACCOUNT,
-            payload: res.data
-        });
-    }).catch(err => console.log(err));
-}
-
-// GET ACCOUNT Transactions
-export const getTransactions = (acct_id, startDate, endDate) => (dispatch, getState) => {
-    if (acct_id) {
-        const jwt_token = getState().auth.token
-
-        const config = {
-            headers: {
-                "Authorization": `bearer ${jwt_token}`
-            }
-        }
-
-        axios.get(`/api/financial/transaction/?acct_id=${acct_id}`, config)
-        .then(res => {
-            dispatch({
-                type: GET_TRANSACTIONS,
-                payload: res.data
-            });
-        }).catch(err => console.log(err));
-    } else {
-        console.log('No Account specified to obtain transactions.')
-    }
-}
-
-export const clearTransactions = () => (dispatch) => {
-    dispatch({
-        type: CLEAR_TRANSACTIONS
-    })
+        dispatch({type: ACCOUNT_LOADED, payload: res.data});
+    }).catch(err => {
+        console.log(err);
+        dispatch(createMessage({type: "error", title: "Error retrieving account details!"}));
+        dispatch({type: ACCOUNT_LOAD_ERROR, payload: err});
+    });
 }
 
 export const clearAccount = () => (dispatch) => {

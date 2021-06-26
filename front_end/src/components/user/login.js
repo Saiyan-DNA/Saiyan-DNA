@@ -156,4 +156,10 @@ const mapStateToProps = state => ({
     loginError: state.auth.loginError
 });
 
-export default connect(mapStateToProps, { userLogin, clearLoginError, setTitle })(withStyles(styles, { withTheme: true })(Login));
+const mapDispatchToProps = {
+    userLogin,
+    clearLoginError,
+    setTitle
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Login));

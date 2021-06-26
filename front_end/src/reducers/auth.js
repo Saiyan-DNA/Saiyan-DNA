@@ -1,17 +1,19 @@
 import jwt_decode from 'jwt-decode';
 
 import { REGISTER_USER, REGISTRATION_ERROR, CLEAR_REGISTRATION_ERRORS } from '../actions/types';
-import { USER_LOADED, USER_LOADING, AUTH_ERROR, EXPIRATION_CHECK } from '../actions/types';
+import { USER_LOADED, USER_LOADING, AUTH_ERROR, TOKEN_EXPIRATION_CHECK, TOKEN_EXPIRED } from '../actions/types';
 import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, CLEAR_LOGIN_ERROR } from '../actions/types';
 
 const initialState = {
     token: localStorage.getItem('token'),
     tokenExpires: new Date(localStorage.getItem('expires')).getTime(),
-    isAuthenticated: false,
+    tokenIsExpired: false,
+    isAuthenticated: localStorage.getItem('token') ? true : false,
     isLoading: false,
     user: {},
     loginError: null,
     deviceFamily: "Unknown",
+    timeRemaining: 15,
     isMobile: false,
     isTablet: false,
     registrationErrors: {}
@@ -34,7 +36,7 @@ export default function(state = initialState, action, dispatch) {
             return {
                 ...state,
                 registrationErrors: action.payload,
-                isAuthenticated: null,
+                isAuthenticated: false,
                 isLoading: false,
                 user: {}
             }
@@ -68,7 +70,8 @@ export default function(state = initialState, action, dispatch) {
                 ...action.payload,
                 isAuthenticated: true,
                 isLoading: false,
-                tokenExpires: expires
+                tokenExpires: expires,
+                tokenIsExpired: false
             }
         case AUTH_ERROR:
             localStorage.removeItem('token');
@@ -78,7 +81,7 @@ export default function(state = initialState, action, dispatch) {
                 ...state,
                 token: null,
                 user: {},
-                isAuthenticated: null,
+                isAuthenticated: false,
                 isLoading: false
             }
         case LOGIN_FAIL:
@@ -104,6 +107,24 @@ export default function(state = initialState, action, dispatch) {
                 isAuthenticated: false,
                 isLoading: false,
                 loginError: null
+            }
+        case TOKEN_EXPIRATION_CHECK:
+            return {
+                ...state,
+                timeRemaining: action.payload
+            }
+        case TOKEN_EXPIRED: 
+            localStorage.removeItem('token');
+            localStorage.removeItem('expires');
+            localStorage.removeItem('home');
+            return {
+                ...state,
+                token: null,
+                user: {},
+                isAuthenticated: false,
+                isLoading: false,
+                loginError: null,
+                tokenIsExpired: true,
             }
         case CLEAR_LOGIN_ERROR:
             return {

@@ -95,4 +95,9 @@ const mapStateToProps = state => ({
     homeModalOpen: state.navigation.homeModalOpen
 });
 
-export default connect(mapStateToProps, { setHome, toggleHomeModal })(withStyles(styles, { withTheme: true })(HomeSelectmodal))
+const mapDispatchToProps = {
+    setHome,
+    toggleHomeModal
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(HomeSelectmodal))
