@@ -31,6 +31,8 @@ const PeopleList = loadable(() => import('./manage' /* webpackChunkName: "Manage
 const CategoryList = loadable(() => import('./inventory' /* webpackChunkName: "Manage" */).then(m => m.CategoryList), {fallback: <LoadingMessage message="Loading Categories..." />})
 const CategoryInfo = loadable(() => import('./inventory' /* webpackChunkName: "Manage" */).then(m => m.CategoryInfo), {fallback: <LoadingMessage message="Loading Category Detail..." />})
 
+const TimeoutModal = loadable(() => import('./common/TimeoutModal' /* webpackChunkName "General" */), {fallback: <div>&nbsp;</div>});
+
 const theme = createMuiTheme({
     typography: {
       fontFamily: "inherit"
@@ -67,6 +69,7 @@ class App extends React.Component {
                         <Header />
                         <NavMenu />
                         <UserMenu />
+                        <TimeoutModal />
                         <Switch>
                           <Route exact path="/login" component={Login} />
                           <Route exact path="/register" component={RegisterUser} />

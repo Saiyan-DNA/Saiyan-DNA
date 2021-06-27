@@ -104,11 +104,18 @@ class Header extends React.Component {
     componentDidMount() {
         const { checkTokenExpiration, isAuthenticated } = this.props;
         if (isAuthenticated) {
-            checkTokenExpiration()            
-            this.tokenCheckInterval = setInterval(checkTokenExpiration, 60000);
+            checkTokenExpiration();
         }
     }
 
+    componentDidUpdate() {
+        const { checkTokenExpiration, isAuthenticated } = this.props;
+
+        if (isAuthenticated && this.tokenCheckInterval == null) {
+            this.tokenCheckInterval = setInterval(checkTokenExpiration, 60000);
+        }
+    }
+    
     componentWillUnmount() {
         clearInterval(this.tokenCheckInterval);
     }
