@@ -7,6 +7,7 @@ import { CurrencyFormat, PercentageFormat } from "./NumberFormats";
 import PrivateRoute from "./PrivateRoute";
 import SummaryCard from "./SummaryCard";
 import SystemMessage from "./SystemMessage";
+import TimeoutModal from "./TimeoutModal";
 
 export {
     BasicModal,
@@ -18,5 +19,6 @@ export {
     PercentageFormat,
     PrivateRoute,
     SummaryCard,
-    SystemMessage
+    SystemMessage,
+    TimeoutModal
 }

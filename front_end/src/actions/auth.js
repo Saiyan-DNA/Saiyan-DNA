@@ -6,6 +6,7 @@ import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, AUTH_ERROR } from './types';
 import { CLEAR_LOGIN_ERROR, TOKEN_EXPIRATION_CHECK, TOKEN_EXPIRED } from './types';
 
 import { createMessage } from './messages';
+import { toggleTimeoutModal } from './navigation';
 import { getAccount } from './accounts';
 
 // Attempt Regisration of a new user
@@ -73,6 +74,7 @@ export const refreshToken = () => (dispatch, getState) => {
 
 export const checkTokenExpiration = () => (dispatch, getState) => {
     const { tokenExpires, tokenIsExpired } = getState().auth;
+    const { timeoutModalOpen } = getState().navigation;
 
     if (tokenExpires && !tokenIsExpired) {
         // Determine if the token is expired
@@ -80,7 +82,11 @@ export const checkTokenExpiration = () => (dispatch, getState) => {
         let remaining = (tokenExpires - current_time.getTime())/60000;
 
         // If expired, notify the user and automatically log the user out.
-        if (remaining < 0) {
+        if (remaining <= 0.25) {
+            if (timeoutModalOpen) {
+                dispatch(toggleTimeoutModal());
+            }
+
             dispatch({type: TOKEN_EXPIRED});
             dispatch(createMessage({type: "warning", title: "Logged out due to inactivity."}));
             return;
@@ -88,7 +94,9 @@ export const checkTokenExpiration = () => (dispatch, getState) => {
 
         // If time remaining is less than 5 minutes, attempt to refresh the token.
         if (remaining < 5) {
-            dispatch(refreshToken());
+            if (!timeoutModalOpen) {
+                dispatch(toggleTimeoutModal());
+            }
         }
 
         dispatch({

@@ -1,10 +1,11 @@
-import { SET_TITLE, USER_NAV, USER_HOME, CLEAR_HOME, TOGGLE_HOME_MODAL } from '../actions/types.js';
+import { SET_TITLE, USER_NAV, USER_HOME, CLEAR_HOME, TOGGLE_HOME_MODAL, TOGGLE_TIMEOUT_MODAL } from '../actions/types.js';
 
 const initialState = {
     headerTitle: "Home Central",
     currentPath: localStorage.getItem("path") || "/",
     currentHome: {},
-    homeModalOpen: false
+    homeModalOpen: false,
+    timeoutModalOpen: false,
 }
 
 export default function(state = initialState, action) {
@@ -36,6 +37,11 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 homeModalOpen: !state.homeModalOpen
+            };
+        case TOGGLE_TIMEOUT_MODAL:
+            return {
+                ...state,
+                timeoutModalOpen: !state.timeoutModalOpen
             };
         default:
             return state;

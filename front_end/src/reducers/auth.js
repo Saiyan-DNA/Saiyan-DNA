@@ -29,7 +29,7 @@ export default function(state = initialState, action, dispatch) {
                 registrationErrors: {},
                 isAuthenticated: true,
                 isLoading: false
-            }
+            };
         case REGISTRATION_ERROR:
             localStorage.removeItem('token');
             localStorage.removeItem('home');
@@ -39,24 +39,24 @@ export default function(state = initialState, action, dispatch) {
                 isAuthenticated: false,
                 isLoading: false,
                 user: {}
-            }
+            };
         case CLEAR_REGISTRATION_ERRORS:
             return {
                 ...state,
                 registrationErrors: action.payload
-            }
+            };
         case USER_LOADING:
             return {
                 ...state,
                 isLoading: true
-            }
+            };
         case USER_LOADED:
             return {
                 ...state,
                 ...action.payload,
                 isAuthenticated: true,
                 isLoading: false,
-            }
+            };
         case LOGIN_SUCCESS:
             localStorage.setItem('token', action.payload.token);
             var decodedToken = jwt_decode(action.payload.token);
@@ -71,8 +71,9 @@ export default function(state = initialState, action, dispatch) {
                 isAuthenticated: true,
                 isLoading: false,
                 tokenExpires: expires,
-                tokenIsExpired: false
-            }
+                tokenIsExpired: false,
+                timeRemaining: 15
+            };
         case AUTH_ERROR:
             localStorage.removeItem('token');
             localStorage.removeItem('expires');
@@ -83,7 +84,7 @@ export default function(state = initialState, action, dispatch) {
                 user: {},
                 isAuthenticated: false,
                 isLoading: false
-            }
+            };
         case LOGIN_FAIL:
             localStorage.removeItem('token');
             localStorage.removeItem('expires');
@@ -95,7 +96,7 @@ export default function(state = initialState, action, dispatch) {
                 isLoading: false,
                 loginError: action.payload.field,
                 user: {}
-            }
+            };
         case LOGOUT_SUCCESS:
             localStorage.removeItem('token');
             localStorage.removeItem('expires');
@@ -107,12 +108,12 @@ export default function(state = initialState, action, dispatch) {
                 isAuthenticated: false,
                 isLoading: false,
                 loginError: null
-            }
+            };
         case TOKEN_EXPIRATION_CHECK:
             return {
                 ...state,
                 timeRemaining: action.payload
-            }
+            };
         case TOKEN_EXPIRED: 
             localStorage.removeItem('token');
             localStorage.removeItem('expires');
@@ -125,12 +126,12 @@ export default function(state = initialState, action, dispatch) {
                 isLoading: false,
                 loginError: null,
                 tokenIsExpired: true,
-            }
+            };
         case CLEAR_LOGIN_ERROR:
             return {
                 ...state,
                 loginError: null
-            }
+            };
         default:
             return state;
     }

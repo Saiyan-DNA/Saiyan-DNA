@@ -13,6 +13,8 @@ const CloseSharp = loadable(() => import('@material-ui/icons/CloseSharp' /* webp
 
 const styles = theme => ({
     modalWindow: {
+        outline: "none",
+        minwidth: "240px",
         maxWidth: "400px",
         ['@media (max-width: 400px)']: {
             maxWidth: "320px"
@@ -61,7 +63,7 @@ const BasicModal = ({classes, children, title, open, onClose}) => {
                 <CardContent className={classes.modalContent}>
                     {children}
                 </CardContent>
-            </Card>              
+            </Card>           
         </Modal>
     )
 }
