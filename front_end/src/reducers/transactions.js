@@ -1,5 +1,6 @@
 import { TRANSACTION_SELECTED, CLEAR_TRANSACTION, TOGGLE_TRANSACTION_MODAL } from '../actions/types';
 import { TRANSACTIONS_LOADING, TRANSACTIONS_LOADED, CLEAR_TRANSACTIONS } from '../actions/types';
+import { CREATE_TRANSACTION, UPDATE_TRANSACTION, DELETE_TRANSACTION } from '../actions/types';
 
 const initialState = {
     transactionsLoading: false,
@@ -39,6 +40,22 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 currentTransaction: action.payload
+            };
+        case CREATE_TRANSACTION:
+            return {
+                ...state,
+                currentTransaction: null
+            };
+        case UPDATE_TRANSACTION:
+            return {
+                ...state,
+                currentTransaction: null
+            };
+        case DELETE_TRANSACTION:
+            return {
+                ...state,
+                currentTransaction: null,
+                transactions: state.transactions.filter(trns => trns.id !== action.payload),
             };
         case CLEAR_TRANSACTION:
             return {

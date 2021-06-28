@@ -42,6 +42,8 @@ class FinancialCategoryReadSerializer(serializers.ModelSerializer):
         fields = '__all__' 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    transaction_date = serializers.DateTimeField(input_formats=['%Y-%m-%dT%H:%M:%S.%fZ'])
+    
     class Meta:
         model = TransactionLog
         fields = '__all__' 
