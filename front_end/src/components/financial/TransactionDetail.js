@@ -26,7 +26,7 @@ const FinancialCategorySelect = loadable(() => import('./controls/FinancialCateg
 const TransactionTypeSelect = loadable(() => import('./controls/TransactionTypeSelect' /* webpackChunkName: "Financial" */));
 
 import { CurrencyFormat } from '../common/NumberFormats'
-import { toggleTransactionModal, clearTransaction } from '../../actions/transactions';
+import { toggleTransactionModal, clearTransaction, createTransaction, updateTransaction, deleteTransaction } from '../../actions/transactions';
 import { setTitle } from '../../actions/navigation';
 
 const styles = theme => ({
@@ -68,6 +68,9 @@ class TransactionDetail extends React.Component {
         isMobile: PropTypes.bool.isRequired,
         setTitle: PropTypes.func.isRequired,
         toggleTransactionModal: PropTypes.func.isRequired,
+        createTransaction: PropTypes.func.isRequired,
+        updateTransaction: PropTypes.func.isRequired,
+        deleteTransaction: PropTypes.func.isRequired
     }
 
     componentDidMount() {
@@ -83,7 +86,7 @@ class TransactionDetail extends React.Component {
             if (transaction.id) {
                 this.setState({transaction: {
                     transactionId: transaction.id,
-                    transactionDate: transaction.transaction_date,
+                    transactionDate: new Date(transaction.transaction_date),
                     transactionType: transaction.transaction_type,
                     transactionSummary: transaction.summary, 
                     transactionDescription: transaction.description,
@@ -198,17 +201,36 @@ class TransactionDetail extends React.Component {
     }
 
     saveTransaction = () => {
+        const { createTransaction, updateTransaction, account, currentUser } = this.props;
         const { transaction } = this.state;
 
-        console.log(transaction);
+        var trns = {
+            id: transaction.transactionId,
+            summary: transaction.transactionSummary,
+            description: transaction.transactionDescription,
+            transaction_date: transaction.transactionDate.toJSON(),
+            transaction_type: transaction.transactionType,
+            amount: parseFloat(transaction.transactionAmount),
+            account: account.id,
+            financial_category: transaction.transactionCategory ? transaction.transactionCategory.id : null,
+            owner: currentUser.id,
+            organization: null
+        }
+
+        if (transaction.transactionId) {
+            updateTransaction(trns)
+        } else {
+            createTransaction(trns);
+        }
+
         this.onClose();
     }
 
     deleteTransaction = () => {
-        const { isMobile, clearTransaction } = this.props;
+        const { deleteTransaction } = this.props;
         const { transaction } = this.state;
 
-        console.log("Delete Transaction!");
+        if (transaction.transactionId) deleteTransaction(transaction.transactionId);
         this.onClose();
     }
 
@@ -232,7 +254,7 @@ class TransactionDetail extends React.Component {
                     <Grid item xs={6} sm={6}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker disableToolbar variant={isMobile ? "dialog" : "inline"} style={{marginTop: "0px"}}
-                                format="MM/dd/yyyy" margin="normal" id="transactionDate" name="transactionDate" 
+                                format="MM/dd/yyyy" margin="normal" id="transactionDate" name="transactionDate" autoOk={ isMobile ? false : true }
                                 label="Transaction Date" value={transaction.transactionDate} onChange={this.handleDateChange}
                                 KeyboardButtonProps={{'aria-label': 'change date',}} />
                         </MuiPickersUtilsProvider>
@@ -368,6 +390,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     toggleTransactionModal,
     clearTransaction,
+    createTransaction,
+    updateTransaction,
+    deleteTransaction,
     setTitle
 }
 
