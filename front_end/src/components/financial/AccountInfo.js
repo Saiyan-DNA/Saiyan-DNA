@@ -1,28 +1,35 @@
 import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
 
-import AutoComplete from '@material-ui/lab/Autocomplete'
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Container from '@material-ui/core/Container';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 
-import NumberFormat from 'react-number-format';
+const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
 
-import { createAccount, updateAccount, deleteAccount, getInstitutions } from '../../actions/accounts';
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
+const DeleteAccountModal = loadable(() => import('./DeleteAccountModal' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
+
+import { createAccount, updateAccount, getInstitutions } from '../../actions/accounts';
 import { setTitle } from '../../actions/navigation';
 
+import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
 
 const styles = theme => ({
     numberInput: {
         textAlign: "right"
+    },
+    deleteButton: {
+        marginTop: "0.5em"
     }
 });
 
@@ -38,35 +45,39 @@ class AccountInfo extends React.Component {
         interestRate: null,
         owner: null,
         isValid: false,
-
+        deleteModalOpen: false
     }
 
     static propTypes = {
         account: PropTypes.object,
         financialInstitutions: PropTypes.array.isRequired,
         currentUser: PropTypes.object.isRequired,
+        getInstitutions: PropTypes.func.isRequired,
         createAccount: PropTypes.func.isRequired,
         updateAccount: PropTypes.func.isRequired,
-        deleteAccount: PropTypes.func.isRequired,
         setTitle: PropTypes.func.isRequired
     }
 
     componentDidMount() {
-        if(this.props.account.id && this.props.financialInstitutions) {
-            this.props.setTitle("Edit Account");
+        const { getInstitutions, setTitle, account } = this.props;
+
+        getInstitutions();
+
+        if(account.id) {
+            setTitle("Edit Account");
 
             this.setState({
-                id: this.props.account.id,
-                accountName: this.props.account.name,
-                organization: this.props.account.organization,
-                accountType: this.props.account.account_type,
-                currentBalance: this.props.account.current_balance,
-                creditLimit: this.props.account.credit_limit,
-                interestRate: this.props.account.interest_rate,
-                owner: this.props.account.owner,
+                id: account.id,
+                accountName: account.name,
+                organization: account.organization,
+                accountType: account.account_type,
+                currentBalance: account.current_balance,
+                creditLimit: account.credit_limit,
+                interestRate: account.interest_rate,
+                owner: account.owner,
             })
         } else {
-            this.props.setTitle("Add Account");
+            setTitle("Add Account");
         }
     } 
 
@@ -78,7 +89,6 @@ class AccountInfo extends React.Component {
         if (!accountInfo.organization) isValid = false;
         if (accountInfo.accountType && accountInfo.accountType == "CR") {
             if (!accountInfo.creditLimit) isValid = false;
-            if (!accountInfo.interestRate) isValid = false;
         }
 
         return isValid;
@@ -108,6 +118,8 @@ class AccountInfo extends React.Component {
     }
 
     creditFields = (classes) => {
+        const { creditLimit, interestRate } = this.state;
+
         return (
             <>
                 <Grid item xs={6}>
@@ -115,115 +127,46 @@ class AccountInfo extends React.Component {
                         label="Credit Limit*"
                         className={classes.numberInput}
                         onChange={this.onChange.bind(this)} 
-                        value={this.state.creditLimit}
-                        fullWidth={true} InputProps={{inputComponent: this.currencyFormat,}} /> 
+                        value={creditLimit}
+                        fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}} /> 
                 </Grid>
                 <Grid item xs={6}>
                     <TextField id="interestRate" name="interestRate"
                         label="Interest Rate*"
                         onChange={this.onChange.bind(this)}
-                        value={this.state.interestRate}
-                        fullWidth={true} InputProps={{inputComponent: this.percentageFormat,}} />
+                        value={interestRate}
+                        fullWidth={true} InputProps={{inputComponent: PercentageFormat,}} />
                 </Grid>
             </>
         );
     }
 
-    deleteButton = () => {
-        return (
-            <Button variant="contained" size="small" color="primary" 
-                style={{backgroundColor: "#c62828", marginTop: "1em"}}
-                onClick={this.deleteAccount}>Delete Account</Button>
-        );
+    toggleDeleteModal = () => {
+        this.setState({deleteModalOpen: !this.state.deleteModalOpen});
     }
 
     saveAccountDetails = () => {
+        const { currentUser, createAccount, updateAccount, history } = this.props;
+        const { id, accountName, accountType, organization, currentBalance, creditLimit, interestRate } = this.state
 
         let accountObject = {
-            "name": this.state.accountName,
-            "account_type": this.state.accountType,
-            "organization": this.state.organization.id,
-            "current_balance": parseFloat(this.state.currentBalance) || 0.00,
-            "credit_limit": parseFloat(this.state.creditLimit) || 0.00,
-            "interest_rate": (parseFloat(this.state.interestRate) || 0),
-            "owner": this.props.currentUser.id
+            "name": accountName,
+            "account_type": accountType,
+            "organization": organization.id,
+            "current_balance": parseFloat(currentBalance) || 0.00,
+            "credit_limit": parseFloat(creditLimit) || 0.00,
+            "interest_rate": (parseFloat(interestRate) || 0),
+            "owner": currentUser.id
         }
 
-        if (this.state.id) {
-            this.props.updateAccount(this.state.id, accountObject);
+        id ? updateAccount(id, accountObject) : createAccount(accountObject);
 
-        } else {
-            this.props.createAccount(accountObject);
-        }
-
-        this.props.history.goBack();
+        history.push("/financial/accountoverview");
     }
-
-    deleteAccount = () => {
-        this.props.deleteAccount(this.state.id);
-        this.props.history.push("/financial/accounts");
-    }
-
-    currencyFormat(props) {
-        const { inputRef, onChange, ...other } = props;
-      
-        return (
-          <NumberFormat
-            {...other}
-            getInputRef={inputRef}
-            style={{"textAlign": "right"}}
-            onValueChange={(values) => {
-              onChange({
-                target: {
-                  name: props.name,
-                  value: values.value,
-                },
-              });
-            }}
-            onClick={(e) => {
-                e.target.select();
-            }}
-            onBlur={props.onBlur}
-            decimalScale={2}
-            fixedDecimalScale={true}
-            thousandSeparator
-            isNumericString
-            prefix="$"
-          />
-        );
-      }
-
-      percentageFormat(props) {
-        const { inputRef, onChange, ...other } = props;
-      
-        return (
-          <NumberFormat
-            {...other}
-            getInputRef={inputRef}
-            style={{"textAlign": "right"}}
-            onValueChange={(values) => {
-              onChange({
-                target: {
-                  name: props.name,
-                  value: values.value,
-                },
-              });
-            }}
-            onClick={(e) => {
-                e.target.select();
-            }}
-            onBlur={props.onBlur}
-            decimalScale={2}
-            fixedDecimalScale={true}
-            thousandSeparator
-            isNumericString
-            suffix="%"
-          />
-        );
-      }
 
     render() {
-        const { classes } = this.props;
+        const { classes, financialInstitutions, history } = this.props;
+        const { id, accountName, accountType, organization, currentBalance, isValid, deleteModalOpen } = this.state;
 
         const accountTypes = [
             {value: "CK", label: "Checking"},
@@ -239,10 +182,10 @@ class AccountInfo extends React.Component {
                     <Grid container spacing={3} justify="space-between">
                         <Grid item>
                             <Button color="primary" variant="outlined" size="small"
-                                onClick={this.props.history.goBack}>Back</Button>
+                                onClick={history.goBack}>Back</Button>
                         </Grid>
                         <Grid item>
-                            <Button color="primary" variant="contained" size="small" disabled={!this.state.isValid}
+                            <Button color="primary" variant="contained" size="small" disabled={!isValid}
                                 onClick={this.saveAccountDetails}>Save</Button>
                         </Grid>
                         <Grid item xs={12}>
@@ -254,7 +197,7 @@ class AccountInfo extends React.Component {
                                                 <FormControl fullWidth={true}>
                                                     <InputLabel htmlFor="accountName">Account Name*</InputLabel>
                                                     <Input id="accountName" name="accountName" 
-                                                        onChange={this.onChange} value={this.state.accountName ? this.state.accountName : ""} 
+                                                        onChange={this.onChange} value={accountName || ""} 
                                                         fullWidth={true} />
                                                 </FormControl>
                                             </Grid>
@@ -264,7 +207,7 @@ class AccountInfo extends React.Component {
                                                     options={accountTypes}
                                                     getOptionLabel={(option) => option.label}
                                                     getOptionSelected={(option, value) => this.accountTypeSelected(option, value)}
-                                                    value={accountTypes.filter(acctType => {return acctType.value == this.state.accountType})[0] || null}
+                                                    value={accountTypes.filter(acctType => {return acctType.value == accountType})[0] || null}
                                                     onChange={(event, selection) => {if (selection) this.onChange({target: {name: "accountType", value: selection.value}})}}
                                                     renderInput={(params) => <TextField {...params} label="Account Type*" variant="standard" />}>
                                                 </AutoComplete>
@@ -272,10 +215,10 @@ class AccountInfo extends React.Component {
                                             <Grid item xs={12} sm={6}>
                                                 <AutoComplete id="organization" name="organization"
                                                     fullWidth={true} 
-                                                    options={this.props.financialInstitutions ? this.props.financialInstitutions : []}
+                                                    options={financialInstitutions || []}
                                                     getOptionLabel={(option) => option.name}
                                                     getOptionSelected={(option, value) => this.institutionSelected(option, value)}
-                                                    value={this.state.organization || null}
+                                                    value={organization || null}
                                                     onChange={(event, value) => this.onChange({target: {name: "organization", value: value}})}
                                                     renderInput={(params) => <TextField {...params} label="Financial Institution*" variant="standard" />}>
                                                 </AutoComplete>
@@ -285,18 +228,27 @@ class AccountInfo extends React.Component {
                                                     label="Balance"
                                                     className={classes.numberInput}
                                                     onChange={this.onChange.bind(this)} 
-                                                    value={this.state.currentBalance}
-                                                    fullWidth={true} InputProps={{inputComponent: this.currencyFormat,}}/> 
+                                                    value={currentBalance}
+                                                    fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/> 
                                             </Grid>
-                                            { this.state.accountType === "CR" ? this.creditFields(classes) : null }
+                                            { accountType === "CR" ? this.creditFields(classes) : null }
                                         </Grid>
                                     </Container>
                                 </CardContent>
                             </Card>
                         </Grid>
+                        {!id ? null : 
+                            <Grid item xs={6}>
+                                <DestructiveButton
+                                    onClick={this.toggleDeleteModal}>Delete Account</DestructiveButton>
+                            </Grid>
+                        }
                     </Grid>
                 </form>
-                { this.state.id ? this.deleteButton() : null }
+                {!id ? null :
+                    <DeleteAccountModal open={deleteModalOpen} onClose={this.toggleDeleteModal} 
+                        id={id} accountName={accountName} organization={organization} />
+                }
             </Container>
         );
     }
@@ -309,4 +261,11 @@ const mapStateToProps = state => ({
     financialInstitutions: state.accounts.financialInstitutions
 });
 
-export default connect(mapStateToProps, { createAccount, updateAccount, deleteAccount, setTitle })(withStyles(styles, { withTheme: true })(AccountInfo));
+const mapDispatchToProps = {
+    createAccount,
+    updateAccount,
+    getInstitutions,
+    setTitle,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(AccountInfo));

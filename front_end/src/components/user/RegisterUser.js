@@ -2,19 +2,35 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
+import zxcvbn from 'zxcvbn';
 
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Container from '@material-ui/core/Container';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
+
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
+
+const PasswordStrengthMeter = loadable(() => import('./PasswordStrengthMeter' /*webpackChunkName: "General" */));
 
 import { setTitle } from '../../actions/navigation';
-import { registerUser } from '../../actions/auth';
+import { registerUser, clearRegistrationErrors } from '../../actions/auth';
+import { requestUsernameEmail } from '../../actions/email';
+
+const styles = theme => ({
+    linkText: {
+        color: "blue",
+        textDecoration: "underline",
+        cursor: "pointer"
+    }
+});
 
 class RegisterUser extends React.Component {
     state = {
@@ -28,14 +44,19 @@ class RegisterUser extends React.Component {
         },
         formValid: false,
         passwordMismatchMessageVisible: false,
-        userNameInUseMessageVisible: false
+        usernameInUseMessageVisible: false,
+        emailInUseMessageVisible: false,
+        submittedUsername: "",
+        submittedEmail: "",
     }
 
     static propTypes = {
         registrationErrors: PropTypes.object.isRequired,
         isAuthenticated: PropTypes.bool,
         setTitle: PropTypes.func.isRequired,
-        registerUser: PropTypes.func.isRequired
+        registerUser: PropTypes.func.isRequired,
+        clearRegistrationErrors: PropTypes.func.isRequired,
+        requestUsernameEmail: PropTypes.func.isRequired
     }
 
     componentDidMount() {
@@ -44,10 +65,20 @@ class RegisterUser extends React.Component {
 
     componentDidUpdate() {
         var registrationErrors = this.props.registrationErrors;
-        if (registrationErrors.username && !this.state.userNameInUseMessageVisible) {
-            console.log(this.props.registrationErrors.username);
+
+        if (registrationErrors.username && !this.state.usernameInUseMessageVisible) {
+            this.toggleMessage("username", true);
         }
-        if (registrationErrors.email) console.log(this.props.registrationErrors.email);
+        if (!registrationErrors.username && this.state.usernameInUseMessageVisible) {
+            this.toggleMessage("username", false);
+        }
+
+        if (registrationErrors.email && !this.state.emailInUseMessageVisible)  {
+            this.toggleMessage("email", true);
+        }
+        if (!registrationErrors.email && this.state.emailInUseMessageVisible) {
+            this.toggleMessage("email", false);
+        }
     }
 
     onSubmit = e => {
@@ -69,37 +100,78 @@ class RegisterUser extends React.Component {
         if (userInfo.email == "") isValid =  false;
         if (userInfo.userName == "") isValid = false;
 
-        // Password Validation
+        // Password Validation - Must fill in Password and Password2 (Confirm Password)
         if (userInfo.password == "" || userInfo.password2 == "") isValid = false;
-        if (userInfo.password != userInfo.password2) {
-            this.togglePasswordMismatchMessage(true);
+
+        // Password Validation - Validate Passwords match
+        if (userInfo.password && userInfo.password2 && userInfo.password != userInfo.password2) {
+            this.toggleMessage("password", true);
             isValid = false;
         } else {
-            this.togglePasswordMismatchMessage(false);
+            this.toggleMessage("password", false);
+        }
+
+        // Clear Registration Errors if user has modified username
+        if (userInfo.userName != this.state.submittedUsername && this.state.usernameInUseMessageVisible) {
+            this.props.clearRegistrationErrors();
+        }
+
+        // Clear Registration Errors if user has modified email
+        if (userInfo.email != this.state.submittedEmail && this.state.emailInUseMessageVisible) {
+            this.props.clearRegistrationErrors();
+        }
+        
+        // Password Validation - Validate Password Strength (using zxcvbn)
+        if (zxcvbn(userInfo.password).score < 3) {
+            isValid = false;
         }
 
         return isValid;
     }
 
-    togglePasswordMismatchMessage = (mismatch) => {
-        this.setState({passwordMismatchMessageVisible: mismatch});
+    toggleMessage = (message, isVisible) => {
+        switch (message) {
+            case "password": {
+                this.setState({passwordMismatchMessageVisible: isVisible});
+                break;
+            }
+            case "username": {
+                this.setState({usernameInUseMessageVisible: isVisible});
+                break;
+            }
+            case "email": {
+                this.setState({emailInUseMessageVisible: isVisible});
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        if (isVisible) this.setState({isValid: false});
+        
     }
 
     registerUser = (e) => {
         e.preventDefault();
+
+        const userInfo = this.state.userInfo;
+
+        this.setState({submittedUsername: userInfo.userName, submittedEmail: userInfo.email})
         this.props.registerUser({
-            "first_name": this.state.userInfo.firstName,
-            "last_name": this.state.userInfo.lastName,
-            "email": this.state.userInfo.email,
-            "username": this.state.userInfo.userName,
-            "password": this.state.userInfo.password
+            "first_name": userInfo.firstName,
+            "last_name": userInfo.lastName,
+            "email": userInfo.email,
+            "username": userInfo.userName,
+            "password": userInfo.password
         });
     }
 
     render() {
-        const { userInfo, formValid, passwordMismatchMessageVisible } = this.state
+        const { userInfo, formValid, passwordMismatchMessageVisible, usernameInUseMessageVisible, emailInUseMessageVisible } = this.state;
+        const { classes, isAuthenticated, requestUsernameEmail } = this.props;
 
-        if (this.props.isAuthenticated) {
+        if (isAuthenticated) {
             return <Redirect to="/" />;
         }
 
@@ -154,7 +226,12 @@ class RegisterUser extends React.Component {
                                                     onChange={this.onChange}
                                                     value={userInfo.email}
                                                 />
-                                            </FormControl>    
+                                            </FormControl>
+                                            { emailInUseMessageVisible &&
+                                                <Typography variant="caption" color="error">
+                                                    This e-mail is already in use. Click <a href="#" className={classes.linkText} onClick={() => {requestUsernameEmail(userInfo.email)}}>here</a> to retrieve your username.
+                                                </Typography>
+                                            }    
                                         </Grid>
                                         <Grid item container xs={12} sm={12} spacing={0} justify="flex-start">
                                             <Grid item xs={12} sm={6}>
@@ -171,7 +248,7 @@ class RegisterUser extends React.Component {
                                                         value={userInfo.userName}
                                                     />
                                                 </FormControl>
-                                                {this.state.userNameInUseMessageVisible &&
+                                                {usernameInUseMessageVisible &&
                                                     <Typography variant="caption" color="error">Username is already in use</Typography>
                                                 }    
                                             </Grid>
@@ -189,7 +266,10 @@ class RegisterUser extends React.Component {
                                                     onChange={this.onChange}
                                                     value={userInfo.password}
                                                 />
-                                            </FormControl>    
+                                            </FormControl>
+                                            { userInfo.password &&
+                                                <PasswordStrengthMeter score={zxcvbn(userInfo.password).score} />    
+                                            }
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
                                             <FormControl fullWidth={true}>
@@ -204,13 +284,11 @@ class RegisterUser extends React.Component {
                                                     onChange={this.onChange}
                                                     value={userInfo.password2}
                                                 />
-                                            </FormControl>    
-                                        </Grid>
-                                        <Grid item container xs={12} sm={12} spacing={0} justify="flex-start">
+                                            </FormControl>
                                             {passwordMismatchMessageVisible ?
                                                 <Typography variant="caption" color="error">Passwords must match</Typography> : 
                                                 <Typography variant="caption" color="primary">&nbsp;</Typography>
-                                            }
+                                            }    
                                         </Grid>
                                         <Grid item container xs={12} sm={12} justify="center">
                                             <Button variant="contained" color="primary" disabled={!formValid} type="submit">Register</Button>    
@@ -234,4 +312,11 @@ const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated 
 });
 
-export default connect(mapStateToProps, { registerUser, setTitle })(RegisterUser);
+const mapDispatchToProps = {
+    registerUser,
+    clearRegistrationErrors,
+    requestUsernameEmail,
+    setTitle
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})(RegisterUser));

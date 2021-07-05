@@ -11,7 +11,6 @@ export const getHomes = () => (dispatch, getState) => {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
-        dispatch(createMessage({homesRetrieved: "Homes Retrieved"}));
 
         dispatch({
             type: GET_HOMES,

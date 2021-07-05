@@ -1,32 +1,37 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
 
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
-
-import NumberFormat from 'react-number-format';
 import { withStyles } from '@material-ui/core/styles';
 
-import TransactionModal from './TransactionModal';
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Chip = loadable(() => import('@material-ui/core/Chip' /* webpackChunkName: "Material" */));
+const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Navigation" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
+const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
+
+const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "General" */));
+import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
+
+const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "General" */), {fallback: <span>&nbsp;</span>});
+const TransactionList = loadable(() => import ('./TransactionList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>})
+const TransactionModal = loadable(() => import('./TransactionModal' /* webpackChunkName: "Financial" */));
 
 import { setTitle } from '../../actions/navigation';
-import { getTransactions } from '../../actions/accounts';
+import { getAccount } from '../../actions/accounts';
+import { getTransactions, clearTransaction, editTransaction } from '../../actions/transactions';
 import { getFinancialCategories } from '../../actions/financial_categories';
-
 
 const styles = theme => ({
     listCard: {
@@ -73,11 +78,6 @@ const styles = theme => ({
             display: "none",
         }
     },
-    hideOnPhone: {
-        ['@media (max-width: 700px)']: {
-            display: "none"
-        }
-    },
     listCaption: {
         verticalAlign: "text-top", 
         fontStyle: "italic",
@@ -90,31 +90,53 @@ const styles = theme => ({
 class AccountOverview extends React.Component {
     state = {
         actionMenuOpen: false,
-        transactionModalOpen: false,
         menuAnchor: null,
-        currentTransaction: {}
+        startDate: new Date(),
+        endDate: new Date()
     };
-
-    componentDidMount() {
-        this.props.setTitle("Account Overview");
-        this.startDate = new Date("2021-04-01");
-        this.endDate = new Date("2021-04-17");
-    }
-
-    componentDidUpdate() {
-        if (this.props.account.id && !this.state.transactionsLoaded) {
-            this.props.getTransactions(this.props.account.id, this.startDate, this.endDate);
-            this.state.transactionsLoaded = true;
-        }
-    }
 
     static propTypes = {
         isAuthenticated: PropTypes.bool.isRequired,
+        isMobile: PropTypes.bool.isRequired,
+        accountLoading: PropTypes.bool.isRequired,
+        accountLoaded: PropTypes.bool.isRequired,
         account: PropTypes.object.isRequired,
-        accountTransactions: PropTypes.array.isRequired,
-        accounts: PropTypes.array.isRequired,
         currentUser: PropTypes.object.isRequired,
+        getAccount: PropTypes.func.isRequired,
         getTransactions: PropTypes.func.isRequired,
+        transactionsLoading: PropTypes.bool.isRequired,
+        transactionsLoaded: PropTypes.bool.isRequired,
+    }
+
+    componentDidMount() {
+        const { setTitle } = this.props;
+        
+        setTitle("Account Overview");
+        this.loadAccount();
+    }
+
+    componentDidUpdate() {
+        this.loadAccount();
+    }
+
+    loadAccount() {
+        const { account, getTransactions, transactionsLoading, transactionsLoaded } = this.props;
+        const { startDate, endDate } = this.state;
+
+        if (account.id && !transactionsLoading && !transactionsLoaded) {
+            getTransactions(account.id, startDate, endDate);
+        }
+    }
+
+    addTransaction = () => {
+        const { isMobile, editTransaction, clearTransaction, history } = this.props;
+
+        clearTransaction();
+        editTransaction(null);
+    
+        if (isMobile) {
+            history.push("/financial/transaction");
+        }
     }
 
     toggleActionMenu = (event) => {
@@ -126,96 +148,61 @@ class AccountOverview extends React.Component {
         this.setState({actionMenuOpen: false});
     }
 
-    toggleTransactionModal = (trns) => {
-        this.setState({transactionModalOpen: !this.state.transactionModalOpen})
-
-        if (trns) {
-            this.setState({currentTransaction: trns});
-        } else {
-            this.setState({currentTransaction: {}});
-        }
-
-        this.closeMenu();
-    }
-
     goToBankingURL(url, e) {
         e.stopPropagation();
         window.open(url,"target=_blank");
     }
 
-    transactionList(styleClasses) {
-        if (this.props.accountTransactions.length > 0) {
+    goToList = (e) => {
+        e.stopPropagation();
+        this.props.history.push("/financial/accounts")
+    }
+
+    creditInfo() {
+        const { account } = this.props;
+
+        if (account.account_type == "CR") {
+            let utilization = account.current_balance/account.credit_limit*100;
+            let available = account.credit_limit - account.current_balance;
+
             return (
-                <List>
-                    { this.props.accountTransactions.map(trns => (
-                        <div key={trns.id}>
-                            <ListItem button className={styleClasses.transactionSummary} 
-                                onClick={() => this.toggleTransactionModal(trns)}>
-                                <Grid container spacing={1} justify="space-between">
-                                    <Grid container item spacing={0} xs={12} justify="space-between">
-                                        <Grid item xs={8} sm={6}>
-                                            <Typography noWrap variant="body1">
-                                                {trns.organization ? trns.organization.name : trns.summary}
-                                            </Typography>
-                                        </Grid>    
-                                        <Grid container item sm={4} direction="column" justify="flex-start" className={styleClasses.hideOnPhone}>
-                                            <Grid item sm={4}>
-                                            {/* Transaction Category */}
-                                                {trns.financial_category ? <Chip size="small" color="secondary" label={trns.financial_category.name} /> : <span>&nbsp;</span>}
-                                            </Grid>
-                                        </Grid>
-                                        <Grid item xs={4} sm={2} className={styleClasses.numberFormat}>
-                                            {/* Transaction Amount */}
-                                            <Typography variant="body1">
-                                                <NumberFormat value={trns.amount} displayType={'text'}
-                                                    thousandSeparator={true} decimalScale={2} fixedDecimalScale={true}
-                                                    prefix={
-                                                        (this.props.account.account_type == 'CR' || this.props.account.account_type == 'LN') && trns.transaction_type == 'CRD' ? '-$' : 
-                                                        (this.props.account.account_type == 'CK' || this.props.account_type == 'SV') && trns.transaction_type == 'DBT' ? '-$' : '$'
-                                                        }  />
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={8} sm={6}>
-                                            <div className={styleClasses.listCaption}>
-                                                <Typography noWrap variant="caption" className={styleClasses.listCaption}>
-                                                    {trns.organization ? trns.summary : trns.description}
-                                                </Typography>
-                                            </div>
-                                        </Grid>
-                                        <Grid item item xs={4} sm={2} className={styleClasses.numberFormat}>
-                                            <Typography variant="caption" className={styleClasses.listCaption}>{trns.transaction_date}</Typography>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>                                
-                            </ListItem>
-                        </div>                                
-                    ))}
-                </List>
+                <Grid container spacing={2} justify={"center"} style={{padding: "0em 0.5em 0.5em 0.5em"}}>
+                    <Grid item xs={4}>
+                        <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} />} />
+                    </Grid>
+                    <Grid item xs={"auto"}>
+                        <Divider orientation="vertical" light={true} />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <InfoTile title="Available" content={<CurrencyFormat value={available} displayType={'text'} />}
+                            caption={<center>Limit: <CurrencyFormat value={account.credit_limit} displayType={'text'} /></center>} />
+                    </Grid>
+                </Grid>
             );
-        } else {
-            return (
-                <Typography variant="body1" className={styleClasses.emptyMessage}>No transactions available</Typography>
-            )
         }
-        
     }
 
     render() {
-        const { classes, account } = this.props;
+        const { classes, account, accountLoading, accountLoaded, accountLoadError, history, editTransaction, isMobile } = this.props;
+        const { actionMenuOpen, menuAnchor } = this.state;
+
+        if (accountLoadError) {
+            return <Redirect to="/financial/accounts" />
+        }
         
         return (
             <Container>
                 <Grid container spacing={3}>
                     <Grid item container xs={12} justify="space-between">
                         <Button variant="outlined" color="primary" size="small" className={classes.hideForPrint}
-                            onClick={this.props.history.goBack}>Back</Button>
+                            onClick={this.goToList}>Back</Button>
                         <Button id="actionButton" variant="contained" color="primary" size="small"
                             disabled={account.id ? false : true} className={classes.hideForPrint}
                             aria-controls="actionMenu" aria-haspopup={true}
-                            onClick={this.toggleActionMenu.bind(this)}>Actions</Button>
+                            onClick={this.toggleActionMenu}>Actions</Button>
                     </Grid>
                     <Grid item xs={12}>
-                        { account.id &&
+                        { !accountLoading && accountLoaded ?
                         <>
                             <Grid container spacing={2} justify="flex-start">
                                 <Grid item>
@@ -224,61 +211,55 @@ class AccountOverview extends React.Component {
                                         <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, account.organization.website_url)}>
                                             {account.organization.name}
                                         </Link> :
-                                        this.props.account.organization.name
+                                        account.organization.name
                                     }
                                     </Typography>
                                 </Grid>
                             </Grid>
-                            <Card elevation={4} className={classes.listCard}>
-                                <CardHeader className={classes.listCardHeader}
-                                    title={
-                                        <Grid container spacing={3} justify="space-between">
-                                            <Grid item xs>
-                                                <Typography variant="h6">{account.name}</Typography>
-                                            </Grid>
-                                            <Grid item xs={"auto"} className={classes.numberFormat}>
-                                                <Typography variant="h6">
-                                                    <NumberFormat value={account.current_balance} displayType={'text'} 
-                                                        thousandSeparator={true} prefix={'$'} decimalScale={2} 
-                                                        fixedDecimalScale={true} />
-                                                </Typography>
-                                            </Grid>
-                                        </Grid>
-                                    } />
-                                <CardContent className={classes.listCardContent}>
+                            <SummaryCard header={
+                                <Grid container spacing={3} justify="space-between">
+                                    <Grid item xs>
+                                        <Typography variant="h6">{account.name}</Typography>
+                                    </Grid>
+                                    <Grid item xs={"auto"} className={classes.numberFormat}>
+                                        <Typography variant="h6">
+                                            <NumberFormat value={account.current_balance} displayType={'text'} 
+                                                thousandSeparator={true} prefix={'$'} decimalScale={2} 
+                                                fixedDecimalScale={true} />
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            }>
+                                
                                     <Grid container spacing={3} justify="flex-end" style={{marginTop: "2px"}}>
                                         <Grid item className={classes.hideForPrint}>
                                             <Button id="addTransactionButton" variant="contained" color="primary" size="small"
                                                 aria-controls="addTransactionButton" aria-haspopup={false}
-                                                onClick={() => this.toggleTransactionModal(null)}>Add Transaction</Button>
+                                                onClick={this.addTransaction}>Add Transaction</Button>
                                         </Grid>
                                     </Grid>
-                                    { account.id ? this.transactionList(classes) :
-                                        <Typography color="primary" variant="caption">Loading Account Details...</Typography>
-                                    }
-                                </CardContent>
-                            </Card>
-                        </>
+                                    { account.id ? this.creditInfo() : null }
+                                    { account.id ? <TransactionList /> : null }
+                            </SummaryCard>
+                        </> : <LoadingMessage message="Loading Account Details" />
                         }
                     </Grid>
                 </Grid>
-                <Menu id="actionMenu" anchorEl={this.state.menuAnchor} keepMounted
+                <Menu id="actionMenu" anchorEl={menuAnchor} keepMounted
                     getContentAnchorEl={null} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}                        
-                    open={Boolean(this.state.actionMenuOpen)} onClose={this.closeMenu}>
+                    open={Boolean(actionMenuOpen)} onClose={this.closeMenu}>
                     <MenuItem style={{fontSize: "10pt"}} dense button 
-                        onClick={() => this.toggleTransactionModal(null)}
+                        onClick={this.addTransaction}
                     >Add Transaction</MenuItem>
                     <MenuItem style={{fontSize: "10pt"}} dense button 
                         onClick={() => console.log("Show Import Transactions Modal")}
                     >Import Transactions</MenuItem>
                     <Divider />                            
                     <MenuItem style={{fontSize: "10pt"}} dense button 
-                        onClick={() => this.props.history.push("/financial/accountinfo")}
+                        onClick={() => history.push("/financial/accountinfo")}
                     >Edit Account</MenuItem>
                 </Menu>
-                <TransactionModal id="transactionModal" name="transactionModal" 
-                    open={this.state.transactionModalOpen} transaction={this.state.currentTransaction}
-                    onClose={this.toggleTransactionModal.bind(this)} />
+                { !isMobile ? <TransactionModal id="transactionModal" name="transactionModal" /> : null }
             </Container>
         );
     }
@@ -287,11 +268,24 @@ class AccountOverview extends React.Component {
 const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated,
     currentUser: state.auth.user,
+    isMobile: state.auth.isMobile,
+    accountLoading: state.accounts.accountLoading,
+    accountLoaded: state.accounts.accountLoaded,
+    accountLoadError: state.accounts.accountLoadError,
     account: state.accounts.currentAccount,
-    accountTransactions: state.accounts.accountTransactions,
-    accounts: state.accounts.accounts,
-    financialCategories: state.accounts.financialCategories
+    financialCategories: state.accounts.financialCategories,
+    transactionsLoading: state.transactions.transactionsLoading,
+    transactionsLoaded: state.transactions.transactionsLoaded
 });
 
-export default withRouter(connect(mapStateToProps, { setTitle, getTransactions, getFinancialCategories })(withStyles(styles, {withTheme: true})
+const mapDispatchToProps = {
+    setTitle,
+    getAccount,
+    getTransactions,
+    getFinancialCategories,
+    clearTransaction,
+    editTransaction
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
     (AccountOverview)));

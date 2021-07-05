@@ -15,3 +15,4 @@ node_modules
 app.yaml
 main.py
 /static
+*main.js.LICENSE.txt

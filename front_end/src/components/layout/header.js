@@ -2,28 +2,21 @@ import React from 'react';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
 
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import Container from '@material-ui/core/Container';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Modal from '@material-ui/core/Modal';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
-import MenuRounded from '@material-ui/icons/MenuRounded';
-import PersonRounded from '@material-ui/icons/PersonRounded';
+const AppBar = loadable(() => import('@material-ui/core/AppBar' /* webpackChunkName: "Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Layout" */));
+const Toolbar = loadable(() => import('@material-ui/core/Toolbar' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
-import { userLogout } from '../../actions/auth';
-import { setHome } from '../../actions/navigation';
-import { toggleNavMenu } from '../../actions/menu';
+const MenuRounded = loadable(() => import('@material-ui/icons/MenuRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const PersonRounded = loadable(() => import('@material-ui/icons/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+
+import { checkTokenExpiration } from '../../actions/auth';
+import { toggleNavMenu, toggleUserMenu } from '../../actions/menu';
 
 
 const styles = (theme) => ({
@@ -71,211 +64,102 @@ const styles = (theme) => ({
         },
         ['@media print']: {
             display: "none",
-        },
-        
+        }, 
       },
-      modal: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      modalContent: {
-          position: "absolute",
-          padding: "8px 12px 8px 12px",
-          marginLeft: "auto",
-          marginRight: "auto",
-          fontSize: "8pt",
-          top: "64px",
-          "&:focus": {
-              outline: "none",
-          },
-      },
-      radioGroup: {
-          border: "0.5px solid rgb(0,0,0,0.2)",
-          margin: "2px",
-          padding: "8px",
-      },
-      radioOption: {
-          paddingLeft: "6px",
-          fontSize: "12pt",
+      sessionInfo: {
+            textAlign: "right !important",
+            opacity: "0.7 !important",
+            filter: "alpha(opacity=70) !important"
       }
   });
 
 class Header extends React.Component {
-    constructor(props) {
-        super(props);
-        this.doLogout = this.doLogout.bind(this);
-        this.classes = null;
-    }
+    tokenCheckInterval = null;
 
     static propTypes = {
-        menuOpened: PropTypes.bool.isRequired,
         toggleNavMenu: PropTypes.func.isRequired,
-        setHome: PropTypes.func.isRequired,
+        toggleUserMenu: PropTypes.func.isRequired,
+        checkTokenExpiration: PropTypes.func.isRequired,
         headerTitle: PropTypes.string.isRequired,
         currentHome: PropTypes.object.isRequired,
-        userHomes: PropTypes.array.isRequired
-    }
-
-    state = {
-        userMenuOpen: false,
-        menuAnchor: null,
-        homeModalOpen: false,
-        homeModalSelection: this.props.currentHome.id ? this.props.currentHome.id.toString() : "",
-    };
-
-    componentDidUpdate() {
-        if (this.props.isAuthenticated && !this.props.currentHome.id && this.state.homeModalOpen === false) {
-            if (this.props.userHomes.length == 1) {
-                this.props.setHome(this.props.userHomes[0]);
-                this.setState({homeModalOpen: false});    
-                return;
-            }
-
-            this.setState({homeModalOpen: true});
-        }    
+        user: PropTypes.object.isRequired,
+        userHomes: PropTypes.array.isRequired,
     }
 
     toggleUserMenu = (event) => {
         if (event) {
             event.preventDefault();
-        }
-
-        this.setState({...this.state,
-            userMenuOpen: !this.state.userMenuOpen, 
-            menuAnchor: (this.state.userMenuOpen ? null : event.currentTarget)
-        });
-    }
-
-    menuButton() {
-        return(
-            <IconButton edge="start" className={this.classes.menuButton} color="inherit" 
-                onClick={this.props.toggleNavMenu} aria-label="menu">
-                <MenuRounded />
-            </IconButton>
-        );
+            this.props.toggleUserMenu(event.currentTarget.id);
+        }        
     }
 
     homeSubtitle() {
+        const { classes, currentHome } = this.props;
+
         return(
-            <Typography variant="caption" className={this.classes.subTitle} paragraph={false}>{ this.props.currentHome.name}</Typography>
+            <Typography variant="caption" className={classes.subTitle} paragraph={false}>{ currentHome.name}</Typography>
         );
     }
 
-    userButton() {
-        return(
-            <IconButton edge="end" className={this.classes.profileButton} color="inherit" onClick={this.toggleUserMenu}><PersonRounded /></IconButton>
-        );
+    componentDidMount() {
+        const { checkTokenExpiration, isAuthenticated } = this.props;
+        if (isAuthenticated) {
+            checkTokenExpiration();
+        }
     }
 
-    selectHomeButton() {
-        return(
-            <MenuItem style={{fontSize: "10pt"}} dense button 
-                onClick={() => this.showHomeSelectionModal()}
-                >Change Home</MenuItem>
-        );
+    componentDidUpdate() {
+        const { checkTokenExpiration, isAuthenticated } = this.props;
+
+        if (isAuthenticated && this.tokenCheckInterval == null) {
+            this.tokenCheckInterval = setInterval(checkTokenExpiration, 60000);
+        }
     }
-
-    doLogout() {
-        this.props.userLogout();
-        this.toggleUserMenu();
-    }
-
-    showHomeSelectionModal = () => {
-        this.setState({
-            ...this.state, 
-            homeModalOpen: true, 
-            homeModalSelection: this.props.currentHome.id ? this.props.currentHome.id.toString() : "",
-        }, this.toggleUserMenu);
-    }
-
-    closeHomeModal = () => {
-        this.setState({...this.state, homeModalOpen: false});
-    }
-
-    goEditProfile = () => {
-        this.toggleUserMenu();
-        console.log("Edit Profile");
-    }
-
-    selectHomeOption = (event) => {
-        this.setState({...this.state, homeModalSelection: event.target.value});
-    }
-
-    setCurrentHome = () => {
-        this.props.setHome(this.props.userHomes.find( ({ id }) => id === parseInt(this.state.homeModalSelection)));
-        this.closeHomeModal();
-    }
-
-
-    modalForm = () => {       
-        return(
-            <Card className={this.classes.modalContent}>
-                <form onSubmit={this.selectHome}>
-                    <Typography variant="h6" id="home-modal-title" style={{textAlign: "Center"}}>Select a Home</Typography>
-                    <RadioGroup aria-label="home" name="home" value={this.state.homeModalSelection} 
-                        className={this.classes.radioGroup} onChange={this.selectHomeOption.bind(this)}>
-                        {this.props.userHomes.map(home => {
-                            return(
-                                <FormControlLabel key={home.id} classes={{label: this.classes.radioOption}} value={home.id.toString()} control={<Radio />} label={home.name} />
-                            );
-                        })}
-                    </RadioGroup>
-                    <Button variant="contained" size="small" color="primary" 
-                        style={{float: "right", marginTop: "1em", marginLeft: "1em"}} 
-                        onClick={this.setCurrentHome}>Select</Button>
-                    <Button variant="outlined" size="small" color="primary" 
-                        style={{float: "right", marginTop: "1em", marginLeft: "1em"}} 
-                        onClick={this.closeHomeModal}>Cancel</Button>
-                </form>
-            </Card>
-        )
+    
+    componentWillUnmount() {
+        clearInterval(this.tokenCheckInterval);
     }
 
     render() {
-        const { classes } = this.props;
-        this.classes = classes;
+        const { classes, isAuthenticated, currentHome, headerTitle, toggleNavMenu, toggleUserMenu } = this.props;
 
         return (
-            <>
-            <AppBar position="sticky" color="primary" className={this.classes.homeBar} style={{marginBottom: "16px"}}>
-                <Toolbar className={this.classes.toolBar}>
-                    {this.props.isAuthenticated ? this.menuButton() : null}
-                    <Container className={this.classes.headerText}>
-                            <Typography variant="h5" className={this.classes.title} paragraph={false}>{this.props.headerTitle}</Typography>
-                            {this.props.currentHome ? this.homeSubtitle() : null}
-                    </Container>                        
-                    {this.props.isAuthenticated ? this.userButton() : null}                        
-                </Toolbar>
-            </AppBar>
-            <Menu id="userMenu" anchorEl={this.state.menuAnchor} keepMounted
-                getContentAnchorEl={null} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}                        
-                open={Boolean(this.state.userMenuOpen)} onClose={this.toggleUserMenu}>
-                {this.props.userHomes.length > 1 ? this.selectHomeButton() : null }
-                <MenuItem style={{fontSize: "10pt"}} dense button onClick={this.goEditProfile} id="editProfileOption">
-                    Edit Profile
-                </MenuItem>
-                <MenuItem style={{fontSize: "10pt"}} dense button 
-                    onClick={this.doLogout} id="logoutOption">
-                    Logout
-                </MenuItem>
-            </Menu>
-            <Modal open={Boolean(this.state.homeModalOpen)} onClose={this.closeHomeModal} 
-                disableAutoFocus={true} className={this.classes.modal}>
-                {this.modalForm()}
-            </Modal>
-            </>
+            <React.Fragment>
+                <AppBar position="sticky" color="primary" className={classes.homeBar} style={{marginBottom: "16px"}}>
+                    <Toolbar className={classes.toolBar}>
+                        {!isAuthenticated ? null :
+                            <IconButton edge="start" className={classes.menuButton} color="inherit" 
+                                onClick={toggleNavMenu} aria-label="menu">
+                                <MenuRounded />
+                            </IconButton>
+                        }
+                        <Container className={classes.headerText}>
+                                <Typography variant="h5" className={classes.title} paragraph={false}>{headerTitle}</Typography>
+                                {currentHome ? this.homeSubtitle() : null}
+                        </Container>                        
+                        {!isAuthenticated ? null :
+                            <IconButton edge="end" className={classes.profileButton} id="userButton" name="userButton" 
+                                color="inherit" onClick={toggleUserMenu}><PersonRounded /></IconButton>
+                        }                        
+                    </Toolbar>
+                </AppBar>
+            </React.Fragment>
         );
     }
 }
 
 const mapStateToProps = state => ({
-    menuOpened: state.menu.opened,
     isAuthenticated: state.auth.isAuthenticated,
     headerTitle: state.navigation.headerTitle,
     currentHome: state.navigation.currentHome,
-    userHomes: state.auth.user.homes || []
-
+    user: state.auth.user,
+    userHomes: state.auth.user.homes || [],
 });
 
-export default connect(mapStateToProps, { toggleNavMenu, userLogout, setHome })(withStyles(styles, { withTheme: true })(Header))
+const mapDispatchToProps = {
+    toggleNavMenu,
+    toggleUserMenu,
+    checkTokenExpiration
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Header))

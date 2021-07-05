@@ -141,10 +141,16 @@ class Person(models.Model):
     """
     Stores People (who may not be users) that reside within a Home.
     """
+    class PersonStatus(models.TextChoices):
+        ACTIVE = "A"
+        INACTIVE = "I"
+        PENDING = "P"
+        NONE = "N"
+
     first_name = models.CharField("First Name", max_length=200)
     middle_name = models.CharField("Middle Name", max_length=200, blank=True)
     last_name = models.CharField("Last Name", max_length=200)
-    email_verified = models.BooleanField("E-Mail Verified", default=False)
+    status = models.CharField(max_length=1, choices=PersonStatus.choices, default=PersonStatus.NONE, verbose_name="Status")
 
     home = models.ForeignKey(to=Home, on_delete=models.PROTECT)
     user_account = models.ForeignKey(to=User, on_delete=models.PROTECT, null=True, blank=True)

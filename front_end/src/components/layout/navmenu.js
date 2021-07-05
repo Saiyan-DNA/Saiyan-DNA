@@ -2,22 +2,29 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
+
+import { withStyles } from '@material-ui/core/styles';
+
+const Collapse = loadable(() => import('@material-ui/core/Collapse' /* webpackChunkName: "Material" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Navigation" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Navigation" */));
+const ListItemIcon = loadable(() => import('@material-ui/core/ListItemIcon' /* webpackChunkName: "Navigation" */));
+const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Navigation" */));
+const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
+const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
+
+const HomeSharp = loadable(() => import('@material-ui/icons/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const AccountBalanceSharp = loadable(() => import('@material-ui/icons/AccountBalanceSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const LocalGroceryStoreSharp = loadable(() => import('@material-ui/icons/LocalGroceryStoreSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const StorageSharp = loadable(() => import('@material-ui/icons/StorageSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const ExpandLess = loadable(() => import('@material-ui/icons/ExpandLess' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const ExpandMore = loadable(() => import('@material-ui/icons/ExpandMore' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
 import { toggleNavMenu } from '../../actions/menu';
 import { userNav } from '../../actions/navigation';
 import { userHasPermission } from '../../actions/auth';
-
-import Collapse from '@material-ui/core/Collapse';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { withStyles } from '@material-ui/core/styles';
-
-import ExpandLess from '@material-ui/icons/ExpandLess'
-import ExpandMore from '@material-ui/icons/ExpandMore'
 
 const styles = (theme) => ({
     menuItem: {
@@ -57,7 +64,7 @@ class NavMenu extends React.Component {
     }
 
     static propTypes = {
-        menuOpened: PropTypes.bool.isRequired,
+        navMenuOpen: PropTypes.bool.isRequired,
         toggleNavMenu: PropTypes.func.isRequired,
         userNav: PropTypes.func.isRequired,
         userHasPermission: PropTypes.func.isRequired,
@@ -73,10 +80,12 @@ class NavMenu extends React.Component {
     }
 
     navigateTo(url, e) {
+        const { toggleNavMenu, history, userNav } = this.props;
+
         this.closeManageInventoryMenu();
-        this.props.toggleNavMenu();
-        this.props.history.push(url);
-        this.props.userNav(url);
+        toggleNavMenu();
+        history.push(url);
+        userNav(url);
     }
 
     activeRoute = (routePath) => {
@@ -147,11 +156,13 @@ class NavMenu extends React.Component {
                 <ListItem button className={this.classes.menuItem}
                     onClick={this.navigateTo.bind(this, "/")}
                     selected = {this.activeRoute("/")}>
+                    <ListItemIcon><HomeSharp /></ListItemIcon>
                     <ListItemText primary="Home" />
                 </ListItem>
                 <ListItem button className={this.classes.menuItem}
                     onClick={this.toggleFinancialGroup}
                     selected={this.state.financialGroupOpen}>
+                    <ListItemIcon><AccountBalanceSharp /></ListItemIcon>
                     <ListItemText primary="Financials" />
                     {Boolean(this.state.financialGroupOpen) ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
@@ -184,6 +195,7 @@ class NavMenu extends React.Component {
                         <ListItem button className={this.classes.menuItem}
                             onClick={this.toggleInventoryGroup}
                             selected={this.state.inventoryGroupOpen}>
+                            <ListItemIcon><LocalGroceryStoreSharp /></ListItemIcon>
                             <ListItemText primary="Inventory" />
                             {Boolean(this.state.inventoryGroupOpen) ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>
@@ -200,6 +212,7 @@ class NavMenu extends React.Component {
                 <ListItem button className={this.classes.menuItem}
                     onClick={this.toggleManageGroup}
                     selected={this.state.manageGroupOpen}>
+                    <ListItemIcon><StorageSharp /></ListItemIcon>
                     <ListItemText primary="Manage" />
                     {Boolean(this.state.manageGroupOpen) ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
@@ -228,14 +241,14 @@ class NavMenu extends React.Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, navMenuOpen, toggleNavMenu, isAuthenticated } = this.props;
         this.classes = classes;
 
         return(
             <>
-                <SwipeableDrawer anchor={"left"} open={this.props.menuOpened} style={{zIndex: "1"}} onClose={this.props.toggleNavMenu} onOpen={this.props.toggleNavMenu}>
+                <SwipeableDrawer anchor={"left"} open={navMenuOpen} style={{zIndex: "1"}} onClose={toggleNavMenu} onOpen={toggleNavMenu}>
                     <div style={{height: "54px"}}>&nbsp;</div>
-                    { this.props.isAuthenticated ? this.userMenuOptions() : this.guestMenuOptions() }
+                    { isAuthenticated ? this.userMenuOptions() : this.guestMenuOptions() }
                 </SwipeableDrawer>
                 <Menu open={Boolean(this.state.manageInventoryMenuOpen)} anchorEl={this.state.manageInventoryMenuAnchor} anchorOrigin={{ vertical: "top", horizontal: "right" }} 
                     onClose={this.closeManageInventoryMenu}>
@@ -251,9 +264,15 @@ class NavMenu extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    menuOpened: state.menu.opened,
-    isAuthenticated: state.auth.isAuthenticated
+    navMenuOpen: state.menu.navMenuOpen,
+    isAuthenticated: state.auth.isAuthenticated,
 });
 
+const mapDispatchToProps = {
+    toggleNavMenu,
+    userNav,
+    userHasPermission
+}
 
-export default withRouter(connect(mapStateToProps, { toggleNavMenu, userNav, userHasPermission })(withStyles(styles, { withTheme: true })(NavMenu)));
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(NavMenu)));

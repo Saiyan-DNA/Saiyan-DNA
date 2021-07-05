@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-import { GET_ACCOUNTS, CREATE_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT, GET_ACCOUNT, CLEAR_ACCOUNT } from './types';
-import { GET_TRANSACTIONS, CLEAR_TRANSACTIONS } from './types';
+import { ACCOUNT_LOADING, ACCOUNT_LOADED, ACCOUNT_LOAD_ERROR, CLEAR_ACCOUNT } from './types';
+import { CREATE_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT } from './types';
+import { ACCOUNTS_LOADING, ACCOUNTS_LOADED } from './types';
+
 import { GET_FINANCIAL_INSTITUTION, GET_FINANCIAL_INSTITUTIONS } from './types';
 import { createMessage } from './messages';
 
@@ -9,17 +11,17 @@ import { createMessage } from './messages';
 export const getAccounts = () => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
 
+    dispatch({type: ACCOUNTS_LOADING});
+
     axios.get('/api/financial/account/', {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
-        dispatch(createMessage({accountsRetrieved: "Accounts Retrieved"}));
-
-        dispatch({
-            type: GET_ACCOUNTS,
-            payload: res.data
-        });
-    }).catch(err => console.log(err));
+            dispatch({type: ACCOUNTS_LOADED, payload: res.data});
+        }).catch(err => {
+            dispatch(createMessage({type: "error", title: "Error Loading Accounts!", detail: err}));
+            dispatch({type: ACCOUNTS_LOAD_ERROR, payload: err})
+    });
 };
 
 // CREATE ACCOUNT
@@ -39,7 +41,13 @@ export const createAccount = (acct) => (dispatch, getState) => {
             type: CREATE_ACCOUNT,
             payload: res.data
         });
-    }).catch(err => console.log(err));
+
+        var successMessage = "Added Account '" + acct.name + "'";
+
+        dispatch(createMessage({type: "success", title: successMessage}));
+    }).catch(err => {
+        dispatch(createMessage({type: "error", title: "Error Adding Account!", detail: err}));
+    });
 };
 
 // UPDATE ACCOUNT
@@ -59,7 +67,11 @@ export const updateAccount = (id, acct) => (dispatch, getState) => {
             type: UPDATE_ACCOUNT,
             payload: res.data
         });
-    }).catch(err => console.log(err));
+
+        var successMessage = "Updated Account '" + acct.name + "'";
+        dispatch(createMessage({type: "success", title: successMessage}));
+
+    }).catch(err => dispatch(createMessage({type: "error", title: "Error Updating Account!", detail: err})));
 };
 
 // DELETE_ACCOUNT
@@ -79,11 +91,15 @@ export const deleteAccount = (id) => (dispatch, getState) => {
             type: DELETE_ACCOUNT,
             payload: id
         });
-    }).catch(err => console.log(err));
+
+        dispatch(createMessage({type: "success", title: "Account Deleted"}));
+    }).catch(err => dispatch(createMessage({type: "error", title: "Unable to Delete Account!", detail: err})));
 };
 
 // GET ACCOUNT DETAILS
 export const getAccount = (id) => (dispatch, getState) => {
+    dispatch({type: ACCOUNT_LOADING});
+
     const jwt_token = getState().auth.token
 
     const config = {
@@ -94,40 +110,12 @@ export const getAccount = (id) => (dispatch, getState) => {
 
     axios.get(`/api/financial/account/${id}/`, config)
     .then(res => {
-        dispatch({
-            type: GET_ACCOUNT,
-            payload: res.data
-        });
-    }).catch(err => console.log(err));
-}
-
-// GET ACCOUNT Transactions
-export const getTransactions = (acct_id, startDate, endDate) => (dispatch, getState) => {
-    if (acct_id) {
-        const jwt_token = getState().auth.token
-
-        const config = {
-            headers: {
-                "Authorization": `bearer ${jwt_token}`
-            }
-        }
-
-        axios.get(`/api/financial/transaction/?acct_id=${acct_id}`, config)
-        .then(res => {
-            dispatch({
-                type: GET_TRANSACTIONS,
-                payload: res.data
-            });
-        }).catch(err => console.log(err));
-    } else {
-        console.log('No Account specified to obtain transactions.')
-    }
-}
-
-export const clearTransactions = () => (dispatch) => {
-    dispatch({
-        type: CLEAR_TRANSACTIONS
-    })
+        dispatch({type: ACCOUNT_LOADED, payload: res.data});
+    }).catch(err => {
+        console.log(err);
+        dispatch(createMessage({type: "error", title: "Error retrieving account details!"}));
+        dispatch({type: ACCOUNT_LOAD_ERROR, payload: err});
+    });
 }
 
 export const clearAccount = () => (dispatch) => {
@@ -145,11 +133,11 @@ export const getInstitutions = () => (dispatch, getState) => {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
-        dispatch(createMessage({institutionsRetrieved: "Financial Institutions Retrieved"}));
-
         dispatch({
             type: GET_FINANCIAL_INSTITUTIONS,
             payload: res.data
         });
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        dispatch(createMessage({type: "error", title: "Error Obtaining Financial Institutions!", detail: err}));
+    });
 };

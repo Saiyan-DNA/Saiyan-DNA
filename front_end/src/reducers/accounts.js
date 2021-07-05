@@ -1,9 +1,16 @@
-import { GET_ACCOUNTS, GET_ACCOUNT, CREATE_ACCOUNT, UPDATE_ACCOUNT, CLEAR_ACCOUNT, DELETE_ACCOUNT } from '../actions/types.js';
-import { GET_TRANSACTIONS, CLEAR_TRANSACTIONS, GET_FINANCIAL_CATEGORIES, GET_FINANCIAL_INSTITUTIONS } from '../actions/types.js'
+import { ACCOUNT_LOADING, ACCOUNT_LOADED, ACCOUNT_LOAD_ERROR, CLEAR_ACCOUNT } from '../actions/types';
+import { CREATE_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT } from '../actions/types';
+import { GET_FINANCIAL_CATEGORIES, GET_FINANCIAL_INSTITUTIONS } from '../actions/types';
+import { ACCOUNTS_LOADING, ACCOUNTS_LOADED, ACCOUNTS_LOAD_ERROR } from '../actions/types';
 
 const initialState = {
+    accountsLoading: false,
+    accountsLoaded: false,
     accounts: [],
     currentAccount: {},
+    accountLoading: false,
+    accountLoaded: false,
+    accountLoadError: false,
     accountTransactions: [],
     financialCategories: [],
     financialInstitutions: []
@@ -11,45 +18,74 @@ const initialState = {
 
 export default function(state = initialState, action) {
     switch(action.type) {
-        case GET_ACCOUNTS:
+        case ACCOUNTS_LOADING:
             return {
                 ...state,
-                accounts: action.payload
+                accounts: [],
+                accountsLoading: true,
+                accountsLoaded: false
+            }
+        case ACCOUNTS_LOADED:
+            return {
+                ...state,
+                accounts: action.payload,
+                accountsLoading: false,
+                accountsLoaded: true
             };
+        case ACCOUNTS_LOAD_ERROR:
+            return {
+                ...state,
+                accounts: [],
+                accountsLoading: false,
+                accountsLoaded: false
+            }
         case DELETE_ACCOUNT:
             return {
                 ...state,
                 accounts: state.accounts.filter(account => account.id !== action.payload),
-                currentAccount: {}
+                currentAccount: {},
+                accountsLoaded: false
             };
         case CREATE_ACCOUNT:
             return {
                 ...state,
-                currentAccount: {}
+                currentAccount: action.payload,
+                accountsLoaded: false
             };
         case UPDATE_ACCOUNT:
             return {
                 ...state,
+                currentAccount: action.payload,
+                accountsLoaded: false
+            };
+        case ACCOUNT_LOADING:
+            return {
+                ...state,
+                accountLoading: true,
+                accountLoaded: false,
+                accountLoadError: false,
+                currentAccount: {}
+            };
+        case ACCOUNT_LOADED:
+            localStorage.setItem("accountId", action.payload.id);
+            return {
+                ...state,
+                accountLoading: false,
+                accountLoaded: true,
+                accountLoadError: false,
                 currentAccount: action.payload
             };
-        case GET_ACCOUNT:
+        case ACCOUNT_LOAD_ERROR:
+            localStorage.removeItem("accountId");
             return {
                 ...state,
-                currentAccount: action.payload
+                accountLoading: false,
+                accountLoaded: false,
+                accountLoadError: true,
+                currentAccount: {}
             };
-        case GET_TRANSACTIONS: {
-            return {
-                ...state,
-                accountTransactions: action.payload
-            };
-        }
-        case CLEAR_TRANSACTIONS: {
-            return {
-                ...state,
-                accountTransactions: []
-            };
-        }
         case CLEAR_ACCOUNT:
+            localStorage.removeItem("accountId");
             return {
                 ...state,
                 currentAccount: {}

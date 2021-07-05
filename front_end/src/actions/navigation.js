@@ -1,4 +1,4 @@
-import { SET_TITLE, USER_NAV, USER_HOME } from './types';
+import { SET_TITLE, USER_NAV, USER_HOME, TOGGLE_HOME_MODAL, TOGGLE_TIMEOUT_MODAL } from './types';
 
 export const setTitle = (title) => {
     return {
@@ -19,4 +19,16 @@ export const setHome = (home) => {
         type: USER_HOME,
         payload: home
     }
+}
+
+export const toggleHomeModal = () => {
+    return {
+        type: TOGGLE_HOME_MODAL
+    };
+}
+
+export const toggleTimeoutModal = () => {
+    return {
+        type: TOGGLE_TIMEOUT_MODAL
+    };
 }

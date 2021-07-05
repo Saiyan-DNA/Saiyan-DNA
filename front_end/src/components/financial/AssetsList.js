@@ -1,21 +1,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
+import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
-import NumberFormat from 'react-number-format';
 
-import { createMessage } from '../../actions/messages';
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
+const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
+
+import { CurrencyFormat } from '../common/NumberFormats';
+
 import { getAssets, getAsset, clearAsset } from '../../actions/assets';
 import { setTitle } from '../../actions/navigation';
 
@@ -41,37 +43,37 @@ const styles = theme => ({
 });
 
 class AssetsList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.actionAddAsset = this.actionAddAsset.bind(this)
-    }
-
     static propTypes = {
         assets: PropTypes.array.isRequired,
         getAssets: PropTypes.func.isRequired,
         getAsset: PropTypes.func.isRequired,
         clearAsset: PropTypes.func.isRequired,
-        createMessage: PropTypes.func.isRequired,
         setTitle: PropTypes.func.isRequired
     }
 
     componentDidMount() {
-        this.props.setTitle("Assets");
-        this.props.getAssets();
+        const { setTitle, getAssets } = this.props;
+        
+        setTitle("Assets");
+        getAssets();
     }
 
-    actionAddAsset() {
-        this.props.clearAsset();
-        this.props.history.push("/financial/assetinfo");
+    actionAddAsset = () => {
+        const { history, clearAsset } = this.props;
+        
+        clearAsset();
+        history.push("/financial/assetinfo");
     }
 
-    viewAsset(id) {
-        this.props.getAsset(id);
-        this.props.history.push("/financial/assetinfo");
+    viewAsset = (id) => {
+        const { history, getAsset } = this.props;
+        
+        getAsset(id);
+        history.push("/financial/assetinfo");
     }
 
     assetList(styleClasses) {
-        const assets = this.props.assets
+        const { assets } = this.props;
         const total = assets.reduce((cnt, asset) => cnt + asset.current_value, 0);
 
         return(
@@ -83,8 +85,7 @@ class AssetsList extends React.Component {
                         </Grid>
                         <Grid item xs={"auto"}>
                             <Typography variant="h5">
-                                <NumberFormat value={total} displayType={'text'} 
-                                    thousandSeparator={true} prefix={'$'} decimalScale={2} fixedDecimalScale={true} />
+                                <CurrencyFormat value={total} displayType={'text'} />
                             </Typography>
                         </Grid>
                     </Grid>
@@ -99,8 +100,7 @@ class AssetsList extends React.Component {
                                     </Grid>
                                     <Grid item xs={"auto"}>
                                         <Typography variant="body1">
-                                            <NumberFormat value={asset.current_value} displayType={'text'}
-                                                thousandSeparator={true} prefix={'$'} decimalScale={2} fixedDecimalScale={true} />
+                                            <CurrencyFormat value={asset.current_value} displayType={'text'} />
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -138,8 +138,14 @@ class AssetsList extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    assets: state.assets.assets,
-    message: state.message
+    assets: state.assets.assets
 });
 
-export default connect(mapStateToProps, { getAssets, getAsset, clearAsset, createMessage, setTitle })(withStyles(styles, { withTheme: true })(AssetsList));
+const mapDispatchToProps = {
+    getAssets,
+    getAsset,
+    clearAsset,
+    setTitle
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(AssetsList));
