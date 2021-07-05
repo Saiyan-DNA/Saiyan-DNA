@@ -107,7 +107,7 @@ class TransactionList extends React.Component {
                                                     thousandSeparator={true} decimalScale={2} fixedDecimalScale={true}
                                                     prefix={
                                                         (account.account_type == 'CR' || account.account_type == 'LN') && trns.transaction_type == 'CRD' ? '-$' : 
-                                                        (account.account_type == 'CK' || account_type == 'SV') && trns.transaction_type == 'DBT' ? '-$' : '$'
+                                                        (account.account_type == 'CK' || account.account_type == 'SV') && trns.transaction_type == 'DBT' ? '-$' : '$'
                                                         }  />
                                             </Typography>
                                         </Grid>
