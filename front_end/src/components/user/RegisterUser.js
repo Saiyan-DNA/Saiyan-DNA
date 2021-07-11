@@ -11,7 +11,7 @@ const Container = loadable(() => import('@material-ui/core/Container' /* webpack
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
 const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
 const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
 const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
 const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
@@ -189,42 +189,30 @@ class RegisterUser extends React.Component {
                                         <Grid item xs={12} sm={6}>
                                             <FormControl fullWidth={true}>
                                                 <InputLabel htmlFor="firstName">First Name</InputLabel>
-                                                <Input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="firstName"
-                                                    name="firstName"
+                                                <Input type="text" className="form-control"
+                                                    id="firstName" name="firstName"
                                                     inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
-                                                    onChange={this.onChange}
-                                                    value={userInfo.firstName}
+                                                    onChange={this.onChange} value={userInfo.firstName}
                                                 />
-                                            </FormControl>    
+                                            </FormControl>
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
                                             <FormControl fullWidth={true}>
                                                 <InputLabel htmlFor="lastName">Last Name</InputLabel>
-                                                <Input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="lastName"
-                                                    name="lastName"
+                                                <Input type="text" className="form-control"
+                                                    id="lastName" name="lastName"
                                                     inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
-                                                    onChange={this.onChange}
-                                                    value={userInfo.lastName}
+                                                    onChange={this.onChange} value={userInfo.lastName}
                                                 />
-                                            </FormControl>    
+                                            </FormControl>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <FormControl fullWidth={true}>
                                                 <InputLabel htmlFor="email">E-Mail Address</InputLabel>
-                                                <Input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="email"
-                                                    name="email"
+                                                <Input type="text" className="form-control"
+                                                    id="email" name="email"
                                                     inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
-                                                    onChange={this.onChange}
-                                                    value={userInfo.email}
+                                                    onChange={this.onChange} value={userInfo.email}
                                                 />
                                             </FormControl>
                                             { emailInUseMessageVisible &&
@@ -237,15 +225,10 @@ class RegisterUser extends React.Component {
                                             <Grid item xs={12} sm={6}>
                                                 <FormControl fullWidth={true}>
                                                     <InputLabel htmlFor="userName">Username</InputLabel>
-                                                    <Input
-                                                        type="text"
-                                                        className="form-control"
-                                                        id="userName"
-                                                        name="userName"
+                                                    <Input type="text" className="form-control"
+                                                        id="userName" name="userName"
                                                         inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-username"}}
-                                                        autoComplete="new-username"
-                                                        onChange={this.onChange}
-                                                        value={userInfo.userName}
+                                                        autoComplete="new-username" onChange={this.onChange} value={userInfo.userName}
                                                     />
                                                 </FormControl>
                                                 {usernameInUseMessageVisible &&
@@ -256,15 +239,10 @@ class RegisterUser extends React.Component {
                                         <Grid item xs={12} sm={6}>
                                             <FormControl fullWidth={true}>
                                                 <InputLabel htmlFor="password">Password</InputLabel>
-                                                <Input
-                                                    type="password"
-                                                    className="form-control"
-                                                    id="password"
-                                                    name="password"
+                                                <Input type="password" className="form-control"
+                                                    id="password" name="password"
                                                     inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
-                                                    autoComplete="new-password"
-                                                    onChange={this.onChange}
-                                                    value={userInfo.password}
+                                                    autoComplete="new-password" onChange={this.onChange} value={userInfo.password}
                                                 />
                                             </FormControl>
                                             { userInfo.password &&
@@ -274,15 +252,10 @@ class RegisterUser extends React.Component {
                                         <Grid item xs={12} sm={6}>
                                             <FormControl fullWidth={true}>
                                                 <InputLabel htmlFor="password">Re-Enter Password</InputLabel>
-                                                <Input
-                                                    type="password"
-                                                    className="form-control"
-                                                    id="password2"
-                                                    name="password2"
+                                                <Input type="password" className="form-control"
+                                                    id="password2" name="password2"
                                                     inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
-                                                    autoComplete="new-password"
-                                                    onChange={this.onChange}
-                                                    value={userInfo.password2}
+                                                    autoComplete="new-password" onChange={this.onChange} value={userInfo.password2}
                                                 />
                                             </FormControl>
                                             {passwordMismatchMessageVisible ?

@@ -33,13 +33,18 @@ class AccountListView(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.accounts.all()
 
+    def create(self, request, *args, **kwargs):
+        result = super(AccountListView, self).create(request, *args, **kwargs)
+
+        if result.status_code == 201:
+            queryset = self.get_queryset()
+            new_account = queryset.get(id=result.data['id'])
+            return Response(data=AccountReadSerializer(new_account).data)
+        return result
+
     def update(self, request, *args, **kwargs):
         result = super(AccountListView, self).update(request, *args, **kwargs)
         
-        '''
-        If update is successful, perform a 'GET' to return serialized related field (Financial Institution).
-        Without this, only Financial Institution ID is returned, which breaks REACT Component functionality.
-        '''
         if result.status_code == 200:
             self.request.method = 'GET'
             return super(AccountListView, self).retrieve(request, *args, **kwargs)

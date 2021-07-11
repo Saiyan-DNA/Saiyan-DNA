@@ -17,6 +17,7 @@ const NavMenu = loadable(() => import('./layout' /* webpackChunkName: "General" 
 const UserMenu = loadable(() => import('./layout' /* webpackChunkName: "Navigation" */).then(m => m.UserMenu));
 const SystemMessage = loadable(() => import('./common/SystemMessage' /* webpackChunkName: "General" */));
 const Login = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.Login), {fallback: <LoadingMessage message="Loading Login..." />});
+const PendingUser = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.PendingUser), {fallback: <LoadingMessage message="Loading Information" />});
 const RegisterUser = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.RegisterUser), {fallback: <LoadingMessage message="Loading Registration Form..." />});
 const Dashboard = loadable(() => import('./Dashboard' /* webpackChunkName: "General" */), {fallback: <LoadingMessage message="Loading Dashboard..." />});
 
@@ -73,6 +74,7 @@ class App extends React.Component {
                         <Switch>
                           <Route exact path="/login" component={Login} />
                           <Route exact path="/register" component={RegisterUser} />
+                          <Route exact path="/pendinguser" component={PendingUser} />
                           <PrivateRoute exact path="/" component={Dashboard} />
                           <PrivateRoute exact path="/financial/accounts" component={FinancialAccounts} />
                           <PrivateRoute exact path="/financial/accountinfo" component={AccountInfo} />

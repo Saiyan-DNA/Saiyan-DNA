@@ -38,16 +38,26 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = Organization
         fields = '__all__'
 
+class PersonSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Person (Profile) Details
+    """
+
+    class Meta:
+        model = Person
+        fields = ['first_name', 'last_name', 'status']
+
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for Django's Auth User Model's API
     """
     homes = HomeSerializer(many=True, required=False)
     groups = GroupSerializer(many=True, required=False)
+    profile = PersonSerializer(many=False, required=True)
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'homes', 'groups']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'homes', 'groups', 'profile']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -65,7 +75,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             home = Home.objects.create(name="My Home", owner=user)
 
         if (home):
-            person = Person.objects.create(home=home, first_name=user.first_name, last_name=user.last_name, user_account=user)
+            person = Person.objects.create(home=home, first_name=user.first_name, last_name=user.last_name, user_account=user, status="P")
 
         return user
 

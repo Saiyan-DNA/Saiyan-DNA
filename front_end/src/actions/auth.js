@@ -4,10 +4,13 @@ import { REGISTER_USER, REGISTRATION_ERROR, CLEAR_REGISTRATION_ERRORS } from './
 import { USER_LOADED, USER_LOADING, USER_HOME, CLEAR_HOME } from './types';
 import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, AUTH_ERROR } from './types';
 import { CLEAR_LOGIN_ERROR, TOKEN_EXPIRATION_CHECK, TOKEN_EXPIRED } from './types';
+import { VERIFYING_USER, USER_VERIFIED, VERIFICATION_ERROR } from './types';
 
 import { createMessage } from './messages';
 import { toggleTimeoutModal } from './navigation';
 import { getAccount } from './accounts';
+
+import { requestVerificationEmail } from './email';
 
 // Attempt Regisration of a new user
 export const registerUser = (userInfo) => (dispatch, getState) => {
@@ -27,6 +30,7 @@ export const registerUser = (userInfo) => (dispatch, getState) => {
                 type: REGISTER_USER,
                 payload: res.data
             });
+            dispatch(requestVerificationEmail(res.data.user.email));
         }
         if (res.data.errors) {
             dispatch({type: REGISTRATION_ERROR, payload: res.data.errors});
@@ -222,4 +226,53 @@ export const userHasPermission = (permName) => (dispatch, getState) => {
 
         return hasPermission;
     }
+}
+
+// Perform User Account Verification
+export const verifyUserAccount = (verificationCode) => (dispatch, getState) => {
+    // Get token from state
+    const { token, isAuthenticated } = getState().auth;
+
+    // Headers
+    const config = {
+        headers: {'Content-Type': 'application/json'}
+    }
+
+    const body = JSON.stringify({ "code": verificationCode });
+
+    // If token, add to headers config & get user data
+    if(token && isAuthenticated) {
+        dispatch({type: VERIFYING_USER });
+
+        // If token has not expired, attempt to verify the user with the provided verification code.    
+
+        config.headers['Authorization'] = `Bearer ${token}`;
+
+        axios.post('/api/core/activate_account', body, config)
+        .then(res => {
+            if (res.data.error) {
+                dispatch({type: VERIFICATION_ERROR});
+                dispatch(createMessage({type: "error", title: res.data.error}));
+                return;
+            }
+
+            if (res.data.success) {
+                dispatch({type: USER_VERIFIED, payload: res.data});
+                dispatch(createMessage({type: "success", title: "Account Verified"}));
+
+                // Re-load user data to reflect status is Active. Wait 3 seconds to allow time for verification process to complete.
+                // TODO: There should be a better way.
+                setTimeout(() => dispatch(loadUser()), 3000);
+                return;
+            }
+        }).catch(err => {
+            dispatch({type: VERIFICATION_ERROR});
+            dispatch(createMessage({type: "error", title: "Failed to Verify User Account!"}));
+        });
+
+    } else {
+        dispatch({type: VERIFICATION_ERROR});
+        dispatch(createMessage({type: "error", title: "Failed to Verify User Account!"}));
+    }
+
 }

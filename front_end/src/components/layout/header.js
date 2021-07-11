@@ -121,13 +121,13 @@ class Header extends React.Component {
     }
 
     render() {
-        const { classes, isAuthenticated, currentHome, headerTitle, toggleNavMenu, toggleUserMenu } = this.props;
-
+        const { classes, isAuthenticated, currentHome, headerTitle, toggleNavMenu, toggleUserMenu, user } = this.props;
+        
         return (
             <React.Fragment>
                 <AppBar position="sticky" color="primary" className={classes.homeBar} style={{marginBottom: "16px"}}>
                     <Toolbar className={classes.toolBar}>
-                        {!isAuthenticated ? null :
+                        {!isAuthenticated || (user.profile && user.profile.status != "A") ? null :
                             <IconButton edge="start" className={classes.menuButton} color="inherit" 
                                 onClick={toggleNavMenu} aria-label="menu">
                                 <MenuRounded />
@@ -135,9 +135,9 @@ class Header extends React.Component {
                         }
                         <Container className={classes.headerText}>
                                 <Typography variant="h5" className={classes.title} paragraph={false}>{headerTitle}</Typography>
-                                {currentHome ? this.homeSubtitle() : null}
+                                {currentHome && user.profile && user.profile.status == "A" ? this.homeSubtitle() : null}
                         </Container>                        
-                        {!isAuthenticated ? null :
+                        {!isAuthenticated || (user.profile && user.profile.status != "A") ? null :
                             <IconButton edge="end" className={classes.profileButton} id="userButton" name="userButton" 
                                 color="inherit" onClick={toggleUserMenu}><PersonRounded /></IconButton>
                         }                        

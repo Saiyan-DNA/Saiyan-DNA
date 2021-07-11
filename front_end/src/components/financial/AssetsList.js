@@ -9,7 +9,7 @@ const Container = loadable(() => import('@material-ui/core/Container' /* webpack
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
 const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
 const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
 const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
 const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));

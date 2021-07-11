@@ -5,7 +5,7 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
 const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
 const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
 const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));

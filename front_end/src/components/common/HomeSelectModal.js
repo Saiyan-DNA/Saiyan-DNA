@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
 const FormControlLabel = loadable(() => import('@material-ui/core/FormControlLabel' /* webpackChunkName: "Material" */));
 const Radio = loadable(() => import('@material-ui/core/Radio' /* webpackChunkName: "Material" */));
 const RadioGroup = loadable(() => import('@material-ui/core/RadioGroup' /* webpackChunkName: "Material" */));
