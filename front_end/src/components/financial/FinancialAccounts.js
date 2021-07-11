@@ -5,10 +5,12 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */), {fallback: <div>&nbsp;</div>});
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
 const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
 const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
 const BankingList = loadable(() => import('./BankingList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
@@ -76,6 +78,8 @@ class FinancialAccounts extends React.Component {
             return <LoadingMessage message="Loading Accounts..." />
         }
 
+        var totalAccounts = bankAccounts.length + creditAccounts.length + loanAccounts.length + investmentAccounts.length
+
         return (
             <Container>
                 <Grid container spacing={2}>
@@ -83,6 +87,17 @@ class FinancialAccounts extends React.Component {
                         <Button variant={"contained"} color={"primary"} size="small" 
                             onClick={this.actionAddAccount}>Add Account</Button>
                     </Grid>
+                    { totalAccounts > 0 ? null :
+                        <Grid item xs={12}>
+                            <SummaryCard header="No Accounts Found">
+                                <Grid container justify="center">
+                                    <Grid item>
+                                        <Typography variant="body1">You do not have any accounts yet. Click "Add Account" to create your first account.</Typography>
+                                    </Grid>
+                                </Grid>
+                            </SummaryCard>
+                        </Grid>
+                    }
                     { !!bankAccounts.length &&
                         <Grid item xs={12} sm={6} className={classes.inlineGrid}>
                             <BankingList history={history} accountList={bankAccounts} />

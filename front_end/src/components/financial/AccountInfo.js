@@ -6,12 +6,12 @@ import loadable from '@loadable/component';
 import { withStyles } from '@material-ui/core/styles';
 
 const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */), {fallback: <div>&nbsp;</div>});
 const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
 const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
 const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
 const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});

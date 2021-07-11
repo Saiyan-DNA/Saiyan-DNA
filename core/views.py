@@ -1,15 +1,18 @@
-from django.contrib.auth.models import User
+import math, random, datetime
+
+from django.contrib.auth.models import User, Group
 from django.views.generic import TemplateView
 from django.template.loader import render_to_string, get_template
 from django.core.mail import send_mail
 from django.utils.html import strip_tags
+from django.utils import timezone
 from rest_framework import permissions, viewsets, generics
 from rest_framework.response import Response
 from rest_framework_jwt.settings import api_settings
 
 from django.conf import settings
 
-from .models import Organization
+from .models import Organization, Person, VerificationCode
 from .permissions import ReadOnly
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, HomeSerializer, OrganizationSerializer
 
@@ -169,9 +172,9 @@ class EmailUsernameAPI(generics.GenericAPIView):
 
         subj = "HomeCentral Username Requested"
         user = user.values()[0]
-        firstName = user.get('first_name')
-        userName = user.get('username')
-        html_message = render_to_string('email/usernamerequest.html', {'first_name': firstName, 'user_name': userName})
+        first_name = user.get('first_name')
+        user_name = user.get('username')
+        html_message = render_to_string('email/usernamerequest.html', {'first_name': first_name, 'user_name': user_name})
         plain_message = strip_tags(html_message)
 
         try:
@@ -186,4 +189,105 @@ class EmailUsernameAPI(generics.GenericAPIView):
         
         return Response({
             "success": f"E-mail successfully sent to {email}."
+        })
+
+class EmailVerificationAPI(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def generate_code(self):
+        string = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        code = ""
+        length = len(string)
+
+        for i in range(6) :
+            code += string[math.floor(random.random() * length)]
+ 
+        return code
+
+    def post(self, request, *args, **kwargs):
+        email = request.data["email"]
+
+        user = User.objects.get(email=email)
+
+        subj = "HomeCentral Account Verification"
+        verification_code = self.generate_code()
+        create_date = timezone.now()
+        expiry_time = create_date + datetime.timedelta(minutes=30)
+        print(expiry_time)
+
+        existing_codes = VerificationCode.objects.filter(user=user, status='A')
+
+        for code in existing_codes:
+            code.status = "R"
+            code.save()
+
+        VerificationCode.objects.create(user=user,code=verification_code, create_date=create_date, expires=expiry_time)
+
+        html_message = render_to_string('email/accountverification.html', {'first_name': user.first_name, 'user_name': user.username, 'verification_code': verification_code})
+        plain_message = strip_tags(html_message)
+
+        try:
+            send_mail(subject=subj, message=plain_message, html_message=html_message, from_email=settings.EMAIL_HOST_USER, recipient_list=[email,], fail_silently=False)
+        except Exception as e:
+            print(e)
+
+            return Response({
+                "error": f"{type(e)}",
+                "message": f"{e}"
+            }) 
+        
+        return Response({
+            "success": f"E-mail successfully sent to {email}."
+        })
+
+class ActivateAccountAPI(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user_code = request.data["code"]
+
+        try:
+            if (request.user.profile and request.user.profile.status == "A"):
+                return Response({"error": "Account is already activated."})
+
+            # Get Active Codes for the user matching the code value provided
+            if (request.user.profile and request.user.profile.status == "P"):
+                issued_code = VerificationCode.objects.filter(user=request.user, code=user_code)
+
+                if issued_code.__len__() >= 1:
+                    for code in issued_code:
+                        if (code.expires >= timezone.now() and code.status == "A"):
+                            # Update user status to Active
+                            profile = Person.objects.get(user_account=request.user)
+                            profile.status = "A"
+                            profile.save()
+
+                            # Grant basic user permissions to the user
+                            standard_group = Group.objects.get(name="Standard User")
+                            standard_group.user_set.add(request.user)
+
+                            # Mark verification code as Completed
+                            code.status = "C"
+                            code.save()
+
+                            return Response({"success": "Account Successfully Activated"})
+                        
+                        if (code.expires < timezone.now() and code.status == "A"):
+                            code.status = "X"
+                            code.save()
+                        
+                        return Response ({"error": "Verification Code Has Expired."})
+                        
+                if issued_code.__len__() == 0:
+                    return Response({"error": "Verification Code Not Found."})
+        except Exception as e:
+            print(e)
+
+            return Response({
+                "error": f"{type(e)}",
+                "message": f"{e}"
+            }) 
+        
+        return Response({
+            "error": "Account Not Activated."
         })

@@ -42,6 +42,8 @@ export const createAccount = (acct) => (dispatch, getState) => {
             payload: res.data
         });
 
+        // dispatch(getAccount(res.data.id));
+
         var successMessage = "Added Account '" + acct.name + "'";
 
         dispatch(createMessage({type: "success", title: successMessage}));

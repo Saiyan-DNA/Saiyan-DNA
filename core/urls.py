@@ -3,7 +3,8 @@ from django.conf.urls import url
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
-from .views import RegisterAPI, LoginAPI, UserAPI, HomeAPI, OrganizationAPI, IndexView, EmailUsernameAPI
+from .views import RegisterAPI, LoginAPI, UserAPI, HomeAPI, OrganizationAPI, IndexView
+from .views import EmailUsernameAPI, EmailVerificationAPI, ActivateAccountAPI
 
 #core_router = routers.DefaultRouter(trailing_slash=False)
 core_router = routers.DefaultRouter(trailing_slash=True)
@@ -17,6 +18,8 @@ urlpatterns = [
     path('api/auth/user', UserAPI.as_view()),
     path('api/core/', include(core_router.urls), name="home"),
     path('api/core/email_username', EmailUsernameAPI.as_view()),
+    path('api/core/email_verification', EmailVerificationAPI.as_view()),
+    path('api/core/activate_account', ActivateAccountAPI.as_view()),
     path('', IndexView.as_view(), name="index"),    
     # path(r'api/auth/api-token-auth/', obtain_jwt_token),
     path('api/auth/token_refresh', refresh_jwt_token),
