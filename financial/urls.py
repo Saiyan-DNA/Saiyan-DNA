@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import AccountListView, AssetListView, TransactionListView
+from .views import AccountListView, AssetListView, TransactionListView, TransferAPIView
 from .views import FinancialCategoryListView, FinancialCategoryHierarchyView, FinancialInstitutionListView
 
 
@@ -15,4 +15,5 @@ router.register('transaction', TransactionListView, 'transaction')
 urlpatterns = [
     path("", include(router.urls)),
     path("categorytree", FinancialCategoryHierarchyView.as_view()),
+    path("transfer/", TransferAPIView.as_view()),
 ]

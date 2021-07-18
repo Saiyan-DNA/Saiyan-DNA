@@ -257,7 +257,6 @@ class TransactionLog(models.Model):
     owner = models.ForeignKey(User, related_name="transactions", verbose_name="Owner", on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, related_name="transactions", verbose_name="Organization", on_delete=models.PROTECT, null=True, blank=True)
 
-
     def __str__(self):
         return '{} - {} ({})'.format(self.summary, self.amount, self.account)
 
@@ -270,8 +269,8 @@ class TransferDetail(models.Model):
     Retains reference of accounts transferred to & from for 'Transfer' Type transactions.
     '''
 
-    transfer_debit_transaction = models.ForeignKey(TransactionLog, related_name="detail_debit", verbose_name="Transfer Debit Transaction", on_delete=models.PROTECT)
-    transfer_credit_transaction = models.ForeignKey(TransactionLog, related_name="detail_credit", verbose_name="Tranfser Credit Transaction", on_delete=models.PROTECT)
+    transfer_debit_transaction = models.OneToOneField(TransactionLog, related_name="transfer_detail_debit", verbose_name="Transfer Debit Transaction", on_delete=models.PROTECT)
+    transfer_credit_transaction = models.OneToOneField(TransactionLog, related_name="transfer_detail_credit", verbose_name="Transfer Debit Transaction", on_delete=models.PROTECT)
     owner = models.ForeignKey(User, related_name="transfers", verbose_name="Owner", on_delete=models.CASCADE)
 
     def __str__(self):
