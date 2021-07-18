@@ -12,8 +12,8 @@ from core.models import Organization
 from core.serializers import OrganizationSerializer
 from .serializers import AccountSerializer, AccountReadSerializer, AssetSerializer
 from .serializers import FinancialCategorySerializer, FinancialCategoryReadSerializer
-from .serializers import TransactionReadSerializer, TransactionSerializer
-from .models import TransactionLog, Account, FinancialCategory
+from .serializers import TransactionReadSerializer, TransactionSerializer, TransferSerializer
+from .models import TransactionLog, TransferDetail, Account, FinancialCategory
 
 
 class AccountListView(viewsets.ModelViewSet):
@@ -143,7 +143,7 @@ class FinancialCategoryHierarchyView(APIView):
 
 class TransactionListView(viewsets.ModelViewSet):
     '''
-    ListCreate API View for Assets
+    ListCreate API View for Transactions
     '''
 
     permission_classes = [
@@ -177,7 +177,78 @@ class TransactionListView(viewsets.ModelViewSet):
         return filtered_set
 
 
+class TransferAPIView(APIView):
+    '''
+    ListCreate API View for Transactions
+    '''
 
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    
+    def post(self, request):
+        base_transaction = request.data["transaction"]
+
+        # Stage Data for the transfer transactions (in/out)
+        transfer_out_transaction = base_transaction.copy()
+        transfer_in_transaction = base_transaction.copy()
+
+        transfer_out_transaction["account"] = request.data["transfer_detail"]["transfer_from"]
+        transfer_in_transaction["account"] = request.data["transfer_detail"]["transfer_to"]
+
+        # Stage Data for the Transfer Detail Record (links transfer in/out transaction IDs)
+        transfer_detail = {"owner": request.user.id, "transfer_debit_transaction": None, "transfer_credit_transaction": None}
+        
+        try:
+            # Validate and Save the Transfer Out (debit) Transaction
+            serializer = TransactionSerializer(data=transfer_out_transaction)
+            if serializer.is_valid():
+                result = serializer.save()
+                transfer_detail["transfer_debit_transaction"] = result.id
+
+            # Validate and Save the Transfer In (credit) Transaction
+            serializer = TransactionSerializer(data=transfer_in_transaction)
+            if serializer.is_valid():
+                result = serializer.save()
+                transfer_detail["transfer_credit_transaction"] = result.id
+
+            # Validat and Save the Transfer Detail Record (links transfer in/out transaction IDs)
+            serializer = TransferSerializer(data=transfer_detail)
+            if serializer.is_valid():
+                result = serializer.save()
+        except ValueError:
+            print("Error Creating Transfer.")
+            return Response({"error": "Error Creating Transfer."})
+
+        return Response({"success": "Transfer Transaction Successfully Created"})
+
+    def delete(self, request):
+        transaction_id = self.request.query_params.get('transaction_id')
+
+        if (transaction_id):
+            try:
+                transfer_detail = TransferDetail.objects.filter(Q(transfer_credit_transaction=transaction_id) | Q(transfer_debit_transaction=transaction_id))
+
+                if (transfer_detail.__len__() == 1):
+                    transaction_set = []
+
+                    for t in transfer_detail.values():
+                        transaction_set.append(t["transfer_debit_transaction_id"])
+                        transaction_set.append(t["transfer_credit_transaction_id"])
+                        
+                    transfer_detail.delete()
+
+                    transactions = TransactionLog.objects.filter(id__in=transaction_set)
+                    transactions.delete()
+
+                    return Response({"success": "Transfer Transactions Deleted."})
+
+                return Response({"error": "Could Not Locate Transfer Transaction."})
+            except ValueError:
+                print("Error Deleting Transfer.")
+                return Response({"error": "Error Deleting Transfer."})
+
+        return Response({"error": "No Transaction ID Provided."})
 
 class FinancialInstitutionListView(viewsets.ModelViewSet):
     '''

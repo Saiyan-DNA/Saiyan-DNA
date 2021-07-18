@@ -81,10 +81,11 @@ class TransactionDetail extends React.Component {
             setTitle(transaction ? "Edit Transaction" : "Add Transaction");
         }
 
+        
         // Apply transaction details to component state for potential edit by the end-user.
         if (transaction && transaction.id != localTransaction.transactionId) {
             if (transaction.id) {
-                this.setState({transaction: {
+                var transactionDetail = {
                     transactionId: transaction.id,
                     transactionDate: new Date(transaction.transaction_date),
                     transactionType: transaction.transaction_type,
@@ -96,7 +97,16 @@ class TransactionDetail extends React.Component {
                     transferToAccount: "",
                     isEdited: false,
                     isValid: false
-                }});
+                }
+
+                if (transaction.transaction_type == "TRN") {
+                    var transferDetail = transaction.transfer_detail_debit || transaction.transfer_detail_credit;
+
+                    transactionDetail.transferFromAccount = transferDetail.transfer_debit_transaction.account;
+                    transactionDetail.transferToAccount = transferDetail.transfer_credit_transaction.account;
+                }
+
+                this.setState({transaction: transactionDetail, transferDetailsVisible: (transaction.transaction_type == "TRN")});
             }
 
             return;
@@ -217,10 +227,19 @@ class TransactionDetail extends React.Component {
             organization: null
         }
 
+        var transferDetail = null;
+
+        if (transaction.transactionType == "TRN") {
+            transferDetail = {
+                transfer_from: transaction.transferFromAccount.id,
+                transfer_to: transaction.transferToAccount.id
+            }
+        }
+
         if (transaction.transactionId) {
-            updateTransaction(trns)
+            updateTransaction(trns, transferDetail)
         } else {
-            createTransaction(trns);
+            createTransaction(trns, transferDetail);
         }
 
         this.onClose();
@@ -230,7 +249,7 @@ class TransactionDetail extends React.Component {
         const { deleteTransaction } = this.props;
         const { transaction } = this.state;
 
-        if (transaction.transactionId) deleteTransaction(transaction.transactionId);
+        if (transaction.transactionId) deleteTransaction(transaction);
         this.onClose();
     }
 
