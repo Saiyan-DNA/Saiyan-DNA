@@ -47,7 +47,7 @@ class Login extends React.Component {
     
     componentDidMount() {
         this.props.setTitle("Log In");
-    }
+    }   
 
     componentDidUpdate() {
         switch (this.props.loginError) {
@@ -79,6 +79,14 @@ class Login extends React.Component {
             this.setState({showPasswordError: false});
             if (this.state.showPasswordError) this.props.clearLoginError();
         }
+    }
+
+    loginDisabled = () => {
+        const { username, password, showUsernameError, showPasswordError } = this.state;
+
+        let disabled = (username == "" || password == "" || showUsernameError || showPasswordError);        
+
+        return disabled
     }
 
     render() {
@@ -131,7 +139,7 @@ class Login extends React.Component {
                                         </Grid>
                                         <Grid item xs={10}>
                                             <div align="center" style={{marginTop: "1em"}}>
-                                                <Button type="submit" variant="contained" color="primary" align="center">
+                                                <Button type="submit" variant="contained" color="primary" align="center" disabled={this.loginDisabled()}>
                                                     Log In
                                                 </Button>
                                             </div>
