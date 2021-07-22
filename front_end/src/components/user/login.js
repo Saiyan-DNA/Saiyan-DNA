@@ -107,7 +107,7 @@ class Login extends React.Component {
                                     <Grid container spacing={2} justify="center">
                                         <Grid item xs={10}>
                                             <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="username">Username</InputLabel>
+                                                <InputLabel htmlFor="username">Username / E-Mail Address</InputLabel>
                                                 <Input
                                                     type="text"
                                                     className="form-control"
