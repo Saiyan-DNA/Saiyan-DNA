@@ -178,17 +178,29 @@ class TransactionDetail extends React.Component {
             var showTransferDetails = false;
 
             if (updatedTransaction.transactionType == "TRN") {
-                showTransferDetails = true;
-                let { transferFromAccount, transferToAccount } = updatedTransaction;
+                showTransferDetails = true;                
 
-                if (!transferFromAccount && !transferToAccount) {
+                if (!updatedTransaction.transferFromAccount && !updatedTransaction.transferToAccount) {
                     updatedTransaction.transferFromAccount = account;
-                } else {
-                    if (transferFromAccount && transferFromAccount.id != account.id) updatedTransaction.transferToAccount = account; 
-                    if (transferToAccount && transferToAccount.id != account.id) updatedTransaction.transferFromAccount = account;
-                }
+                } else {                    
+                    // Allow swapping to/from accounts
+                    const { transferToAccount, transferFromAccount } = this.state.transaction
 
-                
+                    if (transferToAccount && updatedTransaction.transferFromAccount && updatedTransaction.transferFromAccount.id == transferToAccount.id) {
+                        updatedTransaction.transferToAccount = transferFromAccount;
+                    }
+                    if (transferFromAccount && updatedTransaction.transferToAccount && updatedTransaction.transferToAccount.id == transferFromAccount.id) {
+                        updatedTransaction.transferFromAccount = transferToAccount;
+                    }
+                    
+                    // Ensure either the to/from account is the currently viewed account
+                    if (e.target.name == 'transferFromAccount' && updatedTransaction.transferFromAccount && updatedTransaction.transferFromAccount.id != account.id) {
+                        updatedTransaction.transferToAccount = account;
+                    }
+                    if (e.target.name == 'transferToAccount' && updatedTransaction.transferToAccount && updatedTransaction.transferToAccount.id != account.id) {
+                        updatedTransaction.transferFromAccount = account;
+                    }
+                }                
             }
 
             // Run Validate without waiting for 'onBlur' event for Select elements
@@ -313,14 +325,12 @@ class TransactionDetail extends React.Component {
                         <Grid item xs={12} sm={12}>
                             <AccountSelect id="transferFromAccount" name="transferFromAccount"
                                 label="Transfer From" selection={transaction.transferFromAccount} 
-                                onChange={this.onChange} onBlur={this.validateTransaction}                                        
-                                disabledAccount={transaction.transferToAccount} />       
+                                onChange={this.onChange} onBlur={this.validateTransaction} />       
                         </Grid>
                         <Grid item xs={12} sm={12}>
                             <AccountSelect id="transferToAccount" name="transferToAccount"
                                 label="Transfer To" selection={transaction.transferToAccount}
-                                onChange={this.onChange} onBlur={this.validateTransaction}                                        
-                                disabledAccount={transaction.transferFromAccount}  />
+                                onChange={this.onChange} onBlur={this.validateTransaction} />
                         </Grid>
                     </>
                 }
