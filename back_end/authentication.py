@@ -8,7 +8,6 @@ class AuthenticationBackend(ModelBackend):  # requires to define two functions a
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         UserModel = get_user_model()
-        print("Running Authenticate...")
 
         try:
             # below line gives query set,you can change the queryset as per your requirement

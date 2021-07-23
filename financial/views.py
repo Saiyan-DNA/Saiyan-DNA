@@ -222,6 +222,49 @@ class TransferAPIView(APIView):
 
         return Response({"success": "Transfer Transaction Successfully Created"})
 
+    def put(self, request):
+        base_transaction = request.data["transaction"]
+        transaction_id = base_transaction["id"]
+
+        # Stage Data for the transfer transactions (in/out)
+        transfer_out_transaction = base_transaction.copy()
+        transfer_in_transaction = base_transaction.copy()
+
+        transfer_out_transaction["account"] = request.data["transfer_detail"]["transfer_from"]
+        transfer_in_transaction["account"] = request.data["transfer_detail"]["transfer_to"]
+
+        
+        transfer_detail = TransferDetail.objects.filter(Q(transfer_credit_transaction=transaction_id) | Q(transfer_debit_transaction=transaction_id))
+
+        if (transfer_detail.__len__() != 1):
+            return Response({"error": "Error locating existing transfer"})
+
+        # Assign the Transaction ID values from the existing transfer records to the updated details.
+        transfer_out_transaction["id"] = transfer_detail.values()[0]["transfer_debit_transaction_id"]
+        transfer_in_transaction["id"] = transfer_detail.values()[0]["transfer_credit_transaction_id"]
+
+        try:
+            # Validate and Update the Transfer Out (debit) Transaction
+            serializer = TransactionSerializer(data=transfer_out_transaction)
+            if serializer.is_valid():
+                result = serializer.update(TransactionLog.objects.get(id=transfer_out_transaction["id"]), serializer.validated_data)
+            else:
+                return Response({"error": "Error Updating Transfer."})
+
+            # Validate and Update the Transfer In (credit) Transaction
+            serializer = TransactionSerializer(data=transfer_in_transaction)
+            if serializer.is_valid():
+                result = serializer.update(TransactionLog.objects.get(id=transfer_in_transaction["id"]), serializer.validated_data)
+            else:
+                return Response({"error": "Error Updating Transfer."})
+        except ValueError:
+            print("Error Creating Transfer.")
+            return Response({"error": "Error Updating Transfer."})
+        
+
+
+        return Response({"success": "Transfer Transaction Successfully Updated"})
+
     def delete(self, request):
         transaction_id = self.request.query_params.get('transaction_id')
 

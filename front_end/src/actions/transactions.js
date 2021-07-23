@@ -91,7 +91,7 @@ export const createTransaction = (transactionDetails, transferDetail) => (dispat
     }
 }
 
-export const updateTransaction = (transactionDetails) => (dispatch, getState) => {
+export const updateTransaction = (transactionDetails, transferDetail) => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
     const account = getState().accounts.currentAccount;
 
@@ -102,14 +102,27 @@ export const updateTransaction = (transactionDetails) => (dispatch, getState) =>
         }
     };
 
-    axios.put(`/api/financial/transaction/${transactionDetails.id}/`, JSON.stringify(transactionDetails), config)
-    .then(res => {
-        dispatch({type: UPDATE_TRANSACTION, payload: res.data});
-        dispatch(getTransactions(account.id));
-        dispatch(createMessage({type: "success", title: "Updated Transaction"}));
-    }).catch(err => {
-        dispatch(createMessage({type: "error", title: "Failed to Update Transaction", detail: err}));
-    });
+    if (!transferDetail) {
+        axios.put(`/api/financial/transaction/${transactionDetails.id}/`, JSON.stringify(transactionDetails), config)
+        .then(res => {
+            dispatch({type: UPDATE_TRANSACTION, payload: res.data});
+            dispatch(getTransactions(account.id));
+            dispatch(createMessage({type: "success", title: "Updated Transaction"}));
+        }).catch(err => {
+            dispatch(createMessage({type: "error", title: "Failed to Update Transaction", detail: err}));
+        });
+    }
+
+    if (transactionDetails.transaction_type == "TRN" && transferDetail) {
+        axios.put('/api/financial/transfer/', JSON.stringify({transaction: transactionDetails, transfer_detail: transferDetail}), config)
+        .then(res => {
+            dispatch({type: CREATE_TRANSACTION, payload: res.data});
+            dispatch(getTransactions(account.id));
+            dispatch(createMessage({type: "success", title: "Updated Transfer Transaction"}));
+        }).catch(err => {
+            dispatch(createMessage({type: "error", title: "Failed to Update Transaction", detail: err}));
+        });
+    }
 }
 
 // DELETE_TRANSACTION
