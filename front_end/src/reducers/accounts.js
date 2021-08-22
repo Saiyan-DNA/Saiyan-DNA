@@ -1,4 +1,4 @@
-import { ACCOUNT_LOADING, ACCOUNT_LOADED, ACCOUNT_LOAD_ERROR, CLEAR_ACCOUNT } from '../actions/types';
+import { ACCOUNT_LOADING, ACCOUNT_LOADED, ACCOUNT_LOAD_ERROR, CLEAR_ACCOUNT, ACCOUNT_DELETING } from '../actions/types';
 import { CREATE_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT } from '../actions/types';
 import { GET_FINANCIAL_CATEGORIES, GET_FINANCIAL_INSTITUTIONS } from '../actions/types';
 import { ACCOUNTS_LOADING, ACCOUNTS_LOADED, ACCOUNTS_LOAD_ERROR } from '../actions/types';
@@ -11,6 +11,7 @@ const initialState = {
     accountLoading: false,
     accountLoaded: false,
     accountLoadError: false,
+    accountDeleting: false,
     accountTransactions: [],
     financialCategories: [],
     financialInstitutions: []
@@ -39,12 +40,18 @@ export default function(state = initialState, action) {
                 accountsLoading: false,
                 accountsLoaded: false
             }
+        case ACCOUNT_DELETING:
+            return {
+                ...state,
+                accountDeleting: true
+            }
         case DELETE_ACCOUNT:
             return {
                 ...state,
                 accounts: state.accounts.filter(account => account.id !== action.payload),
                 currentAccount: {},
-                accountsLoaded: false
+                accountsLoaded: false,
+                accountDeleting: false
             };
         case CREATE_ACCOUNT:
             return {

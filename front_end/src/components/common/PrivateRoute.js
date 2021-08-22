@@ -10,18 +10,24 @@ const PrivateRoute = ({component: Component, auth, ...rest }) => (
         render={props => {
             if(auth.isLoading) {
                 return <LoadingMessage message="Loading..." />;
-            } else if(!auth.isAuthenticated) {
-                return <Redirect to="/login" />;
-            } else {
-                return <Component {...props} /> ;   
             }
             
+            if(!auth.isAuthenticated) {
+                return <Redirect to="/login" />;
+            }
+            
+            if (auth.user.profile && auth.user.profile.status === "P") {
+                return <Redirect to="/pendinguser" />
+            }
+
+            return <Component {...props} /> ;   
+                        
         }} 
     />
 );
 
 const mapStateToProps = state => ({
-    auth: state.auth
+    auth: state.auth,
 })
 
 export default connect(mapStateToProps)(PrivateRoute)

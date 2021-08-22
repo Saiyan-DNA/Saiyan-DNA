@@ -25,6 +25,7 @@ HomeCentral is a web application for managing personal home activities, includin
   - Django-Filter
   - Django-Extensions
   - django-user-agents
+  - django-redis
 
 ### Front-End
 
@@ -47,6 +48,10 @@ HomeCentral is a web application for managing personal home activities, includin
   - Redux-Thunk v2.3.0
 - Webpack v4.46.0
   - Webpack-CLI v3.3.12
+
+### External
+- MySQL Server
+- Redis Server
 
 ***
 

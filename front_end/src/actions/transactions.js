@@ -31,10 +31,10 @@ export const getTransactions = (acct_id, startDate, endDate) => (dispatch, getSt
     }
 }
 
-export const createTransaction = (transactionDetails) => (dispatch, getState) => {
+export const createTransfer = (transferDetail) => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
     const account = getState().accounts.currentAccount;
-
+    
     const config = {
         headers: {
             "Content-Type": "application/json",
@@ -42,17 +42,56 @@ export const createTransaction = (transactionDetails) => (dispatch, getState) =>
         }
     };
 
-    axios.post('/api/financial/transaction/', JSON.stringify(transactionDetails), config)
+    axios.post('/api/financial/transfer/', JSON.stringify(transferDetail), config)
     .then(res => {
-        dispatch({type: CREATE_TRANSACTION, payload: res.data});
+        dispatch({type: CREATE_TRANSACTION});
         dispatch(getTransactions(account.id));
-        dispatch(createMessage({type: "success", title: "Added Transaction"}));
+        dispatch(createMessage({type: "success", title: "Added Transfer Transaction"}));
     }).catch(err => {
-        dispatch(createMessage({type: "error", title: "Failed to Add Transaction", detail: err}));
+        dispatch(createMessage({type: "error", title: "Failed to Create Transfer", detail: err}));
     });
 }
 
-export const updateTransaction = (transactionDetails) => (dispatch, getState) => {
+export const createTransaction = (transactionDetails, transferDetail) => (dispatch, getState) => {
+    const jwt_token = getState().auth.token;
+    const account = getState().accounts.currentAccount;
+    const owner = getState().auth.user;
+
+    const config = {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `bearer ${jwt_token}`
+        }
+    };
+
+    // Use the Transaction API if the transaction is NOT of type "TRN"
+    if (!transferDetail) {
+        axios.post('/api/financial/transaction/', JSON.stringify(transactionDetails), config)
+        .then(res => {
+            dispatch({type: CREATE_TRANSACTION, payload: res.data});
+            dispatch(getTransactions(account.id));
+            dispatch(createMessage({type: "success", title: "Added Transaction"}));
+        }).catch(err => {
+            dispatch(createMessage({type: "error", title: "Failed to Add Transaction", detail: err}));
+        });
+
+        return
+    }
+
+    // Use the Transfer API if the transaction is of type "TRN" and Transfer Detail information is provided.
+    if (transactionDetails.transaction_type == "TRN" && transferDetail) {
+        axios.post('/api/financial/transfer/', JSON.stringify({transaction: transactionDetails, transfer_detail: transferDetail}), config)
+        .then(res => {
+            dispatch({type: CREATE_TRANSACTION, payload: res.data});
+            dispatch(getTransactions(account.id));
+            dispatch(createMessage({type: "success", title: "Added Transfer Transaction"}));
+        }).catch(err => {
+            dispatch(createMessage({type: "error", title: "Failed to Add Transaction", detail: err}));
+        });
+    }
+}
+
+export const updateTransaction = (transactionDetails, transferDetail) => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
     const account = getState().accounts.currentAccount;
 
@@ -63,18 +102,31 @@ export const updateTransaction = (transactionDetails) => (dispatch, getState) =>
         }
     };
 
-    axios.put(`/api/financial/transaction/${transactionDetails.id}/`, JSON.stringify(transactionDetails), config)
-    .then(res => {
-        dispatch({type: UPDATE_TRANSACTION, payload: res.data});
-        dispatch(getTransactions(account.id));
-        dispatch(createMessage({type: "success", title: "Updated Transaction"}));
-    }).catch(err => {
-        dispatch(createMessage({type: "error", title: "Failed to Update Transaction", detail: err}));
-    });
+    if (!transferDetail) {
+        axios.put(`/api/financial/transaction/${transactionDetails.id}/`, JSON.stringify(transactionDetails), config)
+        .then(res => {
+            dispatch({type: UPDATE_TRANSACTION, payload: res.data});
+            dispatch(getTransactions(account.id));
+            dispatch(createMessage({type: "success", title: "Updated Transaction"}));
+        }).catch(err => {
+            dispatch(createMessage({type: "error", title: "Failed to Update Transaction", detail: err}));
+        });
+    }
+
+    if (transactionDetails.transaction_type == "TRN" && transferDetail) {
+        axios.put('/api/financial/transfer/', JSON.stringify({transaction: transactionDetails, transfer_detail: transferDetail}), config)
+        .then(res => {
+            dispatch({type: CREATE_TRANSACTION, payload: res.data});
+            dispatch(getTransactions(account.id));
+            dispatch(createMessage({type: "success", title: "Updated Transfer Transaction"}));
+        }).catch(err => {
+            dispatch(createMessage({type: "error", title: "Failed to Update Transaction", detail: err}));
+        });
+    }
 }
 
 // DELETE_TRANSACTION
-export const deleteTransaction = (id) => (dispatch, getState) => {
+export const deleteTransaction = (transaction) => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
 
     const config = {
@@ -84,14 +136,26 @@ export const deleteTransaction = (id) => (dispatch, getState) => {
         }
     };
 
-    axios.delete(`/api/financial/transaction/${id}/`, config)
+    // Use the Transfer API if the transaction is of type "TRN"
+    if (transaction.transactionType == "TRN") {
+        axios.delete(`/api/financial/transfer/?transaction_id=${transaction.transactionId}`, config)
+        .then(res => {
+            dispatch({type: DELETE_TRANSACTION, payload: transaction.transactionId});
+            dispatch(createMessage({type: "success", title: "Transaction Deleted"}));
+        }).catch(err => dispatch(createMessage({type: "error", title: "Unable to Delete Transfer!", detail: err})));
+        return;
+    }
+
+    // Use the Transaction API if the transaction is of any other type (Credit, Debit)
+    axios.delete(`/api/financial/transaction/${transaction.transactionId}/`, config)
     .then(res => {
         dispatch({
             type: DELETE_TRANSACTION,
-            payload: id
+            payload: transaction.transactionId
         });
 
         dispatch(createMessage({type: "success", title: "Transaction Deleted"}));
+        return;
     }).catch(err => dispatch(createMessage({type: "error", title: "Unable to Delete Transaction!", detail: err})));
 };
 

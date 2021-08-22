@@ -8,7 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
 const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
 const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
 const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
@@ -81,10 +81,11 @@ class TransactionDetail extends React.Component {
             setTitle(transaction ? "Edit Transaction" : "Add Transaction");
         }
 
+        
         // Apply transaction details to component state for potential edit by the end-user.
         if (transaction && transaction.id != localTransaction.transactionId) {
             if (transaction.id) {
-                this.setState({transaction: {
+                var transactionDetail = {
                     transactionId: transaction.id,
                     transactionDate: new Date(transaction.transaction_date),
                     transactionType: transaction.transaction_type,
@@ -96,7 +97,16 @@ class TransactionDetail extends React.Component {
                     transferToAccount: "",
                     isEdited: false,
                     isValid: false
-                }});
+                }
+
+                if (transaction.transaction_type == "TRN") {
+                    var transferDetail = transaction.transfer_detail_debit || transaction.transfer_detail_credit;
+
+                    transactionDetail.transferFromAccount = transferDetail.transfer_debit_transaction.account;
+                    transactionDetail.transferToAccount = transferDetail.transfer_credit_transaction.account;
+                }
+
+                this.setState({transaction: transactionDetail, transferDetailsVisible: (transaction.transaction_type == "TRN")});
             }
 
             return;
@@ -168,17 +178,29 @@ class TransactionDetail extends React.Component {
             var showTransferDetails = false;
 
             if (updatedTransaction.transactionType == "TRN") {
-                showTransferDetails = true;
-                let { transferFromAccount, transferToAccount } = updatedTransaction;
+                showTransferDetails = true;                
 
-                if (!transferFromAccount && !transferToAccount) {
+                if (!updatedTransaction.transferFromAccount && !updatedTransaction.transferToAccount) {
                     updatedTransaction.transferFromAccount = account;
-                } else {
-                    if (transferFromAccount && transferFromAccount.id != account.id) updatedTransaction.transferToAccount = account; 
-                    if (transferToAccount && transferToAccount.id != account.id) updatedTransaction.transferFromAccount = account;
-                }
+                } else {                    
+                    // Allow swapping to/from accounts
+                    const { transferToAccount, transferFromAccount } = this.state.transaction
 
-                
+                    if (transferToAccount && updatedTransaction.transferFromAccount && updatedTransaction.transferFromAccount.id == transferToAccount.id) {
+                        updatedTransaction.transferToAccount = transferFromAccount;
+                    }
+                    if (transferFromAccount && updatedTransaction.transferToAccount && updatedTransaction.transferToAccount.id == transferFromAccount.id) {
+                        updatedTransaction.transferFromAccount = transferToAccount;
+                    }
+                    
+                    // Ensure either the to/from account is the currently viewed account
+                    if (e.target.name == 'transferFromAccount' && updatedTransaction.transferFromAccount && updatedTransaction.transferFromAccount.id != account.id) {
+                        updatedTransaction.transferToAccount = account;
+                    }
+                    if (e.target.name == 'transferToAccount' && updatedTransaction.transferToAccount && updatedTransaction.transferToAccount.id != account.id) {
+                        updatedTransaction.transferFromAccount = account;
+                    }
+                }                
             }
 
             // Run Validate without waiting for 'onBlur' event for Select elements
@@ -217,10 +239,19 @@ class TransactionDetail extends React.Component {
             organization: null
         }
 
+        var transferDetail = null;
+
+        if (transaction.transactionType == "TRN") {
+            transferDetail = {
+                transfer_from: transaction.transferFromAccount.id,
+                transfer_to: transaction.transferToAccount.id
+            }
+        }
+
         if (transaction.transactionId) {
-            updateTransaction(trns)
+            updateTransaction(trns, transferDetail)
         } else {
-            createTransaction(trns);
+            createTransaction(trns, transferDetail);
         }
 
         this.onClose();
@@ -230,7 +261,7 @@ class TransactionDetail extends React.Component {
         const { deleteTransaction } = this.props;
         const { transaction } = this.state;
 
-        if (transaction.transactionId) deleteTransaction(transaction.transactionId);
+        if (transaction.transactionId) deleteTransaction(transaction);
         this.onClose();
     }
 
@@ -243,71 +274,67 @@ class TransactionDetail extends React.Component {
         const { transferDetailsVisible, transaction } = this.state;
         
         return (
-            <form onSubmit={this.saveTransaction} autoComplete="off">
-                <Grid container spacing={2} justify="space-between" className={isMobile ? classes.detailContainer : null}>
-                    <Grid item xs={6} sm={6}>
-                        <FormControl fullWidth={true} disabled={true}>
-                            <InputLabel htmlFor="accountName">Account</InputLabel>
-                            <Input id="accountName" name="accountName" value={account.name} fullWidth={true} />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={6} sm={6}>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker disableToolbar variant={isMobile ? "dialog" : "inline"} style={{marginTop: "0px"}}
-                                format="MM/dd/yyyy" margin="normal" id="transactionDate" name="transactionDate" autoOk={ isMobile ? false : true }
-                                label="Transaction Date" value={transaction.transactionDate} onChange={this.handleDateChange}
-                                KeyboardButtonProps={{'aria-label': 'change date',}} />
-                        </MuiPickersUtilsProvider>
-                    </Grid> 
-                    <Grid item xs={6} sm={6}>
-                        <TransactionTypeSelect onChange={this.onChange} onBlur={this.validateTransaction}
-                            value={transaction.transactionType ? transaction.transactionType : ""}
-                            defaultValue={transaction.transactionType} />
-                    </Grid>
-                    <Grid item xs={6} sm={6}>
-                        <TextField id="transactionAmount" name="transactionAmount"
-                            label="Amount" className="numberFormat"
-                            onChange={this.onChange} onBlur={this.validateTransaction}
-                            value={transaction.transactionAmount} fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/>                                
-                    </Grid>
-                    <Grid item xs={12} sm={12}>
-                        <FormControl fullWidth={true}>
-                            <InputLabel htmlFor="transactionDescription">Summary</InputLabel>
-                            <Input id="transactionSummary" name="transactionSummary" 
-                                onChange={this.onChange} onBlur={this.validateTransaction}
-                                value={transaction.transactionSummary} fullWidth={true} />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={12}>
-                        <FormControl fullWidth={true}>
-                            <InputLabel htmlFor="transactionDescription">Description</InputLabel>
-                            <Input id="transactionDescription" name="transactionDescription" 
-                                onChange={this.onChange} onBlur={this.validateTransaction}
-                                value={transaction.transactionDescription} fullWidth={true} />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={12}>
-                        <FinancialCategorySelect id="transactionCategory" name="transactionCategory"
-                            selection={transaction.transactionCategory} onChange={this.onChange} />
-                    </Grid>
-                    { transferDetailsVisible &&
-                        <>
-                            <Grid item xs={12} sm={12}>
-                                <AccountSelect id="transferFromAccount" name="transferFromAccount"
-                                    label="Transfer From" selection={transaction.transferFromAccount} 
-                                    onChange={this.onChange} onBlur={this.validateTransaction}                                        
-                                    disabledAccount={transaction.transferToAccount} />       
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <AccountSelect id="transferToAccount" name="transferToAccount"
-                                    label="Transfer To" selection={transaction.transferToAccount}
-                                    onChange={this.onChange} onBlur={this.validateTransaction}                                        
-                                    disabledAccount={transaction.transferFromAccount}  />
-                            </Grid>
-                        </>
-                    }
+            <Grid container spacing={2} justify="space-between" className={isMobile ? classes.detailContainer : null}>
+                <Grid item xs={6} sm={6}>
+                    <FormControl fullWidth={true} disabled={true}>
+                        <InputLabel htmlFor="accountName">Account</InputLabel>
+                        <Input id="accountName" name="accountName" value={account.name} fullWidth={true} />
+                    </FormControl>
                 </Grid>
-            </form>
+                <Grid item xs={6} sm={6}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker disableToolbar variant={isMobile ? "dialog" : "inline"} style={{marginTop: "0px"}}
+                            format="MM/dd/yyyy" margin="normal" id="transactionDate" name="transactionDate" autoOk={ isMobile ? false : true }
+                            label="Transaction Date" value={transaction.transactionDate} onChange={this.handleDateChange}
+                            KeyboardButtonProps={{'aria-label': 'change date',}} />
+                    </MuiPickersUtilsProvider>
+                </Grid> 
+                <Grid item xs={6} sm={6}>
+                    <TransactionTypeSelect onChange={this.onChange} onBlur={this.validateTransaction}
+                        value={transaction.transactionType ? transaction.transactionType : ""}
+                        defaultValue={transaction.transactionType} />
+                </Grid>
+                <Grid item xs={6} sm={6}>
+                    <TextField id="transactionAmount" name="transactionAmount"
+                        label="Amount" className="numberFormat"
+                        onChange={this.onChange} onBlur={this.validateTransaction}
+                        value={transaction.transactionAmount} fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/>                                
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                    <FormControl fullWidth={true}>
+                        <InputLabel htmlFor="transactionDescription">Summary</InputLabel>
+                        <Input id="transactionSummary" name="transactionSummary" 
+                            onChange={this.onChange} onBlur={this.validateTransaction}
+                            value={transaction.transactionSummary} fullWidth={true} />
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                    <FormControl fullWidth={true}>
+                        <InputLabel htmlFor="transactionDescription">Description</InputLabel>
+                        <Input id="transactionDescription" name="transactionDescription" 
+                            onChange={this.onChange} onBlur={this.validateTransaction}
+                            value={transaction.transactionDescription} fullWidth={true} />
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                    <FinancialCategorySelect id="transactionCategory" name="transactionCategory"
+                        selection={transaction.transactionCategory} onChange={this.onChange} />
+                </Grid>
+                { transferDetailsVisible &&
+                    <>
+                        <Grid item xs={12} sm={12}>
+                            <AccountSelect id="transferFromAccount" name="transferFromAccount"
+                                label="Transfer From" selection={transaction.transferFromAccount} 
+                                onChange={this.onChange} onBlur={this.validateTransaction} />       
+                        </Grid>
+                        <Grid item xs={12} sm={12}>
+                            <AccountSelect id="transferToAccount" name="transferToAccount"
+                                label="Transfer To" selection={transaction.transferToAccount}
+                                onChange={this.onChange} onBlur={this.validateTransaction} />
+                        </Grid>
+                    </>
+                }
+            </Grid>
         );
     }
 
@@ -319,60 +346,64 @@ class TransactionDetail extends React.Component {
         if (isMobile) {
             return (
                 <Container>
-                    <Grid container spacing={3} justify="space-between">
-                        <Grid item>
-                            <Button color="primary" variant="outlined" size="small" onClick={this.onClose}>Back</Button>
+                    <form onSubmit={this.saveTransaction} autoComplete="off">
+                        <Grid container spacing={3} justify="space-between">
+                            <Grid item>
+                                <Button color="primary" variant="outlined" size="small" onClick={this.onClose}>Back</Button>
+                            </Grid>
+                            <Grid item>
+                                <Button type="submit" color="primary" variant="contained" size="small"
+                                    disabled={!transaction.isValid}>Save</Button>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Card elevation={4}>
+                                    <CardContent>
+                                        {this.generateDetail()}
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={4}>
+                                {transaction.transactionId ? 
+                                    <DestructiveButton onClick={this.deleteTransaction}>Delete</DestructiveButton> :
+                                    <Typography>&nbsp;</Typography>
+                                }
+                            </Grid>
                         </Grid>
-                        <Grid item>
-                            <Button color="primary" variant="contained" size="small" disabled={!transaction.isValid} 
-                                onClick={this.saveTransaction}>Save</Button>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Card elevation={4}>
-                                <CardContent>
-                                    {this.generateDetail()}
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {transaction.transactionId ? 
-                                <DestructiveButton onClick={this.deleteTransaction}>Delete</DestructiveButton> :
-                                <Typography>&nbsp;</Typography>
-                            }
-                        </Grid>
-                    </Grid>
+                    </form>
                 </Container>                        
             );
         }
 
         // If user is not on a mobile phone device, then the transaction detail is contained within a modal on the Account Overview page view.
         return (
-            <Grid container spacing={3}>
-                <Grid item container xs={12} justify="space-between">
-                    {this.generateDetail()}
-                </Grid>
-                <Grid item xs={12}>
-                    <Divider light={true} />
-                </Grid>
-                <Grid container item xs={12} justify="space-between">
-                    <Grid item xs={4}>
-                        {transaction.transactionId ? 
-                            <DestructiveButton onClick={this.deleteTransaction}>Delete</DestructiveButton> :
-                            <Typography>&nbsp;</Typography>
-                        }
-                    </Grid>                             
-                    <Grid container item xs={8} justify="flex-end">
-                        <Grid item>
-                            <Button color="primary" variant="outlined" size="small" onClick={this.onClose}>Cancel</Button>
-                        </Grid>
-                        <Grid item>&nbsp;</Grid>
-                        <Grid item>
-                            <Button color="primary" variant="contained" size="small" disabled={!transaction.isValid} 
-                                onClick={this.saveTransaction}>Save</Button>
+            <form onSubmit={this.saveTransaction} autoComplete="off">
+                <Grid container spacing={3}>
+                    <Grid item container xs={12} justify="space-between">
+                        {this.generateDetail()}
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Divider light={true} />
+                    </Grid>
+                    <Grid container item xs={12} justify="space-between">
+                        <Grid item xs={4}>
+                            {transaction.transactionId ? 
+                                <DestructiveButton onClick={this.deleteTransaction}>Delete</DestructiveButton> :
+                                <Typography>&nbsp;</Typography>
+                            }
+                        </Grid>                             
+                        <Grid container item xs={8} justify="flex-end">
+                            <Grid item>
+                                <Button color="primary" variant="outlined" size="small" onClick={this.onClose}>Cancel</Button>
+                            </Grid>
+                            <Grid item>&nbsp;</Grid>
+                            <Grid item>
+                                <Button type="submit" color="primary" variant="contained" size="small"
+                                    disabled={!transaction.isValid}>Save</Button>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </form>
         );
     }
 }

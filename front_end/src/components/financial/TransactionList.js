@@ -71,6 +71,32 @@ class TransactionList extends React.Component {
 
     }
 
+    dynamicSummary = (trns) => {
+        const { account } = this.props;
+
+        if (trns.transaction_type == "TRN") {
+            var transferDetail = trns.transfer_detail_debit || trns.transfer_detail_credit
+
+            if (transferDetail.transfer_debit_transaction.account.id == account.id) {
+                return transferDetail.transfer_credit_transaction.account.name
+            }
+
+            if (transferDetail.transfer_credit_transaction.account.id == account.id) {
+                return transferDetail.transfer_debit_transaction.account.name
+            }
+        }
+
+        return trns.organization ? trns.organization.name : trns.summary
+    }
+
+    dynamicDescription = (trns) => {
+        if (trns.transaction_type == "TRN") {
+            return "Transfer"
+        }
+
+        return trns.organization ? trns.summary : trns.description
+    }
+
     render() {
         const { account, transactions, transactionsLoading, transactionsLoaded, editTransaction, isMobile, classes } = this.props
 
@@ -79,6 +105,8 @@ class TransactionList extends React.Component {
         }
 
         if (!transactionsLoading && transactionsLoaded && transactions && transactions.length) {
+            var acctType = account.account_type;
+
             return (
                 <List>
                     { transactions.map(trns => (
@@ -89,7 +117,7 @@ class TransactionList extends React.Component {
                                     <Grid container item spacing={0} xs={12} justify="space-between">
                                         <Grid item xs={8} sm={6}>
                                             <Typography noWrap variant="body1">
-                                                {trns.organization ? trns.organization.name : trns.summary}
+                                                {this.dynamicSummary(trns)}
                                             </Typography>
                                         </Grid>
                                         {isMobile ? null :     
@@ -106,15 +134,17 @@ class TransactionList extends React.Component {
                                                 <NumberFormat value={trns.amount} displayType={'text'}
                                                     thousandSeparator={true} decimalScale={2} fixedDecimalScale={true}
                                                     prefix={
-                                                        (account.account_type == 'CR' || account.account_type == 'LN') && trns.transaction_type == 'CRD' ? '-$' : 
-                                                        (account.account_type == 'CK' || account.account_type == 'SV') && trns.transaction_type == 'DBT' ? '-$' : '$'
+                                                        (acctType == 'CR' || acctType == 'LN') && trns.transaction_type == 'CRD' ? '-$' : 
+                                                        (acctType == 'CK' || acctType == 'SV') && trns.transaction_type == 'DBT' ? '-$' : 
+                                                        (acctType == 'CR' || acctType == 'LN') && trns.transaction_type == 'TRN' && trns.transfer_detail_credit ? '-$' :
+                                                        (acctType == 'CK' || acctType == 'SV') && trns.transaction_type == 'TRN' && trns.transfer_detail_debit ? '-$' : '$'
                                                         }  />
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={8} sm={6}>
                                             <div className={classes.listCaption}>
                                                 <Typography noWrap variant="caption" className={classes.listCaption}>
-                                                    {trns.organization ? trns.summary : trns.description}
+                                                    {this.dynamicDescription(trns)}
                                                 </Typography>
                                             </div>
                                         </Grid>

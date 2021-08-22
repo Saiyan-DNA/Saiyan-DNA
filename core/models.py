@@ -153,7 +153,7 @@ class Person(models.Model):
     status = models.CharField(max_length=1, choices=PersonStatus.choices, default=PersonStatus.NONE, verbose_name="Status")
 
     home = models.ForeignKey(to=Home, on_delete=models.PROTECT)
-    user_account = models.ForeignKey(to=User, on_delete=models.PROTECT, null=True, blank=True)
+    user_account = models.OneToOneField(to=User, related_name="profile", on_delete=models.PROTECT, null=True, blank=True)
 
     def __str__(self):
         return ", ".join((self.last_name, self.first_name))
@@ -161,3 +161,27 @@ class Person(models.Model):
     class Meta:
         verbose_name_plural = "People"
         ordering = ["last_name", "first_name"]
+
+class VerificationCode (models.Model):
+    """
+    Stores System-Generated Verification Codes (time-sensitive) used to activate newly registered accounts.
+    """
+
+    class CodeStatus(models.TextChoices):
+        ACTIVE = "A"
+        EXPIRED = "X"
+        COMPLETED = "C"
+        REVOKED = "R"
+
+    user = models.ForeignKey(to=User, related_name="verification_code", on_delete=models.CASCADE)
+    code = models.CharField("Code", max_length=6)
+    create_date = models.DateTimeField("Create Date")
+    expires = models.DateTimeField("Expires", auto_now_add=False)
+    status = models.CharField(max_length=1, choices=CodeStatus.choices, default=CodeStatus.ACTIVE, verbose_name="Status")
+
+    def __str__(self):
+        return f"{self.user.username} - {self.code} ({self.expires})"
+
+    class Meta:
+        verbose_name_plural = "Verification Codes"
+        ordering = ["-create_date"]

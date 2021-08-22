@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
 const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
 const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "General" */));

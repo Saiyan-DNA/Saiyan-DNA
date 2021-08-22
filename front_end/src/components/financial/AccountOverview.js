@@ -10,7 +10,7 @@ const Container = loadable(() => import('@material-ui/core/Container' /* webpack
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
 const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
 const Chip = loadable(() => import('@material-ui/core/Chip' /* webpackChunkName: "Material" */));
 const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
 const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Navigation" */));
@@ -202,7 +202,7 @@ class AccountOverview extends React.Component {
                             onClick={this.toggleActionMenu}>Actions</Button>
                     </Grid>
                     <Grid item xs={12}>
-                        { !accountLoading && accountLoaded ?
+                        { !accountLoading && accountLoaded && account.id ?
                         <>
                             <Grid container spacing={2} justify="flex-start">
                                 <Grid item>

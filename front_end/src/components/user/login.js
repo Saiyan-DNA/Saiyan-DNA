@@ -9,7 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
 const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
 const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
 const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
 const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
@@ -47,7 +47,7 @@ class Login extends React.Component {
     
     componentDidMount() {
         this.props.setTitle("Log In");
-    }
+    }   
 
     componentDidUpdate() {
         switch (this.props.loginError) {
@@ -81,6 +81,14 @@ class Login extends React.Component {
         }
     }
 
+    loginDisabled = () => {
+        const { username, password, showUsernameError, showPasswordError } = this.state;
+
+        let disabled = (username == "" || password == "" || showUsernameError || showPasswordError);        
+
+        return disabled
+    }
+
     render() {
         const { classes, isAuthenticated, currentPath } = this.props
         const { username, password, showUsernameError, showPasswordError } = this.state
@@ -99,7 +107,7 @@ class Login extends React.Component {
                                     <Grid container spacing={2} justify="center">
                                         <Grid item xs={10}>
                                             <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="username">Username</InputLabel>
+                                                <InputLabel htmlFor="username">Username / E-Mail Address</InputLabel>
                                                 <Input
                                                     type="text"
                                                     className="form-control"
@@ -131,7 +139,7 @@ class Login extends React.Component {
                                         </Grid>
                                         <Grid item xs={10}>
                                             <div align="center" style={{marginTop: "1em"}}>
-                                                <Button type="submit" variant="contained" color="primary" align="center">
+                                                <Button type="submit" variant="contained" color="primary" align="center" disabled={this.loginDisabled()}>
                                                     Log In
                                                 </Button>
                                             </div>
