@@ -40,6 +40,7 @@ class FinancialAccounts extends React.Component {
         getAccounts: PropTypes.func.isRequired,
         accountsLoading: PropTypes.bool.isRequired,
         accountsLoaded: PropTypes.bool.isRequired,
+        accountDeleting: PropTypes.bool.isRequired,
         clearAccount: PropTypes.func.isRequired,
         clearTransactions: PropTypes.func.isRequired,
         setTitle: PropTypes.func.isRequired
@@ -60,7 +61,7 @@ class FinancialAccounts extends React.Component {
     componentDidUpdate() {
         const { accountsLoading, accountsLoaded, getAccounts } = this.props;
         
-        if (!accountsLoaded && !accountsLoading) {
+        if (!accountsLoaded && !accountsLoading && !accountDeleting) {
             getAccounts();
         }
     }
@@ -132,7 +133,8 @@ const mapStateToProps = state => ({
     loanAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("LN")),
     investmentAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("IN")),
     accountsLoading: state.accounts.accountsLoading,
-    accountsLoaded: state.accounts.accountsLoaded
+    accountsLoaded: state.accounts.accountsLoaded,
+    accountDeleting: state.accounts.accountDeleting
 });
 
 const mapDispatchToProps = {

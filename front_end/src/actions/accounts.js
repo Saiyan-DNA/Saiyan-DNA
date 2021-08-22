@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { ACCOUNT_LOADING, ACCOUNT_LOADED, ACCOUNT_LOAD_ERROR, CLEAR_ACCOUNT } from './types';
-import { CREATE_ACCOUNT, UPDATE_ACCOUNT, DELETE_ACCOUNT } from './types';
+import { CREATE_ACCOUNT, UPDATE_ACCOUNT, ACCOUNT_DELETING, DELETE_ACCOUNT } from './types';
 import { ACCOUNTS_LOADING, ACCOUNTS_LOADED } from './types';
 
 import { GET_FINANCIAL_INSTITUTION, GET_FINANCIAL_INSTITUTIONS } from './types';
@@ -78,6 +78,8 @@ export const updateAccount = (id, acct) => (dispatch, getState) => {
 
 // DELETE_ACCOUNT
 export const deleteAccount = (id) => (dispatch, getState) => {
+    dispatch({type: ACCOUNT_DELETING});
+
     const jwt_token = getState().auth.token;
 
     const config = {

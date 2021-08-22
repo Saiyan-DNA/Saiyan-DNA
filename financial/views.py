@@ -2,6 +2,7 @@
 Views for the Accounting Application
 '''
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db.models import Q
 
 from rest_framework.response import Response
@@ -31,7 +32,19 @@ class AccountListView(viewsets.ModelViewSet):
         return AccountSerializer
 
     def get_queryset(self):
-        return self.request.user.accounts.all()
+        cache_key = f"accounts_{self.request.user.id}"
+
+        if (self.request.method in ['GET']):
+            accounts = cache.get(cache_key)
+            if (accounts):
+                return accounts
+        
+        cache.delete(cache_key)
+
+        accounts = self.request.user.accounts.all()
+        cache.set(cache_key, accounts)
+
+        return accounts
 
     def create(self, request, *args, **kwargs):
         result = super(AccountListView, self).create(request, *args, **kwargs)
@@ -39,16 +52,25 @@ class AccountListView(viewsets.ModelViewSet):
         if result.status_code == 201:
             queryset = self.get_queryset()
             new_account = queryset.get(id=result.data['id'])
+
             return Response(data=AccountReadSerializer(new_account).data)
         return result
 
     def update(self, request, *args, **kwargs):
         result = super(AccountListView, self).update(request, *args, **kwargs)
-        
+
         if result.status_code == 200:
             self.request.method = 'GET'
+
             return super(AccountListView, self).retrieve(request, *args, **kwargs)
         return result
+
+    def destroy(self, request, *args, **kwargs):
+        cache_key = f"accounts_{self.request.user.id}"
+        response = super(AccountListView, self).destroy(request, *args, **kwargs)
+        cache.delete(cache_key)
+
+        return response
 
 
 class AssetListView(viewsets.ModelViewSet):
@@ -63,7 +85,19 @@ class AssetListView(viewsets.ModelViewSet):
     serializer_class = AssetSerializer
 
     def get_queryset(self):
-        return self.request.user.assets.all()
+
+        if (self.request.method in ['GET']):
+            key = f"assets_{self.request.user.id}"
+
+            assets = cache.get(key)
+
+            if assets:
+                return assets
+        
+        assets = self.request.user.assets.all()
+        cache.set(key, assets)
+
+        return assets
 
 
 class FinancialCategoryListView(viewsets.ModelViewSet):
@@ -86,12 +120,26 @@ class FinancialCategoryListView(viewsets.ModelViewSet):
             user_homes = self.request.user.homes.all().values()
 
             if home_id and int(home_id) in (i["id"] for i in user_homes) or self.request.user.is_superuser:
-                return FinancialCategory.objects.filter(Q(home=home_id) | Q(home=None))
+                cache_key = f"financial_categories_{self.request.user.id}"
+
+                categories = cache.get(cache_key)
+
+                if (not categories):
+                    categories = FinancialCategory.objects.filter(Q(home=home_id) | Q(home=None))
+                    cache.set(cache_key, categories)
+
+                return categories
 
         except ValueError:
             return Response({"Error": "Home Parameter Must be a Number"})
 
-        return FinancialCategory.objects.filter(home_id=None)
+        cache_key = "financial_categories_generic"
+        categories = cache.get(cache_key)
+        if (not categories):
+            categories = FinancialCategory.objects.filter(home_id=None)
+            cache.set(cache_key, categories)
+
+        return categories
 
     def update(self, request, *args, **kwargs):
         result = super(FinancialCategoryListView, self).update(request, *args, **kwargs)
@@ -129,11 +177,27 @@ class FinancialCategoryHierarchyView(APIView):
         try:
             home_id = request.query_params.get("home")
             user_homes = self.request.user.homes.all().values()
+            cache_key = "financial_category_tree_"
 
             if home_id and int(home_id) in (i["id"] for i in user_homes) or self.request.user.is_superuser:
-                hierarchy = FinancialCategory.objects.get_hierarchy(home_id)
+                cache_key += str(self.request.user.id)
+
+                cached_hierarchy = cache.get(cache_key)
+                if (cached_hierarchy):
+                    hierarchy = cached_hierarchy
+                else:
+                    hierarchy = FinancialCategory.objects.get_hierarchy(home_id)
+                    cache.set(cache_key, hierarchy)
             else:
-                hierarchy = FinancialCategory.objects.get_hierarchy(home_id=None)
+                cache_key += "generic"
+
+                cached_hierarchy = cache.get(cache_key)
+
+                if (cached_hierarchy):
+                    hierarchy = cached_hierarchy
+                else:
+                    hierarchy = FinancialCategory.objects.get_hierarchy(home_id=None)
+                    cache.set(cache_key, hierarchy)
 
                 
             return Response(hierarchy)
@@ -162,18 +226,32 @@ class TransactionListView(viewsets.ModelViewSet):
         return TransactionSerializer
 
     def get_queryset(self):
-        queryset = TransactionLog.objects.all()
-
         account_id = self.request.query_params.get('acct_id')
         filtered_set = []
 
-        if (account_id):
+        if (self.request.method in ['GET'] and account_id):
             start_date = self.request.query_params.get('startDate')
             end_date = self.request.query_params.get('endDate')
-            filtered_set = queryset.filter(owner=self.request.user, account=account_id)
+
+            cache_key = f"transactions_{account_id}"
+
+            transactions = cache.get(cache_key)
+
+            if (transactions):
+                filtered_set = transactions
+            else:
+                filtered_set = TransactionLog.objects.filter(owner=self.request.user, account=account_id)
+                cache.set(cache_key, filtered_set) 
         else:
-            filtered_set = queryset.filter(owner=self.request.user) 
-            
+            cache_key = f"user_transactions_{self.request.user.id}"
+
+            transactions = cache.get(cache_key)
+            if (transactions):
+                filtered_set = transactions
+            else:
+                filtered_set = TransactionLog.objects.filter(owner=self.request.user) 
+                cache.set(cache_key, filtered_set)
+                
         return filtered_set
 
 
@@ -305,7 +383,17 @@ class FinancialInstitutionListView(viewsets.ModelViewSet):
     serializer_class = OrganizationSerializer
 
     def get_queryset(self):
-        return Organization.objects.filter(organization_type="FIN")
+        
+        if (self.request.method in ['GET']):
+            cache_key = "financial_institutions"
+
+            financial_institutions = cache.get(cache_key)
+
+            if (not financial_institutions):
+                financial_institutions = Organization.objects.filter(organization_type="FIN")
+                cache.set(cache_key, financial_institutions)
+
+        return financial_institutions
 
     def perform_create(self, serializer):
         serializer.save(organization_type="FIN")
