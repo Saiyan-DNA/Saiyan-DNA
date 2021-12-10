@@ -35,14 +35,17 @@ class AccountListView(viewsets.ModelViewSet):
         cache_key = f"accounts_{self.request.user.id}"
 
         if (self.request.method in ['GET']):
-            accounts = cache.get(cache_key)
-            if (accounts):
-                return accounts
-        
-        cache.delete(cache_key)
+            accounts = self.request.session.get(cache_key)
 
-        accounts = self.request.user.accounts.all()
-        cache.set(cache_key, accounts)
+            if (not accounts):
+                accounts = self.request.user.accounts.all()
+                self.request.session[cache_key] = accounts
+        else:
+            accounts = self.request.user.accounts.all()
+            try:
+                del self.request.session[cache_key]
+            except KeyError:
+                print(f"Cannot delete '{cache_key}'. It does not exist in the session cache.")
 
         return accounts
 
@@ -68,7 +71,10 @@ class AccountListView(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         cache_key = f"accounts_{self.request.user.id}"
         response = super(AccountListView, self).destroy(request, *args, **kwargs)
-        cache.delete(cache_key)
+        try:
+            del request.session[cache_key]
+        except KeyError:
+            print(f"Cannot delete '{cache_key}'. It does not exist in the session cache.")
 
         return response
 
@@ -87,16 +93,14 @@ class AssetListView(viewsets.ModelViewSet):
     def get_queryset(self):
 
         if (self.request.method in ['GET']):
-            key = f"assets_{self.request.user.id}"
+            cache_key = f"assets_{self.request.user.id}"
 
-            assets = cache.get(key)
+            assets = self.request.session.get(cache_key)
 
-            if assets:
-                return assets
-        
-        assets = self.request.user.assets.all()
-        cache.set(key, assets)
-
+            if (not assets):
+                assets = self.request.user.assets.all()
+                self.request.session[cache_key] = assets
+                
         return assets
 
 
@@ -122,11 +126,12 @@ class FinancialCategoryListView(viewsets.ModelViewSet):
             if home_id and int(home_id) in (i["id"] for i in user_homes) or self.request.user.is_superuser:
                 cache_key = f"financial_categories_{self.request.user.id}"
 
-                categories = cache.get(cache_key)
+                categories = self.request.session.get(cache_key)
+                print(f"Cache Session Expires in: {self.request.session.get_expiry_age()}")
 
                 if (not categories):
                     categories = FinancialCategory.objects.filter(Q(home=home_id) | Q(home=None))
-                    cache.set(cache_key, categories)
+                    self.request.session[cache_key] = categories
 
                 return categories
 
@@ -134,10 +139,13 @@ class FinancialCategoryListView(viewsets.ModelViewSet):
             return Response({"Error": "Home Parameter Must be a Number"})
 
         cache_key = "financial_categories_generic"
-        categories = cache.get(cache_key)
+        categories = self.request.session.get(cache_key)
+
+        print(f"Cache Session Expires in: {self.request.session.get_expiry_age()}")
+
         if (not categories):
             categories = FinancialCategory.objects.filter(home_id=None)
-            cache.set(cache_key, categories)
+            self.request.session[cache_key] = categories
 
         return categories
 
@@ -182,22 +190,22 @@ class FinancialCategoryHierarchyView(APIView):
             if home_id and int(home_id) in (i["id"] for i in user_homes) or self.request.user.is_superuser:
                 cache_key += str(self.request.user.id)
 
-                cached_hierarchy = cache.get(cache_key)
+                cached_hierarchy = request.session.get(cache_key)
                 if (cached_hierarchy):
                     hierarchy = cached_hierarchy
                 else:
                     hierarchy = FinancialCategory.objects.get_hierarchy(home_id)
-                    cache.set(cache_key, hierarchy)
+                    request.session[cache_key] = hierarchy
             else:
                 cache_key += "generic"
 
-                cached_hierarchy = cache.get(cache_key)
+                cached_hierarchy = self.request.session.get(cache_key)
 
                 if (cached_hierarchy):
                     hierarchy = cached_hierarchy
                 else:
                     hierarchy = FinancialCategory.objects.get_hierarchy(home_id=None)
-                    cache.set(cache_key, hierarchy)
+                    self.request.session[cache_key] = hierarchy
 
                 
             return Response(hierarchy)
@@ -230,30 +238,54 @@ class TransactionListView(viewsets.ModelViewSet):
         filtered_set = []
 
         if (self.request.method in ['GET'] and account_id):
+            cache_key = f"transactions_{account_id}"
+
             start_date = self.request.query_params.get('startDate')
             end_date = self.request.query_params.get('endDate')
 
-            cache_key = f"transactions_{account_id}"
-
-            transactions = cache.get(cache_key)
+            transactions = self.request.session.get(cache_key)
 
             if (transactions):
                 filtered_set = transactions
             else:
                 filtered_set = TransactionLog.objects.filter(owner=self.request.user, account=account_id)
-                cache.set(cache_key, filtered_set) 
+                self.request.session[cache_key] = filtered_set
         else:
-            cache_key = f"user_transactions_{self.request.user.id}"
-
-            transactions = cache.get(cache_key)
-            if (transactions):
-                filtered_set = transactions
-            else:
-                filtered_set = TransactionLog.objects.filter(owner=self.request.user) 
-                cache.set(cache_key, filtered_set)
-                
+            filtered_set = TransactionLog.objects.filter(owner=self.request.user)
+                 
         return filtered_set
 
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            cache_key = f"transactions_{instance.account.id}"
+
+            if request.session[cache_key]:
+                del request.session[cache_key]
+        except:
+            print("Error")
+
+        return super(TransactionListView, self).destroy(request, *args, **kwargs)
+    
+    def create(self, request, *args, **kwargs):
+        try:
+            cache_key = f"transactions_{request.data['account']}"
+            if request.session[cache_key]:
+                del request.session[cache_key]
+        except:
+            print("Error creating new transaction.")
+
+        return super(TransactionListView, self).create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        try:
+            cache_key = f"transactions_{request.data['account']}"
+            if request.session[cache_key]:
+                del request.session[cache_key]
+        except:
+            print("Error updating transaction.")
+        
+        return super(TransactionListView, self).update(request, *args, **kwargs)
 
 class TransferAPIView(APIView):
     '''
@@ -284,11 +316,21 @@ class TransferAPIView(APIView):
                 result = serializer.save()
                 transfer_detail["transfer_debit_transaction"] = result.id
 
+                cache_key = f"transactions_{transfer_out_transaction['account']}"
+
+                if request.session.get(cache_key):
+                    del request.session[cache_key]
+
             # Validate and Save the Transfer In (credit) Transaction
             serializer = TransactionSerializer(data=transfer_in_transaction)
             if serializer.is_valid():
                 result = serializer.save()
                 transfer_detail["transfer_credit_transaction"] = result.id
+
+                cache_key = f"transactions_{transfer_in_transaction['account']}"
+
+                if request.session.get(cache_key):
+                    del request.session[cache_key]
 
             # Validat and Save the Transfer Detail Record (links transfer in/out transaction IDs)
             serializer = TransferSerializer(data=transfer_detail)
@@ -326,6 +368,11 @@ class TransferAPIView(APIView):
             serializer = TransactionSerializer(data=transfer_out_transaction)
             if serializer.is_valid():
                 result = serializer.update(TransactionLog.objects.get(id=transfer_out_transaction["id"]), serializer.validated_data)
+
+                cache_key = f"transactions_{transfer_out_transaction['account']}"
+
+                if request.session.get(cache_key):
+                    del request.session[cache_key]
             else:
                 return Response({"error": "Error Updating Transfer."})
 
@@ -333,13 +380,15 @@ class TransferAPIView(APIView):
             serializer = TransactionSerializer(data=transfer_in_transaction)
             if serializer.is_valid():
                 result = serializer.update(TransactionLog.objects.get(id=transfer_in_transaction["id"]), serializer.validated_data)
+                
+                cache_key = f"transactions_{transfer_in_transaction['account']}"
+
+                if request.session.get(cache_key):
+                    del request.session[cache_key]
             else:
                 return Response({"error": "Error Updating Transfer."})
         except ValueError:
-            print("Error Creating Transfer.")
             return Response({"error": "Error Updating Transfer."})
-        
-
 
         return Response({"success": "Transfer Transaction Successfully Updated"})
 
@@ -348,19 +397,29 @@ class TransferAPIView(APIView):
 
         if (transaction_id):
             try:
-                transfer_detail = TransferDetail.objects.filter(Q(transfer_credit_transaction=transaction_id) | Q(transfer_debit_transaction=transaction_id))
+                transfer_detail = TransferDetail.objects.filter(Q(transfer_credit_transaction_id=transaction_id) | Q(transfer_debit_transaction_id=transaction_id))
 
                 if (transfer_detail.__len__() == 1):
+
                     transaction_set = []
 
+                    # Obtain both transactions (debit & credit) associated with the transfer
                     for t in transfer_detail.values():
                         transaction_set.append(t["transfer_debit_transaction_id"])
                         transaction_set.append(t["transfer_credit_transaction_id"])
                         
-                    transfer_detail.delete()
-
                     transactions = TransactionLog.objects.filter(id__in=transaction_set)
-                    transactions.delete()
+
+                    # Delete Cached Transaction Lists for the affected accounts.
+                    for t in transactions:
+                        cache_key = f"transactions_{t.account.id}"
+
+                        if request.session[cache_key]:
+                            del request.session[cache_key]
+
+                    # Delete the transfer detail reference record and transaction log records associated with the transfer
+                    transfer_detail.delete()
+                    transactions.delete()                    
 
                     return Response({"success": "Transfer Transactions Deleted."})
 
@@ -387,11 +446,11 @@ class FinancialInstitutionListView(viewsets.ModelViewSet):
         if (self.request.method in ['GET']):
             cache_key = "financial_institutions"
 
-            financial_institutions = cache.get(cache_key)
+            financial_institutions = self.request.session.get(cache_key)
 
             if (not financial_institutions):
                 financial_institutions = Organization.objects.filter(organization_type="FIN")
-                cache.set(cache_key, financial_institutions)
+                self.request.session[cache_key] = financial_institutions
 
         return financial_institutions
 

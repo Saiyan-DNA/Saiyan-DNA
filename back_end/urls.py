@@ -21,7 +21,8 @@ from django.conf.urls import url
 
 urlpatterns = [
     path('api/inventory/', include("inventory.urls")),
-    path('api/financial/', include("financial.urls")),    
+    path('api/financial/', include("financial.urls")),
+    path('api/utilities/', include("utilities.urls")),
     path('admin/', admin.site.urls),
     path('', include("core.urls")),
 ]
