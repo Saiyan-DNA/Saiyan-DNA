@@ -127,6 +127,7 @@ class FinancialCategoryListView(viewsets.ModelViewSet):
                 cache_key = f"financial_categories_{self.request.user.id}"
 
                 categories = self.request.session.get(cache_key)
+                print(f"Cache Session Expires in: {self.request.session.get_expiry_age()}")
 
                 if (not categories):
                     categories = FinancialCategory.objects.filter(Q(home=home_id) | Q(home=None))
@@ -139,6 +140,8 @@ class FinancialCategoryListView(viewsets.ModelViewSet):
 
         cache_key = "financial_categories_generic"
         categories = self.request.session.get(cache_key)
+
+        print(f"Cache Session Expires in: {self.request.session.get_expiry_age()}")
 
         if (not categories):
             categories = FinancialCategory.objects.filter(home_id=None)
