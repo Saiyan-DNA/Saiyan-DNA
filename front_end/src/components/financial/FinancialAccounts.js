@@ -59,7 +59,7 @@ class FinancialAccounts extends React.Component {
     }
 
     componentDidUpdate() {
-        const { accountsLoading, accountsLoaded, getAccounts } = this.props;
+        const { accountsLoading, accountsLoaded, accountDeleting, getAccounts } = this.props;
         
         if (!accountsLoaded && !accountsLoading && !accountDeleting) {
             getAccounts();
