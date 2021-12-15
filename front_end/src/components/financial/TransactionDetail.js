@@ -376,7 +376,7 @@ class TransactionDetail extends React.Component {
 
         // If user is not on a mobile phone device, then the transaction detail is contained within a modal on the Account Overview page view.
         return (
-            <form onSubmit={this.saveTransaction} autoComplete="off">
+            <form autoComplete="off">
                 <Grid container spacing={3}>
                     <Grid item container xs={12} justify="space-between">
                         {this.generateDetail()}
@@ -397,7 +397,7 @@ class TransactionDetail extends React.Component {
                             </Grid>
                             <Grid item>&nbsp;</Grid>
                             <Grid item>
-                                <Button type="submit" color="primary" variant="contained" size="small"
+                                <Button onClick={this.saveTransaction} color="primary" variant="contained" size="small"
                                     disabled={!transaction.isValid}>Save</Button>
                             </Grid>
                         </Grid>
