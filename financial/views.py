@@ -35,15 +35,15 @@ class AccountListView(viewsets.ModelViewSet):
         cache_key = f"accounts_{self.request.user.id}"
 
         if (self.request.method in ['GET']):
-            accounts = self.request.session.get(cache_key)
+            accounts = cache.get(cache_key)
 
             if (not accounts):
                 accounts = self.request.user.accounts.all()
-                self.request.session[cache_key] = accounts
+                cache.set(cache_key, accounts)
         else:
             accounts = self.request.user.accounts.all()
             try:
-                del self.request.session[cache_key]
+                cache.delete(cache_key)
             except KeyError:
                 print(f"Cannot delete '{cache_key}'. It does not exist in the session cache.")
 
@@ -72,7 +72,7 @@ class AccountListView(viewsets.ModelViewSet):
         cache_key = f"accounts_{self.request.user.id}"
         response = super(AccountListView, self).destroy(request, *args, **kwargs)
         try:
-            del request.session[cache_key]
+            cache.delete(cache_key)
         except KeyError:
             print(f"Cannot delete '{cache_key}'. It does not exist in the session cache.")
 
