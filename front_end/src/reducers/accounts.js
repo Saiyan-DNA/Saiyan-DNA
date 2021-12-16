@@ -57,6 +57,9 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 currentAccount: action.payload,
+                accountLoading: false,
+                accountLoaded: true,
+                accountLoadError: false,
                 accountsLoaded: false
             };
         case UPDATE_ACCOUNT:
@@ -75,6 +78,7 @@ export default function(state = initialState, action) {
             };
         case ACCOUNT_LOADED:
             localStorage.setItem("accountId", action.payload.id);
+            console.log("Account Loaded!");
             return {
                 ...state,
                 accountLoading: false,
