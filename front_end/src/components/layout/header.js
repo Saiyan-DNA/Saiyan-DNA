@@ -6,11 +6,11 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const AppBar = loadable(() => import('@material-ui/core/AppBar' /* webpackChunkName: "Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
-const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Layout" */));
-const Toolbar = loadable(() => import('@material-ui/core/Toolbar' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const AppBar = loadable(() => import('@material-ui/core/AppBar' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
+const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material-Navigation" */));
+const Toolbar = loadable(() => import('@material-ui/core/Toolbar' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
 const MenuRounded = loadable(() => import('@material-ui/icons/MenuRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const PersonRounded = loadable(() => import('@material-ui/icons/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});

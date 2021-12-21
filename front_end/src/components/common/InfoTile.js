@@ -4,10 +4,9 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
 
 const styles = theme => ({
     infoTileCard: {
@@ -36,7 +35,7 @@ class InfoTile extends React.Component {
 
         return (
             <Card variant={showBorder ? "outlined" : "elevation"} elevation={0} className={classes.infoTileCard}>
-                <Grid container direction="column" spacing={0} justify={"center"} style={{marginTop: "2px"}}>
+                <Grid container direction="column" spacing={0} justifyContent={"center"} style={{marginTop: "2px"}}>
                     <Grid item>
                         <Typography variant="h6" align="center" className={classes.infoTitle}>{title}</Typography>
                     </Grid>

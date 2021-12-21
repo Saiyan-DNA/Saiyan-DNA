@@ -7,16 +7,16 @@ import zxcvbn from 'zxcvbn';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
 
 const PasswordStrengthMeter = loadable(() => import('./PasswordStrengthMeter' /*webpackChunkName: "General" */));
 
@@ -177,13 +177,13 @@ class RegisterUser extends React.Component {
 
         return (
             <Container>
-                <Grid container spacing={0} justify="center">
+                <Grid container spacing={0} justifyContent="center">
                     <Grid item xs={12} sm={8} md={6} lg={4}>
                         <Card elevation={4}>
                             <CardContent>
                                 <form onSubmit={this.registerUser}>
-                                    <Grid container spacing={2} justify="space-between">
-                                        <Grid item container xs={12} sm={12} justify="center">
+                                    <Grid container spacing={2} justifyContent="space-between">
+                                        <Grid item container xs={12} sm={12} justifyContent="center">
                                             <Typography variant="h5">Register a New Account</Typography>
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -221,7 +221,7 @@ class RegisterUser extends React.Component {
                                                 </Typography>
                                             }    
                                         </Grid>
-                                        <Grid item container xs={12} sm={12} spacing={0} justify="flex-start">
+                                        <Grid item container xs={12} sm={12} spacing={0} justifyContent="flex-start">
                                             <Grid item xs={12} sm={6}>
                                                 <FormControl fullWidth={true}>
                                                     <InputLabel htmlFor="userName">Username</InputLabel>
@@ -263,10 +263,10 @@ class RegisterUser extends React.Component {
                                                 <Typography variant="caption" color="primary">&nbsp;</Typography>
                                             }    
                                         </Grid>
-                                        <Grid item container xs={12} sm={12} justify="center">
+                                        <Grid item container xs={12} sm={12} justifyContent="center">
                                             <Button variant="contained" color="primary" disabled={!formValid} type="submit">Register</Button>    
                                         </Grid>      
-                                        <Grid item container xs={12} sm={12} justify="center">
+                                        <Grid item container xs={12} sm={12} justifyContent="center">
                                             <Typography variant="body1">Already have an Account? <Link to="/login">Log In</Link></Typography>
                                         </Grid>
                                     </Grid>

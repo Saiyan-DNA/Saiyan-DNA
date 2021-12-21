@@ -6,16 +6,16 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
 
 import { userLogin, clearLoginError } from '../../actions/auth';
 import { setTitle } from '../../actions/navigation';
@@ -99,12 +99,12 @@ class Login extends React.Component {
 
         return (
             <Container>
-                <Grid container spacing={0} justify="center">
+                <Grid container spacing={0} justifyContent="center">
                     <Grid item xs={10} sm={6} lg={4}>
                         <Card elevation={4}>
                             <CardContent>
                                 <form onSubmit={this.onSubmit}>
-                                    <Grid container spacing={2} justify="center">
+                                    <Grid container spacing={2} justifyContent="center">
                                         <Grid item xs={10}>
                                             <FormControl fullWidth={true}>
                                                 <InputLabel htmlFor="username">Username / E-Mail Address</InputLabel>

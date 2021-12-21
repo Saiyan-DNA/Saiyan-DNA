@@ -4,10 +4,10 @@ import loadable from '@loadable/component';
 import { withStyles } from '@material-ui/core/styles';
 
 const Box = loadable(() => import('@material-ui/core/Box' /* webpackChunkName: "Material" */))
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
-const CardHeader = loadable(() => import('@material-ui/core/CardHeader' /* webpackChunkName: "Layout" */));
-const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
+const CardHeader = loadable(() => import('@material-ui/core/CardHeader' /* webpackChunkName: "Material-Layout" */));
+const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material-Navigation" */));
 const Modal = loadable(() => import('@material-ui/core/Modal' /* webpackChunkName: "Material" */));
 const CloseSharp = loadable(() => import('@material-ui/icons/CloseSharp' /* webpackChunkName: "Icons" */));
 
@@ -49,7 +49,7 @@ const styles = theme => ({
 
 const BasicModal = ({classes, children, title, open, onClose}) => {
     return (
-        <Modal open={open} onClose={onClose} disableBackdropClick={true}>
+        <Modal open={open} onClose={onClose}>
             <Card elevation={4} className={classes.modalWindow}>
                 <CardHeader classes={{root: classes.modalHeader, action: classes.modalAction}} 
                     title={title} 

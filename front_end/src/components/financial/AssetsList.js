@@ -5,16 +5,16 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
 const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
 
 import { CurrencyFormat } from '../common/NumberFormats';
 
@@ -79,7 +79,7 @@ class AssetsList extends React.Component {
         return(
             <Card elevation={4}>
                 <CardContent>
-                    <Grid container spacing={0} justify={"space-between"} style={{paddingBottom: "8px"}}>
+                    <Grid container spacing={0} justifyContent={"space-between"} style={{paddingBottom: "8px"}}>
                         <Grid item>
                             <Typography variant="h5">Assets</Typography>
                         </Grid>
@@ -94,7 +94,7 @@ class AssetsList extends React.Component {
                     { assets.map(asset => (
                         <div key={asset.id}>
                             <ListItem button onClick={() => {this.viewAsset(asset.id)}} className={styleClasses.accountSummary}>
-                                <Grid container spacing={0} justify="space-between">
+                                <Grid container spacing={0} justifyContent="space-between">
                                     <Grid item>
                                         <Typography variant="body1">{asset.name}</Typography>
                                     </Grid>

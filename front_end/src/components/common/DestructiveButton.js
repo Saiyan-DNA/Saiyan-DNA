@@ -1,11 +1,11 @@
 import React from 'react';
 import loadable from '@loadable/component';
 
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import { createTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
 
-const theme = createMuiTheme({
+const theme = createTheme({
     typography: {
       fontFamily: "inherit"
     },
