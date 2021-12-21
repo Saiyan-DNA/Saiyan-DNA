@@ -5,16 +5,16 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
-const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Navigation" */));
+const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material-Input" */));
 
 import { setTitle } from '../../actions/navigation';
 
@@ -109,7 +109,7 @@ class CategoryInfo extends React.Component {
         return (
             <Container>
                 <form onSubmit={this.saveCategory}>
-                    <Grid container spacing={2} justify="space-between">
+                    <Grid container spacing={2} justifyContent="space-between">
                         <Grid item>
                             <Button variant="outlined" color="primary" size="small" 
                             onClick={this.goBack}>Back</Button>

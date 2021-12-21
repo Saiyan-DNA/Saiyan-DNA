@@ -6,18 +6,15 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const Chip = loadable(() => import('@material-ui/core/Chip' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
 const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Navigation" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
-const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
+const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Material-Navigation" */));
+const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Material-Navigation" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Navigation" */));
 
 const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "General" */));
 import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
@@ -166,7 +163,7 @@ class AccountOverview extends React.Component {
             let available = account.credit_limit - account.current_balance;
 
             return (
-                <Grid container spacing={2} justify={"center"} style={{padding: "0em 0.5em 0.5em 0.5em"}}>
+                <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em"}}>
                     <Grid item xs={4}>
                         <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} />} />
                     </Grid>
@@ -193,7 +190,7 @@ class AccountOverview extends React.Component {
         return (
             <Container>
                 <Grid container spacing={3}>
-                    <Grid item container xs={12} justify="space-between">
+                    <Grid item container xs={12} justifyContent="space-between">
                         <Button variant="outlined" color="primary" size="small" className={classes.hideForPrint}
                             onClick={this.goToList}>Back</Button>
                         <Button id="actionButton" variant="contained" color="primary" size="small"
@@ -204,7 +201,7 @@ class AccountOverview extends React.Component {
                     <Grid item xs={12}>
                         { !accountLoading && accountLoaded && account.id ?
                         <>
-                            <Grid container spacing={2} justify="flex-start">
+                            <Grid container spacing={2} justifyContent="flex-start">
                                 <Grid item>
                                     <Typography variant="caption" className={classes.listCaption} style={{marginLeft: "4px"}}>
                                     {account.organization.website_url != null ?
@@ -217,7 +214,7 @@ class AccountOverview extends React.Component {
                                 </Grid>
                             </Grid>
                             <SummaryCard header={
-                                <Grid container spacing={3} justify="space-between">
+                                <Grid container spacing={3} justifyContent="space-between">
                                     <Grid item xs>
                                         <Typography variant="h6">{account.name}</Typography>
                                     </Grid>
@@ -231,7 +228,7 @@ class AccountOverview extends React.Component {
                                 </Grid>
                             }>
                                 
-                                    <Grid container spacing={3} justify="flex-end" style={{marginTop: "2px"}}>
+                                    <Grid container spacing={3} justifyContent="flex-end" style={{marginTop: "2px"}}>
                                         <Grid item className={classes.hideForPrint}>
                                             <Button id="addTransactionButton" variant="contained" color="primary" size="small"
                                                 aria-controls="addTransactionButton" aria-haspopup={false}

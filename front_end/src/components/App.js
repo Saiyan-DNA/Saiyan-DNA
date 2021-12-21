@@ -4,7 +4,7 @@ import { connect, Provider } from 'react-redux';
 import { HashRouter as Router, Route, Switch, withRouter } from 'react-router-dom';
 import loadable from '@loadable/component';
 
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 import { checkTokenExpiration, loadUser } from '../actions/auth';
 import store from '../store';
@@ -34,7 +34,7 @@ const CategoryInfo = loadable(() => import('./inventory' /* webpackChunkName: "M
 
 const TimeoutModal = loadable(() => import('./common/TimeoutModal' /* webpackChunkName "General" */), {fallback: <div>&nbsp;</div>});
 
-const theme = createMuiTheme({
+const theme = createTheme({
     typography: {
       fontFamily: "inherit"
     },

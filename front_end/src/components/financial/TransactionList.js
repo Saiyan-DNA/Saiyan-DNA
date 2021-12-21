@@ -6,12 +6,12 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
 const Chip = loadable(() => import('@material-ui/core/Chip' /* webpackChunkName: "Material" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
 
 const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "General" */));
 
@@ -113,15 +113,15 @@ class TransactionList extends React.Component {
                         <div key={trns.id}>
                             <ListItem button className={classes.transactionSummary} 
                                 onClick={() => this.editTransaction(trns)}>
-                                <Grid container spacing={1} justify="space-between">
-                                    <Grid container item spacing={0} xs={12} justify="space-between">
+                                <Grid container spacing={1} justifyContent="space-between">
+                                    <Grid container item spacing={0} xs={12} justifyContent="space-between">
                                         <Grid item xs={8} sm={6}>
                                             <Typography noWrap variant="body1">
                                                 {this.dynamicSummary(trns)}
                                             </Typography>
                                         </Grid>
                                         {isMobile ? null :     
-                                            <Grid container item sm={4} direction="column" justify="flex-start">
+                                            <Grid container item sm={4} direction="column" justifyContent="flex-start">
                                                 <Grid item sm={4}>
                                                 {/* Transaction Category */}
                                                     {trns.financial_category ? <Chip size="small" color="secondary" label={trns.financial_category.name} /> : <span>&nbsp;</span>}

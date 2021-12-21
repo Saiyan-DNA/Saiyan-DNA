@@ -8,17 +8,17 @@ import { withStyles } from '@material-ui/core/styles';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
 const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
-const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
+const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material-Input" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
 const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */));
 const AccountSelect = loadable(() => import ('./controls/AccountSelect' /* webpackChunkName: "Financial" */));
@@ -274,7 +274,7 @@ class TransactionDetail extends React.Component {
         const { transferDetailsVisible, transaction } = this.state;
         
         return (
-            <Grid container spacing={2} justify="space-between" className={isMobile ? classes.detailContainer : null}>
+            <Grid container spacing={2} justifyContent="space-between" className={isMobile ? classes.detailContainer : null}>
                 <Grid item xs={6} sm={6}>
                     <FormControl fullWidth={true} disabled={true}>
                         <InputLabel htmlFor="accountName">Account</InputLabel>
@@ -347,7 +347,7 @@ class TransactionDetail extends React.Component {
             return (
                 <Container>
                     <form onSubmit={this.saveTransaction} autoComplete="off">
-                        <Grid container spacing={3} justify="space-between">
+                        <Grid container spacing={3} justifyContent="space-between">
                             <Grid item>
                                 <Button color="primary" variant="outlined" size="small" onClick={this.onClose}>Back</Button>
                             </Grid>
@@ -378,20 +378,20 @@ class TransactionDetail extends React.Component {
         return (
             <form autoComplete="off">
                 <Grid container spacing={3}>
-                    <Grid item container xs={12} justify="space-between">
+                    <Grid item container xs={12} justifyContent="space-between">
                         {this.generateDetail()}
                     </Grid>
                     <Grid item xs={12}>
                         <Divider light={true} />
                     </Grid>
-                    <Grid container item xs={12} justify="space-between">
+                    <Grid container item xs={12} justifyContent="space-between">
                         <Grid item xs={4}>
                             {transaction.transactionId ? 
                                 <DestructiveButton onClick={this.deleteTransaction}>Delete</DestructiveButton> :
                                 <Typography>&nbsp;</Typography>
                             }
                         </Grid>                             
-                        <Grid container item xs={8} justify="flex-end">
+                        <Grid container item xs={8} justifyContent="flex-end">
                             <Grid item>
                                 <Button color="primary" variant="outlined" size="small" onClick={this.onClose}>Cancel</Button>
                             </Grid>

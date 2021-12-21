@@ -20,7 +20,7 @@ class CreditList extends React.Component {
 
     creditOverview = (utilization, availableAmount) => {
         return (
-            <Grid container spacing={2} justify={"center"} style={{padding: "0em 0.5em 0.5em 0.5em", marginTop: "2px", borderBottom: "0.5px solid #DCDCDC"}}>
+            <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em", marginTop: "2px", borderBottom: "0.5px solid #DCDCDC"}}>
                 <Grid item xs={4}>
                     <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} />} />
                 </Grid>

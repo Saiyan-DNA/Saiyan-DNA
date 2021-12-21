@@ -6,13 +6,13 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */));
 
@@ -83,20 +83,20 @@ class PendingUser extends React.Component {
 
         return (
             <Container>
-                <Grid container spacing={3} justify="center">
-                    <Grid item container justify="flex-start">
+                <Grid container spacing={3} justifyContent="center">
+                    <Grid item container justifyContent="flex-start">
                         <Button color="primary" variant="outlined" size="small" onClick={this.returnToLogin}>Back</Button>
                     </Grid>
-                    <Grid item container xs={12} md={9} justify="flex-end">
+                    <Grid item container xs={12} md={9} justifyContent="flex-end">
                         <SummaryCard header="Awaiting E-Mail Verification">
                             <form onSubmit={this.verifyCode}>
-                                <Grid container justify="center" spacing={2} style={{marginTop: "0.1em"}}>
+                                <Grid container justifyContent="center" spacing={2} style={{marginTop: "0.1em"}}>
                                     <Grid item xs={12}>
                                         <Typography variant="body1">
                                             Please enter the verification code sent to your e-mail address when you registered.
                                         </Typography>
                                     </Grid>
-                                    <Grid item xs={12} container spacing={2} justify="center" alignItems="flex-end">
+                                    <Grid item xs={12} container spacing={2} justifyContent="center" alignItems="flex-end">
                                         <Grid item>
                                             <FormControl fullWidth={true}>
                                                 <InputLabel htmlFor="verificationCode">Verification Code</InputLabel>

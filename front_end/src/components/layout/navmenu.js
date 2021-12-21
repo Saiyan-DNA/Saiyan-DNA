@@ -7,13 +7,13 @@ import loadable from '@loadable/component';
 import { withStyles } from '@material-ui/core/styles';
 
 const Collapse = loadable(() => import('@material-ui/core/Collapse' /* webpackChunkName: "Material" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Navigation" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Navigation" */));
-const ListItemIcon = loadable(() => import('@material-ui/core/ListItemIcon' /* webpackChunkName: "Navigation" */));
-const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Navigation" */));
-const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Navigation" */));
-const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
+const ListItemIcon = loadable(() => import('@material-ui/core/ListItemIcon' /* webpackChunkName: "Material-Layout" */));
+const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material-Layout" */));
+const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Material-Navigation" */));
+const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Navigation" */));
+const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Material-Navigation" */));
 
 const HomeSharp = loadable(() => import('@material-ui/icons/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const AccountBalanceSharp = loadable(() => import('@material-ui/icons/AccountBalanceSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});

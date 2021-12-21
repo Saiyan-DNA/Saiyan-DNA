@@ -5,10 +5,10 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */), {fallback: <div>&nbsp;</div>});
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
 
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
 const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
@@ -91,7 +91,7 @@ class FinancialAccounts extends React.Component {
                     { totalAccounts > 0 ? null :
                         <Grid item xs={12}>
                             <SummaryCard header="No Accounts Found">
-                                <Grid container justify="center">
+                                <Grid container justifyContent="center">
                                     <Grid item>
                                         <Typography variant="body1">You do not have any accounts yet. Click "Add Account" to create your first account.</Typography>
                                     </Grid>

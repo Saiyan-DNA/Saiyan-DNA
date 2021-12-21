@@ -7,12 +7,12 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Navigation" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material" */));
+const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Material-Navigation" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
 
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 
@@ -60,8 +60,8 @@ class AccountList extends React.Component {
             <div key={acct.id}>
                 <ListItem button className={classes.accountSummary} 
                     onClick={() => {this.viewAccount(acct.id)}}>
-                    <Grid container spacing={0} justify="space-between">
-                        <Grid container item spacing={0} xs={12} justify="space-between">
+                    <Grid container spacing={0} justifyContent="space-between">
+                        <Grid container item spacing={0} xs={12} justifyContent="space-between">
                             <Grid item>
                                 <Typography variant="body1">{acct.name}</Typography>
                             </Grid>
@@ -71,7 +71,7 @@ class AccountList extends React.Component {
                                 </Typography>
                             </Grid>
                         </Grid>
-                        <Grid container item spacing={0} xs={12} justify="space-between">
+                        <Grid container item spacing={0} xs={12} justifyContent="space-between">
                             <Grid item>
                                 <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
                                     {acct.organization.website_url != null ?
@@ -99,7 +99,7 @@ class AccountList extends React.Component {
 
         return (
             <SummaryCard header={
-                <Grid container spacing={0} justify={"space-between"}>
+                <Grid container spacing={0} justifyContent={"space-between"}>
                     <Grid item>
                         <Typography variant="h5">{cardTitle}</Typography>
                     </Grid>
