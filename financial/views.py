@@ -67,7 +67,7 @@ class AccountListView(viewsets.ModelViewSet):
         return result
 
     def update(self, request, *args, **kwargs):
-        result = super(AccountListView, self).update(request, *args, **kwargs)
+        result = super(AccountListView, self).update(request, *args, **kwargs)      
 
         if result.status_code == 200:
             self.request.method = 'GET'
@@ -103,6 +103,10 @@ class AssetListView(viewsets.ModelViewSet):
             if (not assets):
                 assets = self.request.user.assets.all()
                 cache.set(cache_key, assets)
+
+        else:
+            assets = self.request.user.assets.all()
+            clear_cache_item(f"assets_{self.request.user.id}")
                 
         return assets
 
