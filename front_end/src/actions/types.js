@@ -68,12 +68,19 @@ export const TRANSACTION_SAVE_ERROR = 'TRANSACTION_SAVE_ERROR'
 export const TOGGLE_TRANSACTION_MODAL = 'TOGGLE_TRANSACTION_MODAL'
 
 // Asset Actions
-export const GET_ASSETS = 'GET_ASSETS'
+export const ASSETS_LOADING = 'ASSETS_LOADING'
+export const ASSETS_LOADED = 'ASSETS_LOADED'
 export const CREATE_ASSET = 'CREATE_ASSET'
 export const UPDATE_ASSET = 'UPDATE_ASSET'
 export const DELETE_ASSET = 'DELETE_ASSET'
 export const GET_ASSET = 'GET_ASSET'
 export const CLEAR_ASSET = 'CLEAR_ASSET'
+
+// Financial DashboardActions
+export const NET_WORTH_LOADING = 'NET_WORTH_LOADING'
+export const NET_WORTH_LOADED = 'NET_WORTH_LOADED'
+export const NET_WORTH_LOAD_ERROR = 'NET_WORTH_LOAD_ERROR'
+export const RESET_NET_WORTH = 'RESET_NET_WORTH'
 
 // Financial Institution Actions
 export const GET_FINANCIAL_CATEGORIES = 'GET_FINANCIAL_CATEGORIES'

@@ -19,7 +19,8 @@ const styles = theme => ({
 
     },
     infoCaption: {
-        fontStyle: "italic"
+        fontStyle: "italic",
+        fontSize: "0.7em"
     }
 });
 
@@ -35,16 +36,16 @@ class InfoTile extends React.Component {
 
         return (
             <Card variant={showBorder ? "outlined" : "elevation"} elevation={0} className={classes.infoTileCard}>
-                <Grid container direction="column" spacing={0} justifyContent={"center"} style={{marginTop: "2px"}}>
+                <Grid container direction="column" spacing={0} justifyContent={"center"} alignContent="center" style={{marginTop: "2px"}}>
                     <Grid item>
-                        <Typography variant="h6" align="center" className={classes.infoTitle}>{title}</Typography>
+                        <Typography variant="h6" align="center" className={classes.infoTitle}>{content}</Typography>
                     </Grid>
                     <Grid item>
-                        <Typography variant="body1" align="center" className={classes.infoContent}>{content}</Typography>
+                        <Typography variant="body1" align="center" className={classes.infoContent}>{title}</Typography>
                     </Grid>
                     {!caption ? null :
                         <Grid item>
-                            <Typography variant="caption" align="center" className={classes.infoCaption}>{caption}</Typography>
+                            <Typography variant="body2" align="center" className={classes.infoCaption}>{caption}</Typography>
                         </Grid>
                     }
                 </Grid>

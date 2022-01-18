@@ -21,6 +21,7 @@ const PendingUser = loadable(() => import('./user' /* webpackChunkName: "General
 const RegisterUser = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.RegisterUser), {fallback: <LoadingMessage message="Loading Registration Form..." />});
 const Dashboard = loadable(() => import('./Dashboard' /* webpackChunkName: "General" */), {fallback: <LoadingMessage message="Loading Dashboard..." />});
 
+const FinancialDashboard = loadable(() => import('./financial' /* webpackChunkName: "Financial" */).then(m => m.FinancialDashboard), {fallback: <LoadingMessage message="Loading Dashboard..." />});
 const FinancialAccounts = loadable(() => import('./financial' /* webpackChunkName: "Financial" */).then(m => m.FinancialAccounts), {fallback: <LoadingMessage message="Loading Accounts..." />});
 const AccountInfo = loadable(() => import('./financial' /* webpackChunkName: "Financial" */).then(m => m.AccountInfo), {fallback: <LoadingMessage message="Loading Account Information..." />});
 const AccountOverview = loadable(() => import('./financial' /* webpackChunkName: "Financial" */).then(m => m.AccountOverview), {fallback:<LoadingMessage message="Loading Account..." />});
@@ -76,6 +77,7 @@ class App extends React.Component {
                           <Route exact path="/register" component={RegisterUser} />
                           <Route exact path="/pendinguser" component={PendingUser} />
                           <PrivateRoute exact path="/" component={Dashboard} />
+                          <PrivateRoute exact path="/financial" component={FinancialDashboard} />
                           <PrivateRoute exact path="/financial/accounts" component={FinancialAccounts} />
                           <PrivateRoute exact path="/financial/accountinfo" component={AccountInfo} />
                           <PrivateRoute exact path="/financial/accountoverview" component={AccountOverview} />

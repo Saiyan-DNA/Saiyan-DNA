@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-
+import LinearProgress from '@material-ui/core/LinearProgress';
 import { withStyles } from '@material-ui/core/styles';
 
 const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
@@ -33,6 +33,15 @@ const styles = theme => ({
     inlineGrid: {
         display: "inline-block"
     },
+    lowColor: {
+        backgroundColor: "#70C1B3",
+    },
+    mediumColor: {
+        backgroundColor: "#FFE066"
+    },
+    highColor: {
+        backgroundColor: "#F25F5C"
+    },
 });
 
 class AccountList extends React.Component {
@@ -56,6 +65,9 @@ class AccountList extends React.Component {
     }
 
     accountSummary = (acct, classes) => {
+        const utilization = acct.current_balance / acct.credit_limit * 100;
+        var utilizationColor = utilization > 60 ? "highColor" : utilization > 30 ? "mediumcolor" : "lowColor";
+
         return (
             <div key={acct.id}>
                 <ListItem button className={classes.accountSummary} 
@@ -67,10 +79,15 @@ class AccountList extends React.Component {
                             </Grid>
                             <Grid item xs={"auto"}>
                                 <Typography variant="body1">
-                                    <CurrencyFormat value={acct.current_balance} displayType={'text'} />
+                                    <CurrencyFormat value={acct.current_balance} displayType={'text'} decimalScale={2} />
                                 </Typography>
                             </Grid>
                         </Grid>
+                        { acct.account_type == "CR" && 
+                            <Grid item xs={12}>
+                                <LinearProgress variant="determinate" value={utilization} classes={{barColorPrimary: classes[utilizationColor]}} />
+                            </Grid>
+                        }
                         <Grid container item spacing={0} xs={12} justifyContent="space-between">
                             <Grid item>
                                 <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
@@ -83,7 +100,7 @@ class AccountList extends React.Component {
                             { acct.account_type == "CR" &&
                                 <Grid item xs={"auto"}>
                                     <Typography variant="caption"  style={{verticalAlign: "text-top", fontStyle: "italic"}}>
-                                        <CurrencyFormat value={acct.credit_limit - acct.current_balance} displayType={'text'} />&nbsp;available
+                                        <CurrencyFormat value={acct.credit_limit - acct.current_balance} displayType={'text'} decimalScale={2} />&nbsp;available
                                     </Typography>
                                 </Grid>
                             }
@@ -105,7 +122,7 @@ class AccountList extends React.Component {
                     </Grid>
                     <Grid item xs={"auto"}>
                         <Typography variant="h5">
-                            <CurrencyFormat value={totalBalance} displayType={'text'} />
+                            <CurrencyFormat value={totalBalance} displayType={'text'} decimalScale={2} />
                         </Typography>
                     </Grid>                        
                 </Grid>

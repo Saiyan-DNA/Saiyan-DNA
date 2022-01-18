@@ -165,14 +165,14 @@ class AccountOverview extends React.Component {
             return (
                 <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em"}}>
                     <Grid item xs={4}>
-                        <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} />} />
+                        <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
                     </Grid>
                     <Grid item xs={"auto"}>
                         <Divider orientation="vertical" light={true} />
                     </Grid>
                     <Grid item xs={4}>
-                        <InfoTile title="Available" content={<CurrencyFormat value={available} displayType={'text'} />}
-                            caption={<center>Limit: <CurrencyFormat value={account.credit_limit} displayType={'text'} /></center>} />
+                        <InfoTile title="Available" content={<CurrencyFormat value={available} displayType={'text'} decimalScale={2} />}
+                            caption={<>Limit: <CurrencyFormat value={account.credit_limit} displayType={'text'} decimalScale={2} /></>} />
                     </Grid>
                 </Grid>
             );
