@@ -57,6 +57,9 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 currentAccount: action.payload,
+                accountLoading: false,
+                accountLoaded: true,
+                accountLoadError: false,
                 accountsLoaded: false
             };
         case UPDATE_ACCOUNT:

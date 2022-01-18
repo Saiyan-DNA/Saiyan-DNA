@@ -5,16 +5,16 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */), {fallback: <div>&nbsp;</div>});
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
+const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material-Input" */));
 
 const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
 const DeleteAccountModal = loadable(() => import('./DeleteAccountModal' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
@@ -179,7 +179,7 @@ class AccountInfo extends React.Component {
         return (
             <Container>
                 <form onSubmit={this.saveAccountDetails}>
-                    <Grid container spacing={3} justify="space-between">
+                    <Grid container spacing={3} justifyContent="space-between">
                         <Grid item>
                             <Button color="primary" variant="outlined" size="small"
                                 onClick={history.goBack}>Back</Button>

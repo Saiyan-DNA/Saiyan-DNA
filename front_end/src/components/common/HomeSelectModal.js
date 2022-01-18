@@ -5,12 +5,12 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const FormControlLabel = loadable(() => import('@material-ui/core/FormControlLabel' /* webpackChunkName: "Material" */));
-const Radio = loadable(() => import('@material-ui/core/Radio' /* webpackChunkName: "Material" */));
-const RadioGroup = loadable(() => import('@material-ui/core/RadioGroup' /* webpackChunkName: "Material" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const FormControlLabel = loadable(() => import('@material-ui/core/FormControlLabel' /* webpackChunkName: "Material-Input" */));
+const Radio = loadable(() => import('@material-ui/core/Radio' /* webpackChunkName: "Material-Input" */));
+const RadioGroup = loadable(() => import('@material-ui/core/RadioGroup' /* webpackChunkName: "Material-Input" */));
 
 const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "General" */));
 
@@ -62,7 +62,7 @@ class HomeSelectmodal extends React.Component {
 
         return (
             <BasicModal open={homeModalOpen} onClose={toggleHomeModal} title="Select a Home"> 
-                <Grid container spacing={2} justify="space-between">
+                <Grid container spacing={2} justifyContent="space-between">
                     <Grid item xs={12}>
                     <RadioGroup aria-label="home" name="home" value={selectedHome} defaultValue={selectedHome}
                         className={classes.radioGroup} onChange={this.selectHomeOption}>
@@ -74,7 +74,7 @@ class HomeSelectmodal extends React.Component {
                         })}
                     </RadioGroup>
                     </Grid>
-                    <Grid item container xs={12} justify="flex-end">
+                    <Grid item container xs={12} justifyContent="flex-end">
                         <Grid item>
                             <Button variant="outlined" size="small" color="primary" onClick={toggleHomeModal}>Cancel</Button>
                         </Grid>

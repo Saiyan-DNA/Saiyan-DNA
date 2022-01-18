@@ -1,16 +1,27 @@
-import { GET_ASSETS, GET_ASSET, CREATE_ASSET, UPDATE_ASSET, CLEAR_ASSET, DELETE_ASSET } from '../actions/types.js';
+import { ASSETS_LOADING, ASSETS_LOADED, GET_ASSET, CREATE_ASSET, UPDATE_ASSET, CLEAR_ASSET, DELETE_ASSET } from '../actions/types.js';
 
 const initialState = {
     assets: [],
-    currentAsset: null
+    currentAsset: null,
+    assetsLoaded: false,
+    assetsLoading: false
 }
 
 export default function(state = initialState, action) {
     switch(action.type) {
-        case GET_ASSETS:
+        case ASSETS_LOADED:
             return {
                 ...state,
-                assets: action.payload
+                assets: action.payload,
+                assetsLoading: false,
+                assetsLoaded: true
+            };
+        case ASSETS_LOADING:
+            return {
+                ...state,
+                assets: [],
+                assetsLoading: true,
+                assetsLoaded: false
             };
         case DELETE_ASSET:
             return {

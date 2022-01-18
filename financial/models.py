@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 
-from core.models import Home, Organization
+from core.models import Home, Organization, Person
 
 
 class Account(models.Model):
@@ -169,6 +169,67 @@ class CategoryManager(models.Manager):
         return tree[0]
 
 
+class CreditReport(models.Model):
+    """
+    Retains Credit Reports for a Person.
+    """
+
+    person = models.ForeignKey(Person, related_name="credit_reports", verbose_name="Person", on_delete=models.CASCADE, null=False, blank=False)
+    agency = models.ForeignKey(Organization, related_name="credit_reports", verbose_name="Agency", on_delete=models.CASCADE, null=False, blank=False)
+    date = models.DateField(verbose_name="Date", null=False, blank=False)
+    credit_score = models.IntegerField(verbose_name="Credit Score", null=False, blank=False)
+    
+    def __str__(self):
+        return f"{self.person} - {self.agency.name} ({self.date})"
+
+    class Meta:
+        verbose_name = "Credit Report"
+        ordering = ['person', 'agency', '-date']
+
+
+class CreditReportDetail(models.Model):
+    """
+    Retains details (accounts, balances, inquiries, etc.) associated with a Credit Report
+    """
+
+    class DetailType(models.TextChoices):
+        ACCOUNT = 'AC', 'Account'
+        INQUIRY = 'IN', 'Inquiry'
+        PUBLIC_RECORD = 'PR', 'Public Record'
+
+    class AccountType(models.TextChoices):
+        CREDIT_CARD = 'CC', 'Credit Card'
+        AUTO_LOAN = 'AL', 'Auto Loan'
+        PERSONAL_LOAN = 'PL', 'Personal Loan'
+        REAL_ESTATE = 'RE', 'Real Estate'
+        OTHER = 'OT', 'Other'
+
+    class AccountStatus(models.TextChoices):
+        CURRENT = 'CU', 'Current'
+        CLOSED = 'CL', 'Closed'
+        PAST_DUE = 'PD', 'Past Due'
+        COLLECTIONS = 'CO', 'Collections'
+
+    report = models.ForeignKey(CreditReport, related_name="details", verbose_name="Report", on_delete=models.CASCADE, null=False, blank=False)
+    detail_type = models.CharField(verbose_name="Detail Type", max_length=2, choices=DetailType.choices, null=False, blank=False)
+    account_type = models.CharField(verbose_name="Account Type", max_length=2, choices=AccountType.choices, null=False, blank=False)
+    organization = models.ForeignKey(to=Organization, on_delete=models.PROTECT, related_name="credit_report_details", null=True, blank=True)
+    current_balance = models.DecimalField(verbose_name="Current Balance", max_digits=12, decimal_places=2, null=True, blank=True)
+    credit_limit = models.DecimalField(verbose_name="Credit Limit", max_digits=12, decimal_places=2, null=True, blank=True)
+    account_status = models.CharField(verbose_name="Account Status", max_length=2, choices=AccountStatus.choices, null=True, blank=True)
+    account_opened_date = models.DateField(verbose_name="Account Opened Date", null=True, blank=True)
+    account_closed_date = models.DateField(verbose_name="Account Closed Date", null=True, blank=True)
+    inquiry_date = models.DateField(verbose_name="Inquiry Date", null=True, blank=True)
+    comment = models.TextField(verbose_name="Comment", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.report} - {self.get_detail_type_display()} - {self.organization}"
+
+    class Meta:
+        verbose_name = "Credit Report Detail"
+        ordering = ['report', 'detail_type', 'organization']
+
+
 class FinancialCategory(models.Model):
     """
     Retains Financial Categories for classifying Financial Transactions
@@ -236,6 +297,94 @@ class FinancialCategory(models.Model):
         ordering = ["parent_category__name", "name"]
 
 
+class PayrollProfile(models.Model):
+    """
+    Retains basic information about an income stream from an employer's payroll.
+    """
+
+    class EmploymentType(models.TextChoices):
+        FULL_TIME = 'FT', 'Full Time'
+        PART_TIME = 'PT', 'Part Time'
+        CONTRACT = 'CT', 'Contract'
+        TEMPORARY = 'TM', 'Temporary'
+        INTERN = 'IN', 'Intern'
+
+    class PayrollType(models.TextChoices):
+        SALARY = 'S', 'Salary'
+        HOURLY = 'H', 'Hourly'
+        GIG = "G", "Gig"
+
+    name = models.CharField(max_length=200, verbose_name="Name", null=False, blank=False)
+    person = models.ForeignKey(to=Person, related_name="payroll_profile", on_delete=models.PROTECT, null=False, blank=False)
+    employer = models.ForeignKey(to=Organization, related_name="payroll_profile", on_delete=models.PROTECT, null=False, blank=False)
+    employment_type = models.CharField(max_length=2, verbose_name="Employment Type", choices=EmploymentType.choices, default=EmploymentType.FULL_TIME, null=False, blank=False)
+    payroll_type = models.CharField(max_length=1, verbose_name="Payroll Type", choices=PayrollType.choices, default=PayrollType.SALARY, null=False, blank=False)
+    start_date = models.DateField(verbose_name="Start Date", null=False, blank=False)
+    end_date = models.DateField(verbose_name="End Date", null=True, blank=True)
+    current_salary = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Current Salary", null=True, blank=True)
+    current_hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Current Hourly Rate", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.person} ({self.employer})"
+
+    class Meta:
+        verbose_name_plural = "Payroll Profiles"
+        ordering = ["person", "-start_date"]
+
+
+class Paycheck(models.Model):
+    """
+    Retains information about a paycheck.
+    """
+
+    payroll_profile = models.ForeignKey(to=PayrollProfile, related_name="paychecks", on_delete=models.PROTECT, null=False, blank=False)
+    issue_date = models.DateField(verbose_name="Issue Date", null=False, blank=False)
+    period_start = models.DateField(verbose_name="Period Start", null=False, blank=False)
+    period_end = models.DateField(verbose_name="Period End", null=False, blank=False)
+    gross_pay = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Gross Pay", null=False, blank=False)
+    net_pay = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Net Pay", null=False, blank=False)
+
+    def __str__(self):
+        return f"{self.payroll_profile} - {self.issue_date} - {self.gross_pay}"
+
+    class Meta:
+        verbose_name_plural = "Paychecks"
+        ordering = ["payroll_profile", "-issue_date"]
+
+class PaycheckDeduction(models.Model):
+    """
+    Retains information about a paycheck withholding.
+    """
+
+    class DeductionType(models.TextChoices):
+        FEDERAL = 'FT', 'Federal Income Tax'
+        STATE = 'ST', 'State Income Tax'
+        LOCAL = 'LT', 'Local Income Tax'
+        SOCIAL_SECURITY = 'SS', 'Social Security'
+        MEDICARE = 'MC', 'Medicare'
+        RETIREMENT = 'RT', 'Retirement'
+        HEALTH_INSURANCE = 'HI', 'Health Insurance'
+        DENTAL_INSURANCE = 'DI', 'Dental Insurance'
+        VISION_INSURANCE = 'VI', 'Vision Insurance'
+        LIFE_INSURANCE = 'LI', 'Supplemental Life Insurance'
+        FSA = 'FS', 'Flex-Spending Account'
+        HSA = 'HS', 'Health Savings Account'
+        OTHER = 'OT', 'Other'
+
+    paycheck = models.ForeignKey(to=Paycheck, related_name="deductions", on_delete=models.PROTECT, null=False, blank=False)
+    deduction_type = models.CharField(max_length=2, verbose_name="Type", choices=DeductionType.choices, default=DeductionType.OTHER, null=False, blank=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Amount", null=False, blank=False)
+    pretax = models.BooleanField(verbose_name="Pre-tax Deduction", default=False, null=False, blank=False)
+    description = models.CharField(max_length=200, verbose_name="Description", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.paycheck} - {self.deduction_type} - {self.amount}"
+
+    class Meta:
+        verbose_name_plural = "Paycheck Deductions"
+        ordering = ["paycheck", "-amount"]
+
+
 class TransactionLog(models.Model):
     '''
     Log of Transactions for Financial Accounts
@@ -263,6 +412,7 @@ class TransactionLog(models.Model):
     class Meta:
         verbose_name = "Transaction Log"
         ordering = ['account', '-transaction_date']
+
 
 class TransferDetail(models.Model):
     '''

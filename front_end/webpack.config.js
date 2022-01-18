@@ -22,7 +22,7 @@ module.exports = {
     optimization: {
         splitChunks: {
             chunks: 'async',
-            minSize: 35000
+            minSize: 48000
         }
     },
     plugins: [

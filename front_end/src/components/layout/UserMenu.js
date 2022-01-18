@@ -6,15 +6,14 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Layout" */));
-const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Navigation" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Navigation" */));
-const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Navigation" */));
-const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Navigation" */));
+const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Material-Navigation" */));
+const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
+const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material-Layout" */));
 
 const ExitToAppSharp = loadable(() => import('@material-ui/icons/ExitToAppSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const HomeSharp = loadable(() => import('@material-ui/icons/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});

@@ -5,10 +5,10 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */));
+const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Navigation" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Layout" */));
+const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
 const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "General" */));
 
@@ -56,13 +56,13 @@ class TimeoutModal extends React.Component {
 
         return (
             <BasicModal open={timeoutModalOpen} onClose={toggleTimeoutModal} title="Stay Logged In?"> 
-                <Grid container spacing={2} justify="space-between">
+                <Grid container spacing={2} justifyContent="space-between">
                     <Grid item xs={12}>
                         <Typography variant="body1">
                             { this.generateMessage(timeRemaining) }
                         </Typography>
                     </Grid>
-                    <Grid item container xs={12} justify="flex-end">
+                    <Grid item container xs={12} justifyContent="flex-end">
                         <Grid item>
                             <Button variant="outlined" size="small" color="primary" onClick={userLogout}>Log Out Now</Button>
                         </Grid>
