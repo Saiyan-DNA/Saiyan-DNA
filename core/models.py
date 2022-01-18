@@ -114,6 +114,7 @@ class Organization(models.Model):
 
     class OrganizationType(models.TextChoices):
         CHARITY = "CTY"
+        CREDIT_REPORTING_AGENCY = "CRA"
         EDUCATIONAL = "EDU"
         FINANCIAL = "FIN"
         GOVERNMENT = "GOV"
