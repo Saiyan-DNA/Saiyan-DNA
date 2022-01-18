@@ -14,10 +14,12 @@ const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName:
 const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
 
 const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
+const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "General" */));
 
 import { CurrencyFormat } from '../common/NumberFormats'
 
 import { getAccount } from '../../actions/accounts';
+import { Divider } from "@material-ui/core";
 
 const styles = theme => ({
     listCardSubHeader: {
@@ -77,7 +79,7 @@ class BankingList extends React.Component {
                             </Grid>
                             <Grid item xs={"auto"}>
                                 <Typography variant="body1">
-                                    <CurrencyFormat value={acct.current_balance} displayType={'text'} />
+                                    <CurrencyFormat value={acct.current_balance} displayType={'text'} decimalScale={2} />
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -97,19 +99,34 @@ class BankingList extends React.Component {
         );
     }
 
+    bankingOverview = (checkingTotal, savingsTotal) => {
+        return (
+            <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em", marginTop: "2px", borderBottom: "0.5px solid #DCDCDC"}}>
+                <Grid item>
+                    <InfoTile title="Checking" content={<CurrencyFormat value={checkingTotal} displayType={'text'} decimalScale={2} />} />
+                </Grid>
+                <Grid item xs={"auto"}>
+                    <Divider orientation="vertical" light={true} />
+                </Grid>
+                <Grid item>
+                    <InfoTile title="Savings" content={<CurrencyFormat value={savingsTotal} displayType={'text'} decimalScale={2} />} />
+                </Grid>
+            </Grid>
+        );
+    }
+
     render() {
         const { classes, accountList } = this.props;
         
         var checkingAccounts = accountList.filter(this.accountTypeFilter, "CK").sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));
         var savingsAccounts = accountList.filter(this.accountTypeFilter, "SV").sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));
-
-        var totalBalance = 0.00;
-       
-        totalBalance += checkingAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0);
-        totalBalance += savingsAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0);
+        var checkingTotal = checkingAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0);
+        var savingsTotal = savingsAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0);
+        var totalBalance = checkingTotal + savingsTotal;
 
         return (
-            <AccountList cardTitle="Banking" totalBalance={totalBalance}>
+            <AccountList cardTitle="Banking" totalBalance={totalBalance}
+                overviewContent={this.bankingOverview(checkingTotal, savingsTotal)}>
                 <React.Fragment>
                     { !!checkingAccounts.length &&
                         <React.Fragment>
@@ -117,6 +134,11 @@ class BankingList extends React.Component {
                             <List>
                                 {checkingAccounts.map(acct => this.accountSummary(acct, classes))}
                             </List>
+                        </React.Fragment>
+                    }
+                    { !!checkingAccounts.length && !!savingsAccounts.length &&
+                        <React.Fragment>
+                            <Divider light={true} />
                         </React.Fragment>
                     }
                     { !!savingsAccounts.length &&

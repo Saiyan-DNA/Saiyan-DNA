@@ -6,6 +6,7 @@ import BankingList from './BankingList';
 import CreditList from './CreditList';
 import DeleteAccountModal from './DeleteAccountModal';
 import FinancialAccounts from './FinancialAccounts';
+import FinancialDashboard from './FinancialDashboard';
 import TransactionDetail from './TransactionDetail';
 import TransactionList from './TransactionList';
 import TransactionModal from './TransactionModal';
@@ -19,6 +20,7 @@ export {
     CreditList,
     DeleteAccountModal,
     FinancialAccounts,
+    FinancialDashboard,
     TransactionDetail,
     TransactionList,
     TransactionModal

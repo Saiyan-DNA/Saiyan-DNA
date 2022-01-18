@@ -1,11 +1,13 @@
 import axios from 'axios';
 
-import { GET_ASSETS, CREATE_ASSET, UPDATE_ASSET, DELETE_ASSET, GET_ASSET, CLEAR_ASSET } from './types';
+import { ASSETS_LOADING, ASSETS_LOADED, CREATE_ASSET, UPDATE_ASSET, DELETE_ASSET, GET_ASSET, CLEAR_ASSET } from './types';
 import { createMessage } from './messages';
 
 // GET_ASSETS
 export const getAssets = () => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
+
+    dispatch({type: ASSETS_LOADING});
 
     axios.get('/api/financial/asset/', {
         headers: {
@@ -13,7 +15,7 @@ export const getAssets = () => (dispatch, getState) => {
         }}).then(res => {
 
         dispatch({
-            type: GET_ASSETS,
+            type: ASSETS_LOADED,
             payload: res.data
         });
     }).catch(err => console.log(err));

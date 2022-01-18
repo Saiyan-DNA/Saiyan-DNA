@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { ACCOUNT_LOADING, ACCOUNT_LOADED, ACCOUNT_LOAD_ERROR, CLEAR_ACCOUNT } from './types';
 import { CREATE_ACCOUNT, UPDATE_ACCOUNT, ACCOUNT_DELETING, DELETE_ACCOUNT } from './types';
-import { ACCOUNTS_LOADING, ACCOUNTS_LOADED } from './types';
+import { ACCOUNTS_LOADING, ACCOUNTS_LOADED, RESET_NET_WORTH } from './types';
 
 import { GET_FINANCIAL_INSTITUTION, GET_FINANCIAL_INSTITUTIONS } from './types';
 import { createMessage } from './messages';
@@ -69,6 +69,7 @@ export const updateAccount = (id, acct) => (dispatch, getState) => {
             type: UPDATE_ACCOUNT,
             payload: res.data
         });
+        dispatch({type: RESET_NET_WORTH});
 
         var successMessage = "Updated Account '" + acct.name + "'";
         dispatch(createMessage({type: "success", title: successMessage}));
