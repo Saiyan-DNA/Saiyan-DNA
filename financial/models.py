@@ -21,6 +21,7 @@ class Account(models.Model):
         CREDIT = 'CR'
         LOAN = 'LN'
         INVESTMENT = 'IN'
+        BILLING = 'BL'
 
     name = models.CharField(max_length=150, verbose_name="Name")
     account_type = models.CharField(max_length=2, choices=AccountType.choices, default=AccountType.CHECKING, verbose_name="Account Type")
@@ -351,6 +352,7 @@ class Paycheck(models.Model):
         verbose_name_plural = "Paychecks"
         ordering = ["payroll_profile", "-issue_date"]
 
+
 class PaycheckDeduction(models.Model):
     """
     Retains information about a paycheck withholding.
@@ -428,3 +430,30 @@ class TransferDetail(models.Model):
 
     class Meta:
         verbose_name = "Transfer Detail"
+
+
+class AccountStatement(models.Model):
+    '''
+    Financial Account Statements
+    '''
+
+    account = models.ForeignKey(Account, related_name="statements", verbose_name="Account", on_delete=models.CASCADE)
+    issue_date = models.DateField(verbose_name="Issue Date")
+    due_date = models.DateField(verbose_name="Due Date")
+    period_start = models.DateField(verbose_name="Period Start")
+    period_end = models.DateField(verbose_name="Period End")
+    previous_balance = models.FloatField(verbose_name="Previous Balance")
+    account_debits = models.FloatField(verbose_name="Account Debits")
+    account_credits = models.FloatField(verbose_name="Account Credits")
+    current_balance = models.FloatField(verbose_name="Current Balance")
+    minimum_due = models.FloatField(verbose_name="Minimum Due", null=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Create Date")
+    is_paid = models.BooleanField(default=False, verbose_name="Paid")
+    payment_transaction = models.OneToOneField(TransactionLog, related_name="bill_payment", verbose_name="Payment Transaction", null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return '{} - {} ({})'.format(self.account.organization.name, self.account.name, self.due_date)
+
+    class Meta:
+        verbose_name = "Account Statement"
+        ordering = ['account', '-created_at']
