@@ -6,8 +6,6 @@ const NumberFormat = loadable(() => import('react-number-format' /* webpackChunk
 export const CurrencyFormat = (props) => {
   const { inputRef, onChange, decimalScale, ...other } = props;
 
-  console.log("Decimal Scale: " + decimalScale);
-
   return (
     <NumberFormat
       {...other}
