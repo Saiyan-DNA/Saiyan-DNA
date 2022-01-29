@@ -6,6 +6,8 @@ const NumberFormat = loadable(() => import('react-number-format' /* webpackChunk
 export const CurrencyFormat = (props) => {
   const { inputRef, onChange, decimalScale, ...other } = props;
 
+  console.log("Decimal Scale: " + decimalScale);
+
   return (
     <NumberFormat
       {...other}
@@ -20,7 +22,7 @@ export const CurrencyFormat = (props) => {
         });
       }}
       onBlur={props.onBlur}
-      decimalScale={decimalScale === null || decimalScale === "" ? 2 : decimalScale}
+      decimalScale={decimalScale === null || decimalScale === "" || decimalScale === undefined ? 2 : decimalScale}
       fixedDecimalScale={true}
       thousandSeparator
       isNumericString
@@ -46,7 +48,7 @@ export const PercentageFormat = (props) => {
           });
         }}        
         onBlur={props.onBlur}
-        decimalScale={decimalScale === null || decimalScale === "" ? 2 : decimalScale}
+        decimalScale={decimalScale === null || decimalScale === "" || decimalScale === undefined ? 2 : decimalScale}
         fixedDecimalScale={true}
         thousandSeparator
         isNumericString
