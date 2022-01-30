@@ -119,6 +119,7 @@ class Organization(models.Model):
         FINANCIAL = "FIN"
         GOVERNMENT = "GOV"
         MEDICAL = "MED"
+        OTHER = "OTH"
         POLITICAL = "POL"
         RELIGIOUS = "RLG"
         RESTAURANT = "RST"
@@ -128,6 +129,7 @@ class Organization(models.Model):
     name = models.CharField("Name", max_length=200, unique=True)
     organization_type = models.CharField(max_length=3, choices=OrganizationType.choices, default=OrganizationType.RETAIL, verbose_name="Organization Type")
     website_url = models.URLField(verbose_name="Website URL", null=True, blank=True)
+    created_by = models.ForeignKey(to=User, related_name="organizations", on_delete=models.CASCADE, verbose_name="Created By", null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.get_organization_type_display()})"
@@ -135,7 +137,7 @@ class Organization(models.Model):
     class Meta:
         verbose_name = "Organization"
         verbose_name_plural = "Organizations"
-        ordering =["organization_type", "name"]
+        ordering =["name"]
         
 
 class Person(models.Model):
