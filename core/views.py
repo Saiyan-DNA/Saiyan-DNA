@@ -1,11 +1,12 @@
 import math, random, datetime
 
 from django.contrib.auth.models import User, Group
-from django.views.generic import TemplateView
-from django.template.loader import render_to_string, get_template
 from django.core.mail import send_mail
+from django.db.models import Q
+from django.template.loader import render_to_string, get_template
 from django.utils.html import strip_tags
 from django.utils import timezone
+from django.views.generic import TemplateView
 from rest_framework import permissions, viewsets, generics
 from rest_framework.response import Response
 from rest_framework_jwt.settings import api_settings
@@ -14,7 +15,8 @@ from django.conf import settings
 
 from .models import Organization, Person, VerificationCode
 from .permissions import ReadOnly
-from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, HomeSerializer, OrganizationSerializer
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, HomeSerializer
+from .serializers import OrganizationSerializer, OrganizationReadSerializer
 
 
 class RegisterAPI(generics.GenericAPIView):
@@ -139,15 +141,20 @@ class OrganizationAPI(viewsets.ModelViewSet):
         permissions.IsAuthenticated,
     ]
 
-    serializer_class = OrganizationSerializer
+    def get_serializer_class(self):
+        if self.request.method in ['GET']:
+            return OrganizationReadSerializer
+        return OrganizationSerializer
 
     def get_queryset(self):
         org_type = self.request.query_params.get("type")
+
+        org_list = Organization.objects.filter(Q(created_by=self.request.user) | Q(created_by=None))
         
         if (org_type):
-            return Organization.objects.filter(organization_type=org_type)
+            return org_list.filter(organization_type=org_type)
 
-        return Organization.objects.all()
+        return org_list
 
 
 class EmailUsernameAPI(generics.GenericAPIView):
