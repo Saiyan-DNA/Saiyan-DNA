@@ -1,6 +1,6 @@
 import { ORGANIZATIONS_LOADING, ORGANIZATIONS_LOADED, ORGANIZATIONS_LOAD_ERROR } from '../actions/types';
 import { ORGANIZATION_LOADING, ORGANIZATION_LOADED, CLEAR_ORGANIZATION } from '../actions/types';
-import { CREATE_ORGANIZATION, UPDATE_ORGANIZATION, DELETE_ORGANIZATION } from '../actions/types';
+import { CREATE_ORGANIZATION, UPDATE_ORGANIZATION, DELETE_ORGANIZATION, SAVE_ORGANIZATION } from '../actions/types';
 
 const initialState = {
     organizations: [],
@@ -9,6 +9,7 @@ const initialState = {
     currentOrganization: null,
     organizationLoading: false,
     organizationLoaded: false,
+    organizationSaving: false,
 }
 
 export default function(state = initialState, action) {
@@ -49,10 +50,18 @@ export default function(state = initialState, action) {
                 organizationLoaded: true
             };
         case CREATE_ORGANIZATION:
+            return {
+                ...state,
+                currentOrganization: action.payload,
+                organizationsLoaded: false,
+                organizationsLoading: false,
+                organizationSaving: false,
+            };
         case UPDATE_ORGANIZATION:
             return {
                 ...state,
-                currentHome: action.payload
+                currentOrganization: action.payload,
+                organizationsLoaded: false,
             };
         case DELETE_ORGANIZATION:
             return {
@@ -66,6 +75,11 @@ export default function(state = initialState, action) {
                 currentOrganization: null,
                 organizationLoaded: false,
                 organizationLoading: false
+            };
+        case SAVE_ORGANIZATION:
+            return {
+                ...state,
+                organizationSaving: true
             };
         default:
             return state;
