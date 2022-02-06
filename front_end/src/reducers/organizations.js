@@ -1,6 +1,7 @@
 import { ORGANIZATIONS_LOADING, ORGANIZATIONS_LOADED, ORGANIZATIONS_LOAD_ERROR } from '../actions/types';
 import { ORGANIZATION_LOADING, ORGANIZATION_LOADED, CLEAR_ORGANIZATION } from '../actions/types';
-import { CREATE_ORGANIZATION, UPDATE_ORGANIZATION, DELETE_ORGANIZATION, SAVE_ORGANIZATION } from '../actions/types';
+import { CREATE_ORGANIZATION, UPDATE_ORGANIZATION, SAVE_ORGANIZATION } from '../actions/types';
+import { DELETE_ORGANIZATION, ORGANIZATION_DELETING } from '../actions/types';
 
 const initialState = {
     organizations: [],
@@ -9,6 +10,7 @@ const initialState = {
     currentOrganization: null,
     organizationLoading: false,
     organizationLoaded: false,
+    organizationDeleting: false,
     organizationSaving: false,
 }
 
@@ -65,10 +67,16 @@ export default function(state = initialState, action) {
                 organizationsLoading: false,
                 organizationSaving: false,
             };
+        case ORGANIZATION_DELETING:
+            return {
+                ...state,
+                organizationDeleting: true,
+            };
         case DELETE_ORGANIZATION:
             return {
                 ...state,
                 organizations: state.organizations.filter(org => org.id !== action.payload),
+                organizationDeleting: false,
                 currentOrganization: null
             };
         case CLEAR_ORGANIZATION:

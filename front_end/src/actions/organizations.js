@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 import { ORGANIZATION_LOADING, ORGANIZATION_LOADED, ORGANIZATION_LOAD_ERROR } from './types';
-import { CREATE_ORGANIZATION, UPDATE_ORGANIZATION, DELETE_ORGANIZATION, CLEAR_ORGANIZATION, SAVE_ORGANIZATION } from './types';
+import { CREATE_ORGANIZATION, UPDATE_ORGANIZATION, CLEAR_ORGANIZATION, SAVE_ORGANIZATION } from './types';
+import { ORGANIZATION_DELETING, DELETE_ORGANIZATION } from './types';
 import { ORGANIZATIONS_LOADING, ORGANIZATIONS_LOADED, ORGANIZATIONS_LOAD_ERROR } from './types';
 
 import { createMessage } from './messages';
@@ -80,6 +81,30 @@ export const saveOrganization = (org) => (dispatch, getState) => {
             dispatch(createMessage({type: "error", title: "Error Adding Organization!", detail: err}));
         });
     }
+};
+
+// DELETE_ORGANIZATION
+export const deleteOrganization = (id) => (dispatch, getState) => {
+    dispatch({type: ORGANIZATION_DELETING});
+
+    const jwt_token = getState().auth.token;
+
+    const config = {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `bearer ${jwt_token}`
+        }
+    };
+
+    axios.delete(`/api/core/organization/${id}/`, config)
+    .then(res => {
+        dispatch({
+            type: DELETE_ORGANIZATION,
+            payload: id
+        });
+
+        dispatch(createMessage({type: "success", title: "Organization Deleted"}));
+    }).catch(err => dispatch(createMessage({type: "error", title: "Unable to Delete Organization!", detail: err})));
 };
 
 export const clearOrganization = () => (dispatch) => {
