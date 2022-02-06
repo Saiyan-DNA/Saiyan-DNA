@@ -20,7 +20,7 @@ export const CurrencyFormat = (props) => {
         });
       }}
       onBlur={props.onBlur}
-      decimalScale={decimalScale === null || decimalScale === "" ? 2 : decimalScale}
+      decimalScale={decimalScale === null || decimalScale === "" || decimalScale === undefined ? 2 : decimalScale}
       fixedDecimalScale={true}
       thousandSeparator
       isNumericString
@@ -46,7 +46,7 @@ export const PercentageFormat = (props) => {
           });
         }}        
         onBlur={props.onBlur}
-        decimalScale={decimalScale === null || decimalScale === "" ? 2 : decimalScale}
+        decimalScale={decimalScale === null || decimalScale === "" || decimalScale === undefined ? 2 : decimalScale}
         fixedDecimalScale={true}
         thousandSeparator
         isNumericString

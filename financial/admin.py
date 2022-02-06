@@ -1,10 +1,13 @@
 from django.contrib import admin
 
-from .models import Account, Asset, CreditReport, CreditReportDetail, FinancialCategory, TransactionLog, TransferDetail
+from .models import Account, AccountStatement, Asset
+from .models import CreditReport, CreditReportDetail
+from .models import FinancialCategory, TransactionLog, TransferDetail
 from .models import PayrollProfile, Paycheck, PaycheckDeduction
 
 
 admin.site.register(Account)
+admin.site.register(AccountStatement)
 admin.site.register(Asset)
 admin.site.register(CreditReport)
 admin.site.register(CreditReportDetail)

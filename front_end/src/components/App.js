@@ -29,6 +29,8 @@ const AssetsList = loadable(() => import('./financial' /*webpackChunkName: "Fina
 const TransactionDetail = loadable(() => import('./financial' /*webpackChunkName: "Financial" */).then(m => m.TransactionDetail), {fallback: <LoadingMessage message="Loading Transaction..." />});
 
 const HomeList = loadable(() => import('./manage' /* webpackChunkName: "Manage" */).then(m => m.HomeList), {fallback: <LoadingMessage message="Loading Homes..." />});
+const OrganizationsList = loadable(() => import('./manage' /* webpackChunkName: "Manage" */).then(m => m.OrganizationsList), {fallback: <LoadingMessage message="Loading Organizations..." />});
+const OrganizationDetail = loadable(() => import('./manage' /* webpackChunkName: "Manage" */).then(m => m.OrganizationDetail), {fallback: <LoadingMessage message="Loading Organization Detail..." />});
 const PeopleList = loadable(() => import('./manage' /* webpackChunkName: "Manage" */).then(m => m.PeopleList), {fallback: <LoadingMessage message="Loading People..." />});
 const CategoryList = loadable(() => import('./inventory' /* webpackChunkName: "Manage" */).then(m => m.CategoryList), {fallback: <LoadingMessage message="Loading Categories..." />})
 const CategoryInfo = loadable(() => import('./inventory' /* webpackChunkName: "Manage" */).then(m => m.CategoryInfo), {fallback: <LoadingMessage message="Loading Category Detail..." />})
@@ -84,6 +86,8 @@ class App extends React.Component {
                           <PrivateRoute exact path="/financial/assets" component={AssetsList} />
                           <PrivateRoute exact path="/financial/transaction" component={TransactionDetail} />
                           <PrivateRoute exact path="/manage/homes" component={HomeList} />
+                          <PrivateRoute exact path="/manage/organizations" component={OrganizationsList} />
+                          <PrivateRoute exact path="/manage/organizationdetail" component={OrganizationDetail} />
                           <PrivateRoute exact path="/manage/people" component={PeopleList} />
                           <PrivateRoute exact path="/inventory/categories" component={CategoryList} />
                           <PrivateRoute exact path="/inventory/categoryinfo" component={CategoryInfo} />

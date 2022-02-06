@@ -15,6 +15,9 @@ const styles = theme => ({
     summaryCardHeader: {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
+        minHeight: "2.25em !important",
+        maxHeight: "2.25em !important",
+        height: "2.25em !important",
         padding: "8px !important",
         ['@media print']: {
             backgroundColor: "inherit",

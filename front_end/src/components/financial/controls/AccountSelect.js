@@ -40,10 +40,10 @@ class AccountSelect extends React.Component {
     render() {
         const { id, name, label, accounts, onChange, onBlur, selection, disabledAccount } = this.props;
 
-        var filteredAccounts = null;
-        if (disabledAccount) filteredAccounts = accounts.filter(acct => acct.id != disabledAccount.id);
-        else filteredAccounts = accounts;
-
+        var filteredAccounts = accounts.filter(acct => acct.account_type != "BL");
+        
+        if (disabledAccount) filteredAccounts = filteredAccounts.filter(acct => acct.id != disabledAccount.id);
+        
         return (
             <AutoComplete id={id} name={name}
                 fullWidth={true} 

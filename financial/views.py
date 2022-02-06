@@ -12,9 +12,10 @@ from rest_framework.views import APIView
 from core.models import Organization
 from core.serializers import OrganizationSerializer
 from .serializers import AccountSerializer, AccountReadSerializer, AssetSerializer
+from .serializers import AccountStatementSerializer, AccountStatementReadSerializer
 from .serializers import FinancialCategorySerializer, FinancialCategoryReadSerializer
 from .serializers import TransactionReadSerializer, TransactionSerializer, TransferSerializer
-from .models import TransactionLog, TransferDetail, Account, FinancialCategory
+from .models import TransactionLog, TransferDetail, Account, AccountStatement, FinancialCategory
 
 
 def clear_cache_item(key):
@@ -78,6 +79,96 @@ class AccountListView(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         clear_cache_item(f"accounts_{self.request.user.id}")
         response = super(AccountListView, self).destroy(request, *args, **kwargs)
+
+        return response
+
+
+class AccountStatementView(viewsets.ModelViewSet):
+    '''
+    ListCreate API View for Accounts
+    '''
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    
+    def get_serializer_class(self):
+        if self.request.method in ['GET']:
+            return AccountStatementReadSerializer
+        return AccountStatementSerializer
+
+    def get_queryset(self):
+        cache_key = f"stmts_{self.request.user.id}"
+
+        clear_cache_item(cache_key)
+        stmts = []
+
+        if (self.request.method in ['GET']):
+            
+            account_id = self.request.query_params.get('account')
+            organization_id = self.request.query_params.get('org')
+            stmt_id = self.request.query_params.get('id')
+            is_paid = self.request.query_params.get('is_paid', -1)
+
+            if (stmt_id):
+                stmts = AccountStatement.objects.filter(id=stmt_id)
+            elif (account_id):
+                cache_key = f"stmts_{self.request.user.id}_a{account_id}"
+                stmts = cache.get(cache_key)
+
+                if (not stmts):
+                    stmts = AccountStatement.objects.filter(account__id=account_id)
+                    cache.set(cache_key, stmts)
+            elif (organization_id):
+                cache_key = f"stmts_{self.request.user.id}_o{organization_id}"
+                stmts = cache.get(cache_key)
+
+                if (not stmts):
+                    accounts = self.request.user.accounts.filter(organization__id=organization_id)
+                    stmts = AccountStatement.objects.filter(account__in=accounts.values_list('id', flat=True))
+                    cache.set(cache_key, stmts)
+            else: 
+                stmts = cache.get(cache_key)
+
+                if (not stmts):
+                    accounts = self.request.user.accounts.all()
+                    stmts = AccountStatement.objects.filter(account__in=accounts.values_list('id', flat=True))
+                    cache.set(cache_key, stmts)
+
+            if (is_paid != -1):
+                stmts = stmts.filter(is_paid=is_paid)
+
+        else:
+            accounts = self.request.user.accounts.all()
+            # print(accounts.values_list('id', flat=True))
+            stmts = AccountStatement.objects.filter(account__in=accounts.values_list('id', flat=True))
+
+            clear_cache_item(cache_key)
+
+        return stmts
+
+    def create(self, request, *args, **kwargs):
+        result = super(AccountStatementView, self).create(request, *args, **kwargs)
+
+        if result.status_code == 201:
+            queryset = self.get_queryset()
+            new_statement = queryset.get(id=result.data['id'])
+
+            return Response(data=AccountStatementReadSerializer(new_statement).data)
+        return result
+
+    def update(self, request, *args, **kwargs):
+        result = super(AccountStatementView, self).update(request, *args, **kwargs)      
+
+        if result.status_code == 200:
+            self.request.method = 'GET'
+
+            return super(AccountStatementView, self).retrieve(request, *args, **kwargs)
+        return result
+
+    def destroy(self, request, *args, **kwargs):
+        clear_cache_item(f"stmts_{self.request.user.id}")
+        response = super(AccountStatementView, self).destroy(request, *args, **kwargs)
 
         return response
 
