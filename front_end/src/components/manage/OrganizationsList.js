@@ -13,13 +13,12 @@ const Container = loadable(() => import('@material-ui/core/Container' /* webpack
 const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
 const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
 const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material-Layout" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Layout" */));
-const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material-Input" */));
 const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material-Input" */));
 const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
 import { setTitle } from '../../actions/navigation';
-import { getOrganizations } from '../../actions/organizations';
+import { getOrganizations, clearOrganization } from '../../actions/organizations';
+import OrganizationTypeSelect from './controls/OrganizationTypeSelect';
 
 const styles = theme => ({
     hideForPrint: {
@@ -30,10 +29,11 @@ const styles = theme => ({
     emptyMessage: {
         textAlign: "center",
         fontStyle: "italic",
-        marginTop: "12px",
-        marginBottom: "12px",
+        marginTop: "2em",
+        marginBottom: "2em",
         marginLeft: "auto",
-        marginRight: "auto"
+        marginRight: "auto",
+        padding: "4em"
     },
     listCaption: {
         margin: "0em",
@@ -43,8 +43,7 @@ const styles = theme => ({
     },
     listFilter: {
         maxHeight: "2.5em",
-        minWidth: "12em"
-  
+        minWidth: "12em"  
     },
     showMore: {
         fontStyle: "italic",
@@ -57,23 +56,8 @@ class OrganizationsList extends React.Component {
         super(props);
     }
 
-    orgTypes = [
-        { value: "ALL", label: "All Types" }, 
-        { value: "CTY", label: "Charity" },
-        { value: "CRA", label: "Credit Reporting Agency"},
-        { value: "EDU", label: "Education" },
-        { value: "FIN", label: "Financial" },
-        { value: "GOV", label: "Government" },
-        { value: "MED", label: "Medical" },
-        { value: "OTH", label: "Other" },
-        { value: "POL", label: "Political" },
-        { value: "RLG", label: "Religious" },
-        { value: "RTL", label: "Retail" },
-        { value: "SVC", label: "Service" }
-    ]
-
     state = {
-        filter: { value: "ALL", label: "All"},
+        filter: "ALL",
         filteredOrganizations: [],
         searchText: "",
         isDirty: true,
@@ -88,34 +72,45 @@ class OrganizationsList extends React.Component {
         organizations: PropTypes.array.isRequired,
         organizationsLoading: PropTypes.bool.isRequired,
         organizationsLoaded: PropTypes.bool.isRequired,
+        organizationSaving: PropTypes.bool.isRequired,
         user: PropTypes.object.isRequired,
     }
 
     componentDidMount() {
-        this.props.setTitle("Organizations");
-        this.props.getOrganizations();
+        const { setTitle, getOrganizations, organizationsLoaded, organizationsLoading } = this.props;
+        
+        setTitle("Organizations");
+
+        if (!organizationsLoaded && !organizationsLoading) {
+            getOrganizations();
+        }
+
         this.updateWindowDimensions();
     }
 
     componentDidUpdate() {
-        const { organizations, organizationsLoaded } = this.props;
+        const { organizations, organizationsLoaded, organizationsLoading, organizationSaving } = this.props;
         const { filter, searchText, isDirty } = this.state;
 
         if (organizationsLoaded && isDirty) {
             this.setState({
-                filteredOrganizations: filter.value === "ALL" ? organizations.filter(org => org.name.toLowerCase().includes(searchText.toLowerCase())) :
-                    organizations.filter(org => org.organization_type === filter.value && org.name.toLowerCase().includes(searchText.toLowerCase())),
+                filteredOrganizations: filter === "ALL" ? organizations.filter(org => org.name.toLowerCase().includes(searchText.toLowerCase())) :
+                    organizations.filter(org => org.organization_type.value === filter && org.name.toLowerCase().includes(searchText.toLowerCase())),
                 isDirty: false
             });
+        }
+
+        if (!organizationsLoaded && !organizationsLoading && !organizationSaving) {
+            this.props.getOrganizations();
         }
     }
 
     filterOrganizations = (e) => {
         const { filter } = this.state;
 
-        if (filter.value != e.target.value) {
+        if (filter != e.target.value) {
             this.setState({
-                filter: this.orgTypes.filter(orgType => orgType.value === e.target.value)[0], 
+                filter: e.target.value, 
                 isDirty: true
             });
 
@@ -137,7 +132,7 @@ class OrganizationsList extends React.Component {
                                 <Typography variant="body1">{org.name}</Typography>
                             </Grid>
                             <Grid item>
-                                <Typography variant="caption" color="primary" className={classes.listCaption}>{this.orgTypes.filter(type => type.value === org.organization_type)[0].label}</Typography>
+                                <Typography variant="caption" color="primary" className={classes.listCaption}>{org.organization_type.label}</Typography>
                             </Grid>
                         </Grid>
                     </ListItem>
@@ -157,18 +152,11 @@ class OrganizationsList extends React.Component {
 
     showMore = () => {
         const { numOrganizations } = this.state;
-
         this.setState({numOrganizations: numOrganizations + 10});
-        return;
     }
 
     searchList = (e) => {
-        this.setState({
-            searchText: e.target.value,
-            isDirty: true
-        });
-
-        return;
+        this.setState({searchText: e.target.value, isDirty: true});
     }
 
     listFilters = () => {
@@ -178,12 +166,8 @@ class OrganizationsList extends React.Component {
         return(
             <Grid item container xs={12} sm={9} md={6} spacing={1} justifyContent={width < 600 ? "center" : "flex-start"}>
                 <Grid item xs={width < 600 ? 12 : 6}>
-                    <Select variant="outlined" size="small" id="typeFilter" name="typeFilter" className={classes.listFilter} fullWidth={true}
-                        value={filter.value} defaultValue={filter.value} onChange={this.filterOrganizations}>
-                        {this.orgTypes.map(type => (
-                            <MenuItem key={type.value} value={type.value} className={classes.listFilter}>{type.label}</MenuItem>
-                        ))}
-                    </Select>
+                    <OrganizationTypeSelect variant={"outlined"} value={filter} defaultValue={filter} 
+                        showLabel={false} onChange={this.filterOrganizations} className={classes.listFilter} />
                 </Grid>
                 <Grid item xs={width < 600 ? 12 : 6}>
                     <TextField variant="outlined" size="small" id="searchOrganizations" name="searchOrganizations" fullWidth={true}
@@ -197,22 +181,27 @@ class OrganizationsList extends React.Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     }
 
+    actionAddOrganization = () => {
+        this.props.clearOrganization();
+        this.props.history.push("/manage/organizationdetail");
+    }
+
     render() {
         const { classes } = this.props;
-        const { filter, filteredOrganizations, numOrganizations, width } = this.state;        
+        const { filteredOrganizations, numOrganizations, width } = this.state;        
 
         return(
             <Container>
                 <Grid container spacing={2} justifyContent="space-between">
                     { width >= 600 && this.listFilters()}
                     <Grid item xs={12} sm={3} md={6} align="right" className={classes.hideForPrint}>
-                        <Button variant="contained" color="primary" size="small">Add Organization</Button>
+                        <Button variant="contained" color="primary" size="small" onClick={this.actionAddOrganization}>Add Organization</Button>
                     </Grid>
                     { width < 600 && this.listFilters()}
                     <Grid item xs={12}>
                         <Card elevation={4}>
                             { filteredOrganizations.length == 0 ? 
-                                <Typography variant="body1" className={classes.emptyMessage}>No {filter.label} Organizations Found.</Typography> :
+                                <Typography variant="body1" className={classes.emptyMessage}>No Organizations Found.</Typography> :
                                 this.orgList(filteredOrganizations, numOrganizations)
                             }
                         </Card>
@@ -227,12 +216,14 @@ const mapStateToProps = state => ({
     organizations: state.organizations.organizations || [],
     organizationsLoading: state.organizations.organizationsLoading,
     organizationsLoaded: state.organizations.organizationsLoaded,
+    organizationSaving: state.organizations.organizationSaving,
     user: state.auth.user || {},
 });
 
 const mapDispatchToProps = {
     setTitle,
-    getOrganizations
+    getOrganizations,
+    clearOrganization,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(OrganizationsList));

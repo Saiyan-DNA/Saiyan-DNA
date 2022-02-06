@@ -95,12 +95,30 @@ class LoginSerializer(serializers.Serializer):
         raise serializers.ValidationError("Incorrect Credentials")
 
 
+class ChoiceField(serializers.ChoiceField):
+
+    def to_representation(self, obj):
+        if obj == '' and self.allow_blank:
+            return obj
+        return {"value": obj, "label": self._choices[obj]}
+
+    def to_internal_value(self, data):
+        # To support inserts with the value
+        if data == '' and self.allow_blank:
+            return ''
+
+        for key, val in self._choices.items():
+            if val == data:
+                return key
+        self.fail('invalid_choice', input=data)
+
 class OrganizationReadSerializer(serializers.ModelSerializer):
     """
     Read Serializer for User Homes
     """
 
     created_by = UserSerializer(read_only=True)
+    organization_type = ChoiceField(choices=Organization.OrganizationType.choices)
     
     class Meta:
         model = Organization
