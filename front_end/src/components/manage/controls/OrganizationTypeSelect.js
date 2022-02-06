@@ -6,7 +6,7 @@ const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpa
 const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Navigation" */));
 const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material-Input" */));
 
-const OrganizationTypeSelect = ({variant, value, defaultValue, onChange, onBlur, className, showAllTypes=true, showLabel=true}) => {
+const OrganizationTypeSelect = ({variant, value, defaultValue, onChange, onBlur, className, showAllTypes=true, showLabel=true, disabled=false}) => {
     const orgTypes = [
         { value: "ALL", label: "All Types" }, 
         { value: "CTY", label: "Charity" },
@@ -31,7 +31,7 @@ const OrganizationTypeSelect = ({variant, value, defaultValue, onChange, onBlur,
         <FormControl fullWidth={true}>
             {showLabel && <InputLabel htmlFor="orgType">Type</InputLabel>}
             <Select variant={variant} size="small" id="orgType" name="orgType" className={className} fullWidth={true}
-                value={value} defaultValue={defaultValue} onChange={onChange} onBlur={onBlur}>
+                value={value} defaultValue={defaultValue} onChange={onChange} onBlur={onBlur} disabled={disabled}>
                 {orgTypes.map(type => (
                     <MenuItem key={type.value} value={type.value} className={className}>{type.label}</MenuItem>
                 ))}
