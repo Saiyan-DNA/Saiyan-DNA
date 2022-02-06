@@ -17,7 +17,7 @@ const TextField = loadable(() => import('@material-ui/core/TextField' /* webpack
 const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
 
 import { setTitle } from '../../actions/navigation';
-import { getOrganizations, clearOrganization } from '../../actions/organizations';
+import { getOrganizations, getOrganization, clearOrganization } from '../../actions/organizations';
 import OrganizationTypeSelect from './controls/OrganizationTypeSelect';
 
 const styles = theme => ({
@@ -105,6 +105,17 @@ class OrganizationsList extends React.Component {
         }
     }
 
+    emptyMessage() {
+        const { classes, organizationsLoading } = this.props;
+
+        return (
+            <Typography variant="body1" className={classes.emptyMessage}>
+                { organizationsLoading ? "Loading Organizations..." : "No Organizations Found." }
+            </Typography>
+        )
+
+    }
+
     filterOrganizations = (e) => {
         const { filter } = this.state;
 
@@ -126,7 +137,7 @@ class OrganizationsList extends React.Component {
         return (
             <List>
                 {organizations.slice(0, numToShow).map(org => (
-                    <ListItem key={org.id} button divider onClick={() => {console.log(`Edit '${org.name}'`)}}>
+                    <ListItem key={org.id} button divider onClick={() => {this.actionViewOrganization(org.id)}}>
                         <Grid container spacing={0} justifyContent="space-between">
                             <Grid item xs={12}>
                                 <Typography variant="body1">{org.name}</Typography>
@@ -186,6 +197,15 @@ class OrganizationsList extends React.Component {
         this.props.history.push("/manage/organizationdetail");
     }
 
+    actionViewOrganization = (id) => {
+        const { currentOrganization, getOrganization } = this.props;
+
+        if (!currentOrganization || currentOrganization.id != id) {
+            getOrganization(id);
+            this.props.history.push("/manage/organizationdetail");
+        }
+    }
+
     render() {
         const { classes } = this.props;
         const { filteredOrganizations, numOrganizations, width } = this.state;        
@@ -201,7 +221,7 @@ class OrganizationsList extends React.Component {
                     <Grid item xs={12}>
                         <Card elevation={4}>
                             { filteredOrganizations.length == 0 ? 
-                                <Typography variant="body1" className={classes.emptyMessage}>No Organizations Found.</Typography> :
+                                this.emptyMessage() :
                                 this.orgList(filteredOrganizations, numOrganizations)
                             }
                         </Card>
@@ -223,6 +243,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     setTitle,
     getOrganizations,
+    getOrganization,
     clearOrganization,
 }
 
