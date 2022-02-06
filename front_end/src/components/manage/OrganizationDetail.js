@@ -18,7 +18,9 @@ const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkNam
 
 import { setTitle } from '../../actions/navigation';
 import { saveOrganization } from '../../actions/organizations';
+
 import OrganizationTypeSelect from './controls/OrganizationTypeSelect';
+import DestructiveButton from '../common/DestructiveButton';
 
 const styles = theme => ({
     hideForPrint: {
@@ -51,25 +53,33 @@ class OrganizationDetail extends React.Component {
     }
 
     componentDidMount() {
-        const { organization } = this.props;
+        const { organization, setTitle } = this.props;
 
-        this.props.setTitle(organization.name || "New Organization");
+        setTitle(organization.name || "New Organization");
+    }
 
-        if (organization.id) {
+    componentDidUpdate() {
+        const { organization, setTitle } = this.props;
+        const { id } = this.state;
+
+        if (organization.id && id !== organization.id) {
+            setTitle(organization.name);
+
             this.setState({
                 id: organization.id,
                 name: organization.name,
-                organizationType: organization.organizationType.value,
-                url: organization.url,
+                organizationType: organization.organization_type.value,
+                url: organization.website_url,
+                isDirty: false,
             });
         }
     }
 
     saveOrganization = () => {
         const { id, name, organizationType, url } = this.state;
-        const { user } = this.props;
+        const { history, user, saveOrganization } = this.props;
 
-        this.props.saveOrganization({
+        saveOrganization({
             id: id, 
             name: name, 
             organization_type: organizationType,
@@ -77,7 +87,9 @@ class OrganizationDetail extends React.Component {
             created_by: user.id
         });
 
-        this.props.history.goBack();
+        this.setState({isDirty: false});
+
+        setTimeout(() => {history.goBack()}, 500);
     }
 
     render() {
@@ -92,7 +104,7 @@ class OrganizationDetail extends React.Component {
                             <Button variant="outlined" color="primary" size="small" onClick={() => {this.props.history.goBack()}}>Back</Button>
                         </Grid>
                         <Grid item xs={6} align="right" className={classes.hideForPrint}>
-                            <Button variant="contained" color="primary" size="small" onClick={this.saveOrganization}>
+                            <Button variant="contained" color="primary" size="small" disabled={!isDirty} onClick={this.saveOrganization}>
                                 {id ? "Save" : "Add"}</Button>
                         </Grid>
                         <Grid item xs={12}>
@@ -121,6 +133,11 @@ class OrganizationDetail extends React.Component {
                                 </CardContent>
                             </Card>
                         </Grid>
+                        { id &&
+                            <Grid item xs={12}>
+                                <DestructiveButton onClick={() => console.log("Delete this organization!")}>Delete</DestructiveButton>
+                            </Grid>
+                        }
                     </Grid>
                 </Box>
             </Container>

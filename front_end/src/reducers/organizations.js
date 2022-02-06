@@ -62,6 +62,8 @@ export default function(state = initialState, action) {
                 ...state,
                 currentOrganization: action.payload,
                 organizationsLoaded: false,
+                organizationsLoading: false,
+                organizationSaving: false,
             };
         case DELETE_ORGANIZATION:
             return {

@@ -29,7 +29,7 @@ export const getOrganization = (id) => (dispatch, getState) => {
 
     dispatch({type: ORGANIZATION_LOADING});
 
-    axios.get('/api/core/organization/?id=' + id, {
+    axios.get('/api/core/organization/' + id, {
         headers: {
           'Authorization': `Bearer ${jwt_token}`
         }}).then(res => {
