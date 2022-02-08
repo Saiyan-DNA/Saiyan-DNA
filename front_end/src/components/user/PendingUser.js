@@ -4,15 +4,15 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
+const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
+const FormControl = loadable(() => import('@mui/material/FormControl' /* webpackChunkName: "Material-Input" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+const Input = loadable(() => import('@mui/material/Input' /* webpackChunkName: "Material-Input" */));
+const InputLabel = loadable(() => import('@mui/material/InputLabel' /* webpackChunkName: "Material-Input" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
 
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */));
 

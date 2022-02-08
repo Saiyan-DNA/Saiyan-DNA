@@ -1,9 +1,10 @@
 import React from 'react';
 import loadable from '@loadable/component';
 
-import { createTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
+const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
 
 const theme = createTheme({
     typography: {
@@ -34,11 +35,11 @@ const styles = theme => ({
 
 const DestructiveButton = ({classes, className, children, onClick}) => {
     return (
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
             <Button variant="contained" color="primary" size="small" className={className} onClick={onClick}>
                 {children}
             </Button>
-        </MuiThemeProvider>
+        </ThemeProvider>
     )
 }
 

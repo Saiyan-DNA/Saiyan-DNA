@@ -3,18 +3,20 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
-const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material-Input" */));
+const Autocomplete = loadable(() => import('@mui/material/Autocomplete' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
+const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const FormControl = loadable(() => import('@mui/material/FormControl' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const Input = loadable(() => import('@mui/material/Input' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+const InputLabel = loadable(() => import('@mui/material/InputLabel' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+
+// Lazy-Loading the TextField causes an issue with the Autocomplete component. Need to find a solution.
+import TextField from '@mui/material/TextField';
 
 const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
 const DeleteAccountModal = loadable(() => import('./DeleteAccountModal' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
@@ -41,8 +43,8 @@ class AccountInfo extends React.Component {
         financialInstitutions: [],
         accountType: null,
         currentBalance: null,
-        creditLimit: null,
-        interestRate: null,
+        creditLimit: "",
+        interestRate: "",
         owner: null,
         isValid: false,
         deleteModalOpen: false
@@ -124,15 +126,15 @@ class AccountInfo extends React.Component {
             <>
                 <Grid item xs={6}>
                     <TextField id="creditLimit" name="creditLimit"
-                        label="Credit Limit*"
+                        label="Credit Limit*" variant="standard"
                         className={classes.numberInput}
                         onChange={this.onChange.bind(this)} 
-                        value={creditLimit}
+                        value={creditLimit} 
                         fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}} /> 
                 </Grid>
                 <Grid item xs={6}>
                     <TextField id="interestRate" name="interestRate"
-                        label="Interest Rate*"
+                        label="Interest Rate*" variant="standard"
                         onChange={this.onChange.bind(this)}
                         value={interestRate}
                         fullWidth={true} InputProps={{inputComponent: PercentageFormat,}} />
@@ -201,33 +203,33 @@ class AccountInfo extends React.Component {
                                                 </FormControl>
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                                <AutoComplete id="accountType" name="accountType"
+                                                <Autocomplete id="accountType" name="accountType"
                                                     fullWidth={true} 
                                                     options={accountTypes}
                                                     getOptionLabel={(option) => option.label}
-                                                    getOptionSelected={(option, value) => this.accountTypeSelected(option, value)}
+                                                    isOptionEqualToValue={(option, value) => this.accountTypeSelected(option, value)}
                                                     value={accountTypes.filter(acctType => {return acctType.value == accountType})[0] || null}
                                                     onChange={(event, selection) => {if (selection) this.onChange({target: {name: "accountType", value: selection.value}})}}
-                                                    renderInput={(params) => <TextField {...params} label="Account Type*" variant="standard" />}>
-                                                </AutoComplete>
+                                                    renderInput={props => <TextField {...props} label="Account Type*" variant="standard" />}>
+                                                </Autocomplete>
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                                <AutoComplete id="organization" name="organization"
+                                                <Autocomplete id="organization" name="organization"
                                                     fullWidth={true} 
                                                     options={financialInstitutions || []}
                                                     getOptionLabel={(option) => option.name}
-                                                    getOptionSelected={(option, value) => this.institutionSelected(option, value)}
+                                                    isOptionEqualToValue={(option, value) => this.institutionSelected(option, value)}
                                                     value={organization || null}
                                                     onChange={(event, value) => this.onChange({target: {name: "organization", value: value}})}
-                                                    renderInput={(params) => <TextField {...params} label="Financial Institution*" variant="standard" />}>
-                                                </AutoComplete>
+                                                    renderInput={(props) => <TextField {...props} label="Financial Institution*" variant="standard" />}>
+                                                </Autocomplete>
                                             </Grid>
                                             <Grid item xs={6}>
                                                 <TextField id="currentBalance" name="currentBalance"
-                                                    label="Balance"
+                                                    label="Balance" variant="standard"
                                                     className={classes.numberInput}
                                                     onChange={this.onChange.bind(this)} 
-                                                    value={currentBalance}
+                                                    value={currentBalance} 
                                                     fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/> 
                                             </Grid>
                                             { accountType === "CR" ? this.creditFields(classes) : null }

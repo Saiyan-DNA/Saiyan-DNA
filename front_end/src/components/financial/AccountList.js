@@ -4,15 +4,15 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import LinearProgress from '@material-ui/core/LinearProgress';
-import { withStyles } from '@material-ui/core/styles';
+import LinearProgress from '@mui/material/LinearProgress';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Material-Navigation" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
+const Link = loadable(() => import('@mui/material/Link' /* webpackChunkName: "Material-Navigation" */));
+const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
 
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 

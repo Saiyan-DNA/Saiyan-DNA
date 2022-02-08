@@ -4,17 +4,17 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Material-Navigation" */));
-const Menu = loadable(() => import('@material-ui/core/Menu' /* webpackChunkName: "Material-Navigation" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Navigation" */));
+const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
+const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
+const Link = loadable(() => import('@mui/material/Link' /* webpackChunkName: "Material-Navigation" */));
+const Menu = loadable(() => import('@mui/material/Menu' /* webpackChunkName: "Material-Navigation" */));
+const MenuItem = loadable(() => import('@mui/material/MenuItem' /* webpackChunkName: "Material-Navigation" */));
 
 const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "General" */));
 import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
@@ -243,16 +243,16 @@ class AccountOverview extends React.Component {
                     </Grid>
                 </Grid>
                 <Menu id="actionMenu" anchorEl={menuAnchor} keepMounted
-                    getContentAnchorEl={null} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}                        
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}                        
                     open={Boolean(actionMenuOpen)} onClose={this.closeMenu}>
-                    <MenuItem style={{fontSize: "10pt"}} dense button 
+                    <MenuItem style={{fontSize: "10pt"}} dense 
                         onClick={this.addTransaction}
                     >Add Transaction</MenuItem>
-                    <MenuItem style={{fontSize: "10pt"}} dense button 
+                    <MenuItem style={{fontSize: "10pt"}} dense
                         onClick={() => console.log("Show Import Transactions Modal")}
                     >Import Transactions</MenuItem>
                     <Divider />                            
-                    <MenuItem style={{fontSize: "10pt"}} dense button 
+                    <MenuItem style={{fontSize: "10pt"}} dense
                         onClick={() => history.push("/financial/accountinfo")}
                     >Edit Account</MenuItem>
                 </Menu>

@@ -3,18 +3,18 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material-Layout" */));
-const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material-Input" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
+const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
+const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
+const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Material-Layout" */));
+const TextField = loadable(() => import('@mui/material/TextField' /* webpackChunkName: "Material-Input" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
 
 import { setTitle } from '../../actions/navigation';
 import { getOrganizations, getOrganization, clearOrganization } from '../../actions/organizations';

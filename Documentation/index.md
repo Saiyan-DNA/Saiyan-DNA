@@ -27,8 +27,8 @@
 
 ## Product Management
 
-- [Feature Roadmap](Roadmap.md)
-- [Bug List](Bugs.md)
+- [Feature Roadmap](../Documentation/ProjectManagement/Roadmap.md)
+- [Bug List](../Documentation/ProjectManagement/BugList.md)
 
 ***
 

@@ -3,18 +3,18 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
+const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
+const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
+const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
+const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
 
 import { CurrencyFormat } from '../common/NumberFormats';
 

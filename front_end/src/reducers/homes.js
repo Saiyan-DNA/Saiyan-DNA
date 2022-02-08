@@ -2,7 +2,7 @@ import { GET_HOMES, GET_HOME, CLEAR_HOME, CREATE_HOME, UPDATE_HOME, DELETE_HOME 
 
 const initialState = {
     homes: [],
-    currentHome: null
+    selectedHome: null
 }
 
 export default function(state = initialState, action) {
@@ -15,24 +15,24 @@ export default function(state = initialState, action) {
         case GET_HOME:
             return {
                 ...state,
-                currentHome: action.payload
+                selectedHome: action.payload
             };
         case CLEAR_HOME:
             return {
                 ...state,
-                currentHome: null
+                selectedHome: null
             };
         case CREATE_HOME:
         case UPDATE_HOME:
             return {
                 ...state,
-                currentHome: action.payload
+                selectedHome: action.payload
             };
         case DELETE_HOME:
             return {
                 ...state,
                 homes: state.homes.filter(home => home.id !== action.payload),
-                currentHome: null
+                selectedHome: null
             };
         default:
             return state;

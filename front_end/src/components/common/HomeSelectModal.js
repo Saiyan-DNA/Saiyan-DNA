@@ -3,14 +3,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const FormControlLabel = loadable(() => import('@material-ui/core/FormControlLabel' /* webpackChunkName: "Material-Input" */));
-const Radio = loadable(() => import('@material-ui/core/Radio' /* webpackChunkName: "Material-Input" */));
-const RadioGroup = loadable(() => import('@material-ui/core/RadioGroup' /* webpackChunkName: "Material-Input" */));
+const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
+const FormControlLabel = loadable(() => import('@mui/material/FormControlLabel' /* webpackChunkName: "Material-Input" */));
+const Radio = loadable(() => import('@mui/material/Radio' /* webpackChunkName: "Material-Input" */));
+const RadioGroup = loadable(() => import('@mui/material/RadioGroup' /* webpackChunkName: "Material-Input" */));
 
 const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "General" */));
 
@@ -29,7 +29,7 @@ class HomeSelectmodal extends React.Component {
     }
 
     static propTypes = {
-        currentHome: PropTypes.object.isRequired,
+        selectedHome: PropTypes.object.isRequired,
         userHomes: PropTypes.array.isRequired,
         toggleHomeModal: PropTypes.func.isRequired,
         homeModalOpen: PropTypes.bool.isRequired,
@@ -37,10 +37,10 @@ class HomeSelectmodal extends React.Component {
     }
 
     componentDidMount() {
-        const { currentHome } = this.props;
+        const { selectedHome } = this.props;
 
-        if (currentHome.id) {
-            this.setState({selectedHome: currentHome.id});
+        if (selectedHome.id) {
+            this.setState({selectedHome: selectedHome.id});
         }
     }
 
@@ -90,7 +90,7 @@ class HomeSelectmodal extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    currentHome: state.navigation.currentHome,
+    selectedHome: state.navigation.selectedHome,
     userHomes: state.auth.user.homes || [],
     homeModalOpen: state.navigation.homeModalOpen
 });

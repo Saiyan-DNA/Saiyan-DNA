@@ -3,13 +3,13 @@ import loadable from '@loadable/component';
 
 const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "General" */));
 
-export const CurrencyFormat = (props) => {
+export const CurrencyFormat = React.forwardRef((props, ref) => {
   const { inputRef, onChange, decimalScale, ...other } = props;
 
   return (
     <NumberFormat
       {...other}
-      getInputRef={inputRef}
+      getInputRef={ref}
       style={{"textAlign": "right"}}
       onValueChange={(values) => {!onChange ? null : 
         onChange({
@@ -27,15 +27,15 @@ export const CurrencyFormat = (props) => {
       prefix="$"
     />
   );
-}
+});
 
-export const PercentageFormat = (props) => {
+export const PercentageFormat = React.forwardRef((props, ref) => {
     const { inputRef, onChange, decimalScale, ...other } = props;
   
     return (
       <NumberFormat
         {...other}
-        getInputRef={inputRef}
+        getInputRef={ref}
         style={{"textAlign": "right"}}
         onValueChange={(values) => {!onChange ? null : 
           onChange({
@@ -53,4 +53,4 @@ export const PercentageFormat = (props) => {
         suffix="%"
       />
     );
-  }
+  });

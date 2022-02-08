@@ -140,7 +140,6 @@ class AccountStatementView(viewsets.ModelViewSet):
 
         else:
             accounts = self.request.user.accounts.all()
-            # print(accounts.values_list('id', flat=True))
             stmts = AccountStatement.objects.filter(account__in=accounts.values_list('id', flat=True))
 
             clear_cache_item(cache_key)

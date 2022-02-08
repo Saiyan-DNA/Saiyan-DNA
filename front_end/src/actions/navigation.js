@@ -1,4 +1,4 @@
-import { SET_TITLE, USER_NAV, USER_HOME, TOGGLE_HOME_MODAL, TOGGLE_TIMEOUT_MODAL } from './types';
+import { CHANGE_MONTH, SET_TITLE, USER_NAV, USER_HOME, TOGGLE_HOME_MODAL, TOGGLE_TIMEOUT_MODAL } from './types';
 
 export const setTitle = (title) => {
     return {
@@ -18,6 +18,13 @@ export const setHome = (home) => {
     return {
         type: USER_HOME,
         payload: home
+    }
+}
+
+export const changeMonth = (month) => {
+    return {
+        type: CHANGE_MONTH,
+        payload: month
     }
 }
 

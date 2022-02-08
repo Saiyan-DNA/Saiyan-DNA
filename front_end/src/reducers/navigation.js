@@ -1,9 +1,11 @@
-import { SET_TITLE, USER_NAV, USER_HOME, CLEAR_HOME, TOGGLE_HOME_MODAL, TOGGLE_TIMEOUT_MODAL } from '../actions/types.js';
+import { SET_TITLE, USER_NAV, USER_HOME, TOGGLE_HOME_MODAL, TOGGLE_TIMEOUT_MODAL } from '../actions/types.js';
+import { CHANGE_MONTH, CLEAR_HOME } from '../actions/types.js';
 
 const initialState = {
     headerTitle: "Home Central",
     currentPath: localStorage.getItem("path") || "/",
-    currentHome: {},
+    selectedHome: {},
+    selectedMonth: localStorage.getItem("selectedMonth") || "",
     homeModalOpen: false,
     timeoutModalOpen: false,
 }
@@ -25,13 +27,19 @@ export default function(state = initialState, action) {
             localStorage.setItem("homeId", action.payload.id)
             return {
                 ...state,
-                currentHome: action.payload
+                selectedHome: action.payload
+            };
+        case CHANGE_MONTH:
+            localStorage.setItem("selectedMonth", action.payload, {expires: 1});
+            return {
+                ...state,
+                selectedMonth: action.payload
             };
         case CLEAR_HOME:
             localStorage.removeItem("home");
             return {
                 ...state,
-                currentHome: { name: ""}
+                selectedHome: { name: ""}
             };
         case TOGGLE_HOME_MODAL:
             return {

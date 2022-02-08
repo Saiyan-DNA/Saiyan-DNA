@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
+const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
 
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
 const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});

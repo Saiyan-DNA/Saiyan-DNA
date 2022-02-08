@@ -4,20 +4,20 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-const SwipeableDrawer = loadable(() => import('@material-ui/core/SwipeableDrawer' /* webpackChunkName: "Material-Navigation" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material-Layout" */));
+const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
+const SwipeableDrawer = loadable(() => import('@mui/material/SwipeableDrawer' /* webpackChunkName: "Material-Navigation" */));
+const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
+const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Material-Layout" */));
 
-const ExitToAppSharp = loadable(() => import('@material-ui/icons/ExitToAppSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
-const HomeSharp = loadable(() => import('@material-ui/icons/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
-const PersonRounded = loadable(() => import('@material-ui/icons/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const ExitToAppSharp = loadable(() => import('@mui/icons-material/ExitToAppSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const HomeSharp = loadable(() => import('@mui/icons-material/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const PersonRounded = loadable(() => import('@mui/icons-material/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
 const HomeSelectModal = loadable(() => import('../common/HomeSelectModal' /* webpackChunkName: "Navigation" */));
 
@@ -64,7 +64,7 @@ class UserMenu extends React.Component {
         toggleHomeModal: PropTypes.func.isRequired,
         userLogout: PropTypes.func.isRequired,
         setHome: PropTypes.func.isRequired,
-        currentHome: PropTypes.object,
+        selectedHome: PropTypes.object,
     }
 
     componentDidMount() {
@@ -76,9 +76,9 @@ class UserMenu extends React.Component {
     }
 
     homeSelection() {
-        const { isAuthenticated, currentHome, user, setHome, homeModalOpen, toggleHomeModal } = this.props;
+        const { isAuthenticated, selectedHome, user, setHome, homeModalOpen, toggleHomeModal } = this.props;
 
-        if (isAuthenticated && !currentHome.id && user.homes && homeModalOpen === false) {
+        if (isAuthenticated && !selectedHome.id && user.homes && homeModalOpen === false) {
             if (user.homes.length == 1) {
                 setHome(user.homes[0]);
                 return;
@@ -172,7 +172,7 @@ const mapStateToProps = state => ({
     timeRemaining: state.auth.timeRemaining,
     userMenuOpen: state.menu.userMenuOpen,
     homeModalOpen: state.navigation.homeModalOpen,
-    currentHome: state.navigation.currentHome,
+    selectedHome: state.navigation.selectedHome,
 });
 
 const mapDispatchToProps = {

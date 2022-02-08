@@ -3,6 +3,7 @@ import AccountList from './AccountList';
 import AccountOverview from './AccountOverview';
 import AssetsList from './AssetsList';
 import BankingList from './BankingList';
+import BillsList from './BillsList';
 import CreditList from './CreditList';
 import DeleteAccountModal from './DeleteAccountModal';
 import FinancialAccounts from './FinancialAccounts';
@@ -17,6 +18,7 @@ export {
     AccountOverview,
     AssetsList,
     BankingList,
+    BillsList,
     CreditList,
     DeleteAccountModal,
     FinancialAccounts,

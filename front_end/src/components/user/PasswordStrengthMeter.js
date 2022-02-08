@@ -1,14 +1,14 @@
 import React from 'react';
 import loadable from '@loadable/component';
 
-import LinearProgress from '@material-ui/core/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
 // Lazy-Loading LinearProgress breaks the dynamic color change based on password strength. Needs investigation.
-// const LinearProgress = loadable(() => import('@material-ui/core/LinearProgress' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+// const LinearProgress = loadable(() => import('@mui/material/LinearProgress' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
 
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
 
 
 const styles = theme => ({

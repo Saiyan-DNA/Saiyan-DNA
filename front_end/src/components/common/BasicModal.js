@@ -1,15 +1,15 @@
 import React from 'react';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Box = loadable(() => import('@material-ui/core/Box' /* webpackChunkName: "Material" */))
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const CardHeader = loadable(() => import('@material-ui/core/CardHeader' /* webpackChunkName: "Material-Layout" */));
-const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material-Navigation" */));
-const Modal = loadable(() => import('@material-ui/core/Modal' /* webpackChunkName: "Material" */));
-const CloseSharp = loadable(() => import('@material-ui/icons/CloseSharp' /* webpackChunkName: "Icons" */));
+const Box = loadable(() => import('@mui/material/Box' /* webpackChunkName: "Material" */))
+const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
+const CardHeader = loadable(() => import('@mui/material/CardHeader' /* webpackChunkName: "Material-Layout" */));
+const IconButton = loadable(() => import('@mui/material/IconButton' /* webpackChunkName: "Material-Navigation" */));
+const Modal = loadable(() => import('@mui/material/Modal' /* webpackChunkName: "Material" */));
+const CloseSharp = loadable(() => import('@mui/icons-material/CloseSharp' /* webpackChunkName: "Icons" */));
 
 const styles = theme => ({
     modalWindow: {
