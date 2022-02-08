@@ -8,6 +8,7 @@ export const USER_NAV = "USER_NAV"
 export const USER_HOME = "USER_HOME"
 export const CREATE_MESSAGE = 'CREATE_MESSAGE'
 export const CLEAR_MESSAGE = 'CLEAR_MESSAGE'
+export const CHANGE_MONTH = 'CHANGE_MONTH'
 
 // Auth Actions
 export const REGISTER_USER = 'REGISTER_USER'

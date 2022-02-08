@@ -2,11 +2,11 @@ import React from "react";
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const CardHeader = loadable(() => import('@material-ui/core/CardHeader' /* webpackChunkName: "Material-Layout" */));
+const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
+const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
+const CardHeader = loadable(() => import('@mui/material/CardHeader' /* webpackChunkName: "Material-Layout" */));
 
 const styles = theme => ({
     summaryCard: {

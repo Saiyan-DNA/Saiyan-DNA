@@ -4,6 +4,7 @@ import HomeSelectModal from "./HomeSelectModal";
 import InfoTile from "./InfoTile";
 import LoadingMessage from "./LoadingMessage";
 import { CurrencyFormat, PercentageFormat } from "./NumberFormats";
+import MonthSelector from "./MonthSelector";
 import PrivateRoute from "./PrivateRoute";
 import SummaryCard from "./SummaryCard";
 import SystemMessage from "./SystemMessage";
@@ -16,6 +17,7 @@ export {
     HomeSelectModal,
     InfoTile,
     LoadingMessage,
+    MonthSelector,
     PercentageFormat,
     PrivateRoute,
     SummaryCard,

@@ -4,11 +4,11 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
+const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
 
 import { CurrencyFormat } from '../../common/NumberFormats'
 
@@ -16,8 +16,8 @@ import { CurrencyFormat } from '../../common/NumberFormats'
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "General" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
-import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-import { EventTracker, Palette } from '@devexpress/dx-react-chart';
+// import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
+// import { EventTracker, Palette } from '@devexpress/dx-react-chart';
 
 
 const styles = theme => ({

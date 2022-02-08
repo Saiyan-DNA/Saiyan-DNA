@@ -3,10 +3,17 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const MuiAlert = loadable(() => import('@material-ui/lab/Alert' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-const Snackbar = loadable(() => import('@material-ui/core/Snackbar' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+/***************************************************************************************\
+| Lazy-loading seems to break new styling/theme system in MUI v5. Need to investigate.  |
+\***************************************************************************************/
+
+// const Alert = loadable(() => import('@mui/material/Alert' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+// const Snackbar = loadable(() => import('@mui/material/Snackbar' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
+
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 import { clearMessage } from '../../actions/messages';
 
@@ -18,12 +25,6 @@ const styles = theme => ({
         filter: "alpha(opacity=80)"
     }
 });
-
-function Alert(props) {
-    return <MuiAlert elevation = { 6 }
-    variant = "filled" {...props }
-    />;
-}
 
 class SystemMessage extends React.Component {
     state = {
@@ -66,11 +67,11 @@ class SystemMessage extends React.Component {
 
     componentDidMount() {
         this.updateWindowDimensions();
-        window.addEventListener('resize', this.updateWindowDimensions);
+        //window.addEventListener('resize', this.updateWindowDimensions);
     }
       
     componentWillUnmount() {
-        window.removeEventListener('resize', this.updateWindowDimensions);
+        //window.removeEventListener('resize', this.updateWindowDimensions);
     }
       
     updateWindowDimensions() {
@@ -89,15 +90,17 @@ class SystemMessage extends React.Component {
             anchor = {vertical: "top", horizontal: "center"}
         }
 
-        return ( 
-            <Snackbar className={classes.systemMessage} open={isVisible} autoHideDuration={3000} onClose={this.handleClose} anchorOrigin={anchor}>
-                { message && 
-                    <Alert onClose={this.handleClose} severity={message.type}>
-                        { message.title } 
+        if (message) {
+            return ( 
+                <Snackbar className={classes.systemMessage} open={isVisible} autoHideDuration={3000} onClose={this.handleClose} anchorOrigin={anchor}>
+                    <Alert elevation={6} variant = "filled" severity={message.type} className={classes.systemMessage}>
+                        { message.title }
                     </Alert>
-                }
-            </Snackbar>
-        )
+                </Snackbar>
+            )
+        }
+
+        return <></>
     }
 }
 

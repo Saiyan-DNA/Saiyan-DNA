@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material-Input" */));
-const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material-Input" */));
+const AutoComplete = loadable(() => import('@mui/lab/Autocomplete' /* webpackChunkName: "Material-Input" */));
+const TextField = loadable(() => import('@mui/material/TextField' /* webpackChunkName: "Material-Input" */));
 
 import { getFinancialCategories } from '../../../actions/financial_categories';
 

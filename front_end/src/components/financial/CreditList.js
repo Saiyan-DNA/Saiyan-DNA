@@ -2,8 +2,8 @@ import React from "react";
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 
 import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
 const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});

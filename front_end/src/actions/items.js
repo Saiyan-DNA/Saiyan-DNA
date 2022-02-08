@@ -6,7 +6,7 @@ import { createMessage } from './messages';
 // GET ITEMS
 export const getItems = () => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
-    const home_id = getState().navigation.currentHome.id;
+    const home_id = getState().navigation.selectedHome.id;
 
     axios.get(`/api/inventory/item/?home=${home_id}`, {
         headers: {

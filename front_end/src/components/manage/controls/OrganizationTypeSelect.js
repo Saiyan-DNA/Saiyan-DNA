@@ -1,10 +1,10 @@
 import React from "react";
 import loadable from '@loadable/component';
 
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Navigation" */));
-const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material-Input" */));
+const FormControl = loadable(() => import('@mui/material/FormControl' /* webpackChunkName: "Material-Input" */));
+const InputLabel = loadable(() => import('@mui/material/InputLabel' /* webpackChunkName: "Material-Input" */));
+const MenuItem = loadable(() => import('@mui/material/MenuItem' /* webpackChunkName: "Material-Navigation" */));
+const Select = loadable(() => import('@mui/material/Select' /* webpackChunkName: "Material-Input" */));
 
 const OrganizationTypeSelect = ({variant, value, defaultValue, onChange, onBlur, className, showAllTypes=true, showLabel=true, disabled=false}) => {
     const orgTypes = [

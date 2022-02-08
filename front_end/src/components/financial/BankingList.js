@@ -4,14 +4,15 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
 
-const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Material-Navigation" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
+const Link = loadable(() => import('@mui/material/Link' /* webpackChunkName: "Material-Navigation" */));
+const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
+const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
 
 const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
 const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "General" */));
@@ -19,7 +20,6 @@ const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName:
 import { CurrencyFormat } from '../common/NumberFormats'
 
 import { getAccount } from '../../actions/accounts';
-import { Divider } from "@material-ui/core";
 
 const styles = theme => ({
     listCardSubHeader: {
@@ -88,7 +88,7 @@ class BankingList extends React.Component {
                                 <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
                                     {acct.organization.website_url != null ?
                                         <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, acct.organization.website_url)}>{acct.organization.name}</Link> :
-                                        acct.financial_institution.name
+                                        acct.organization.name
                                     }
                                 </Typography>
                             </Grid>

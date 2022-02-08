@@ -4,7 +4,7 @@ import { connect, Provider } from 'react-redux';
 import { HashRouter as Router, Route, Switch, withRouter } from 'react-router-dom';
 import loadable from '@loadable/component';
 
-import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { checkTokenExpiration, loadUser } from '../actions/auth';
 import store from '../store';
@@ -15,7 +15,7 @@ const LoadingMessage = loadable(() => import('./common/LoadingMessage' /* webpac
 const Header = loadable(() => import('./layout' /* webpackChunkName: "Layout" */).then(m => m.Header));
 const NavMenu = loadable(() => import('./layout' /* webpackChunkName: "General" */).then(m => m.NavMenu));
 const UserMenu = loadable(() => import('./layout' /* webpackChunkName: "Navigation" */).then(m => m.UserMenu));
-const SystemMessage = loadable(() => import('./common/SystemMessage' /* webpackChunkName: "General" */));
+const SystemMessage = loadable(() => import('./common' /* webpackChunkName: "General" */).then(m => m.SystemMessage), {fallback: <LoadingMessage message="Loading Messages..." />});
 const Login = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.Login), {fallback: <LoadingMessage message="Loading Login..." />});
 const PendingUser = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.PendingUser), {fallback: <LoadingMessage message="Loading Information" />});
 const RegisterUser = loadable(() => import('./user' /* webpackChunkName: "General" */).then(m => m.RegisterUser), {fallback: <LoadingMessage message="Loading Registration Form..." />});
@@ -27,6 +27,7 @@ const AccountInfo = loadable(() => import('./financial' /* webpackChunkName: "Fi
 const AccountOverview = loadable(() => import('./financial' /* webpackChunkName: "Financial" */).then(m => m.AccountOverview), {fallback:<LoadingMessage message="Loading Account..." />});
 const AssetsList = loadable(() => import('./financial' /*webpackChunkName: "Financial" */).then(m => m.AssetsList), {fallback: <LoadingMessage message="Loading Assets..." />});
 const TransactionDetail = loadable(() => import('./financial' /*webpackChunkName: "Financial" */).then(m => m.TransactionDetail), {fallback: <LoadingMessage message="Loading Transaction..." />});
+const BillsList = loadable(() => import('./financial' /*webpackChunkName: "Financial" */).then(m => m.BillsList), {fallback: <LoadingMessage message="Loading Bills..." />});
 
 const HomeList = loadable(() => import('./manage' /* webpackChunkName: "Manage" */).then(m => m.HomeList), {fallback: <LoadingMessage message="Loading Homes..." />});
 const OrganizationsList = loadable(() => import('./manage' /* webpackChunkName: "Manage" */).then(m => m.OrganizationsList), {fallback: <LoadingMessage message="Loading Organizations..." />});
@@ -68,7 +69,7 @@ class App extends React.Component {
     render() {
         return (
             <Provider store={store}>
-                <MuiThemeProvider theme={theme}>
+                <ThemeProvider theme={theme}>
                     <Router>
                         <Header />
                         <NavMenu />
@@ -84,7 +85,8 @@ class App extends React.Component {
                           <PrivateRoute exact path="/financial/accountinfo" component={AccountInfo} />
                           <PrivateRoute exact path="/financial/accountoverview" component={AccountOverview} />
                           <PrivateRoute exact path="/financial/assets" component={AssetsList} />
-                          <PrivateRoute exact path="/financial/transaction" component={TransactionDetail} />
+                          <PrivateRoute exact path="/financial/bills" component={BillsList} />
+                          <PrivateRoute exact path="/financial/transaction" component={TransactionDetail} />                          
                           <PrivateRoute exact path="/manage/homes" component={HomeList} />
                           <PrivateRoute exact path="/manage/organizations" component={OrganizationsList} />
                           <PrivateRoute exact path="/manage/organizationdetail" component={OrganizationDetail} />
@@ -94,7 +96,7 @@ class App extends React.Component {
                         </Switch>
                     </Router>
                     <SystemMessage />
-                </MuiThemeProvider>
+                </ThemeProvider>
             </Provider>
         );
     }
