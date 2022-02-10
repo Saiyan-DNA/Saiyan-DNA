@@ -5,16 +5,10 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+import { Button, Card, Container, Grid, List, ListItem, ListItemButton, TextField, Typography } from '@mui/material';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Material-Layout" */));
-const TextField = loadable(() => import('@mui/material/TextField' /* webpackChunkName: "Material-Input" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
+const ArrowUp = loadable(() => import('@mui/icons-material/KeyboardArrowUp' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
+const ArrowDown = loadable(() => import('@mui/icons-material/KeyboardArrowDown' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 
 import { setTitle } from '../../actions/navigation';
 import { getOrganizations, getOrganization, clearOrganization } from '../../actions/organizations';
@@ -52,10 +46,6 @@ const styles = theme => ({
 });
 
 class OrganizationsList extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     state = {
         filter: "ALL",
         filteredOrganizations: [],
@@ -133,11 +123,12 @@ class OrganizationsList extends React.Component {
         var { classes } = this.props;
 
         var showMore = numToShow < organizations.length ? true : false;
+        var showLess = numToShow > 10 ? true : false;
 
         return (
             <List>
                 {organizations.slice(0, numToShow).map(org => (
-                    <ListItem key={org.id} button divider onClick={() => {this.actionViewOrganization(org.id)}}>
+                    <ListItemButton key={org.id} divider onClick={() => {this.actionViewOrganization(org.id)}}>
                         <Grid container spacing={0} justifyContent="space-between">
                             <Grid item xs={12}>
                                 <Typography variant="body1">{org.name}</Typography>
@@ -146,14 +137,24 @@ class OrganizationsList extends React.Component {
                                 <Typography variant="caption" color="primary" className={classes.listCaption}>{org.organization_type.label}</Typography>
                             </Grid>
                         </Grid>
-                    </ListItem>
+                    </ListItemButton>
                 ))}
-                { showMore && (
-                    <ListItem key="more" button divider onClick={this.showMore}>
+                { (showLess || showMore) && (
+                    <ListItem disableGutters>
                         <Grid container spacing={0} justifyContent="center">
-                            <Grid item>
-                                <ListItemText primary="Show More..." className={classes.showMore} />
-                            </Grid>
+                            { showLess && 
+                                <Grid item alignItems="center" onClick={this.showLess}>
+                                    <Button color="inherit" fullWidth={true} className={classes.showMore} size="small"
+                                        startIcon={<ArrowUp />} endIcon={<ArrowUp />}>Show Less</Button>
+                                </Grid>
+                            }
+                            { (showLess && showMore) && <Grid item xs={"auto"}><Divider orientation="vertical" light={true} /></Grid> }
+                            { showMore &&
+                                <Grid item alignItems="center" onClick={this.showMore}>
+                                    <Button color="inherit" fullWidth={true} className={classes.showMore} size="small"
+                                        startIcon={<ArrowDown />} endIcon={<ArrowDown />}>Show More</Button>
+                                </Grid>
+                            }
                         </Grid>
                     </ListItem>
                 )}
@@ -164,6 +165,11 @@ class OrganizationsList extends React.Component {
     showMore = () => {
         const { numOrganizations } = this.state;
         this.setState({numOrganizations: numOrganizations + 10});
+    }
+
+    showLess = () => {
+        let newCount = this.state.numOrganizations - 10;
+        this.setState({numOrganizations: newCount < 10 ? 10 : newCount});
     }
 
     searchList = (e) => {

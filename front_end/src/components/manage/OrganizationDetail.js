@@ -5,23 +5,13 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Box = loadable(() => import('@mui/material/Box' /* webpackChunkName: "Material-Layout" */));
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const FormControl = loadable(() => import('@mui/material/FormControl' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@mui/material/InputLabel' /* webpackChunkName: "Material-Input" */));
-const Input = loadable(() => import('@mui/material/Input' /* webpackChunkName: "Material-Input" */));
+import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
 
 import { setTitle } from '../../actions/navigation';
 import { saveOrganization, deleteOrganization } from '../../actions/organizations';
 
-const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "General" */));
-const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */));
+const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "Common" */));
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */));
 const OrganizationTypeSelect = loadable(() => import('./controls/OrganizationTypeSelect' /* webpackChunkName: "Manage" */));
 
 const styles = theme => ({
@@ -153,22 +143,17 @@ class OrganizationDetail extends React.Component {
                                 <CardContent>
                                     <Grid container spacing={2} justifyContent="space-between">
                                         <Grid item xs={12} md={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="name">Name</InputLabel>
-                                                <Input id="name" name="name" placeholder="Organization Name" required value={name} disabled={readOnly}
-                                                    onChange={(e) => this.setState({name: e.target.value, isDirty: true})} />
-                                            </FormControl>                                        
+                                            <TextField id="name" name="name" label="Organization Name" required value={name} 
+                                                disabled={readOnly} variant="standard" fullWidth={true}
+                                                onChange={(e) => this.setState({name: e.target.value, isDirty: true})} />
                                         </Grid>
                                         <Grid item xs={12} md={6}>
                                             <OrganizationTypeSelect required value={organizationType} showAllTypes={false} disabled={readOnly}
-                                                onChange={(e) => this.setState({organizationType: e.target.value, isDirty: true})} />
+                                                variant="standard" onChange={(e) => this.setState({organizationType: e.target.value, isDirty: true})} />
                                         </Grid>
                                         <Grid item xs={12} md={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="url">Website</InputLabel>
-                                                <Input id="url" name="url" placeholder="Website" value={url} disabled={readOnly}
-                                                    onChange={(e) => this.setState({url: e.target.value, isDirty: true})} />
-                                            </FormControl>                                        
+                                            <TextField id="url" name="url" label="Website" variant="standard" fullWidth={true}
+                                                value={url} disabled={readOnly} onChange={(e) => this.setState({url: e.target.value, isDirty: true})} />
                                         </Grid>
                                     </Grid>
                                 </CardContent>

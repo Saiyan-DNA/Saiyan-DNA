@@ -6,13 +6,7 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const FormControl = loadable(() => import('@mui/material/FormControl' /* webpackChunkName: "Material-Input" */));
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Input = loadable(() => import('@mui/material/Input' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@mui/material/InputLabel' /* webpackChunkName: "Material-Input" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
+import { Button, Container, Grid, TextField } from '@mui/material';
 
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */));
 
@@ -98,14 +92,9 @@ class PendingUser extends React.Component {
                                     </Grid>
                                     <Grid item xs={12} container spacing={2} justifyContent="center" alignItems="flex-end">
                                         <Grid item>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="verificationCode">Verification Code</InputLabel>
-                                                <Input type="text" className="form-control"
-                                                    id="verificationCode" name="verificationCode"
-                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none"}}
-                                                    onChange={this.onChange} value={verificationCode}
-                                                />
-                                            </FormControl>
+                                            <TextField type="text" className="form-control" id="verificationCode" name="verificationCode"
+                                                inputProps={{autoCapitalize: "none", autoCorrect: "none"}} value={verificationCode} error={recommendNewRequest}
+                                                onChange={this.onChange} label="Verification Code" variant="outlined" fullWidth required />
                                         </Grid>                               
                                         <Grid item>
                                             <Button color="primary" variant="contained" type="submit" size="small"

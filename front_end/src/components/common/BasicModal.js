@@ -3,12 +3,8 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Box = loadable(() => import('@mui/material/Box' /* webpackChunkName: "Material" */))
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
-const CardHeader = loadable(() => import('@mui/material/CardHeader' /* webpackChunkName: "Material-Layout" */));
-const IconButton = loadable(() => import('@mui/material/IconButton' /* webpackChunkName: "Material-Navigation" */));
-const Modal = loadable(() => import('@mui/material/Modal' /* webpackChunkName: "Material" */));
+import { Box, Card, CardContent, CardHeader, IconButton, Modal } from '@mui/material';
+
 const CloseSharp = loadable(() => import('@mui/icons-material/CloseSharp' /* webpackChunkName: "Icons" */));
 
 const styles = theme => ({

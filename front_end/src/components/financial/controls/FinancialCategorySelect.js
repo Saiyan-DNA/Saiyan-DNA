@@ -1,10 +1,8 @@
 import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
-const AutoComplete = loadable(() => import('@mui/lab/Autocomplete' /* webpackChunkName: "Material-Input" */));
-const TextField = loadable(() => import('@mui/material/TextField' /* webpackChunkName: "Material-Input" */));
+import { Autocomplete, TextField } from '@mui/material';
 
 import { getFinancialCategories } from '../../../actions/financial_categories';
 
@@ -34,15 +32,15 @@ class FinancialCategorySelect extends React.Component {
         const { id, name, financialCategories, onChange, selection } = this.props;
         
         return (
-            <AutoComplete id={id || "transactionCategory"} name={name || "transactionCategory"}
+            <Autocomplete id={id || "transactionCategory"} name={name || "transactionCategory"}
                 fullWidth={true} 
                 options={financialCategories ? financialCategories.sort((a, b) => a.path_name.localeCompare(b.path_name)) : []}
                 getOptionLabel={(option) => option.path_name}
-                getOptionSelected={(option, value) => this.categorySelected(option, value)}
+                isOptionEqualToValue={(option, value) => this.categorySelected(option, value)}
                 value={selection}
                 onChange={(event, value) => onChange({target: {name: name || "transactionCategory", value: value}})}
                 renderInput={(params) => <TextField {...params} label="Category" variant="standard" />}>
-            </AutoComplete>
+            </Autocomplete>
         )
     }
 

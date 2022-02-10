@@ -6,14 +6,14 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
+const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
 
 import { CurrencyFormat, PercentageFormat } from '../../common/NumberFormats'
 
 // const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "General" */), {fallback: <span>&nbsp;</span>});
+const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
 // import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';

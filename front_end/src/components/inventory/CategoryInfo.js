@@ -1,33 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const FormControl = loadable(() => import('@mui/material/FormControl' /* webpackChunkName: "Material-Input" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
-const Input = loadable(() => import('@mui/material/Input' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@mui/material/InputLabel' /* webpackChunkName: "Material-Input" */));
-const MenuItem = loadable(() => import('@mui/material/MenuItem' /* webpackChunkName: "Material-Navigation" */));
-const Select = loadable(() => import('@mui/material/Select' /* webpackChunkName: "Material-Input" */));
+import { Button, Card, CardContent, Container, Grid, MenuItem, TextField } from '@mui/material';
 
 import { setTitle } from '../../actions/navigation';
 
-const styles = theme => ({
-    hideForPrint: {
-        ['@media print']: { // eslint-disable-line no-useless-computed-key
-            display: "none",
-        }
-    },
-    menuPaper: {
-        maxHeight: "400px"
-    }
-});
+const styles = theme => ({});
 
 class CategoryInfo extends React.Component {
     state = {
@@ -103,6 +84,7 @@ class CategoryInfo extends React.Component {
 
     render() {
         const { classes } = this.props;
+        const { categoryName, description, parent, children, categoryType, home, parentCategories } = this.state;
 
         this.classes = classes;
 
@@ -111,45 +93,31 @@ class CategoryInfo extends React.Component {
                 <form onSubmit={this.saveCategory}>
                     <Grid container spacing={2} justifyContent="space-between">
                         <Grid item>
-                            <Button variant="outlined" color="primary" size="small" 
-                            onClick={this.goBack}>Back</Button>
+                            <Button variant="outlined" color="primary" size="small" onClick={this.goBack}>Back</Button>
                         </Grid>
                         <Grid item>
-                            <Button variant="contained" color="primary" size="small" 
-                            onClick={this.saveCategory}>Save</Button>
+                            <Button variant="contained" color="primary" size="small" onClick={this.saveCategory}>Save</Button>
                         </Grid>
                         <Grid item xs={12}>
                             <Card elevation={4}>
                                 <CardContent>
                                     <Grid container spacing={1}>
                                         <Grid item xs={12} md={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="categoryName">Category Name</InputLabel>
-                                                <Input id="categoryName" name="categoryName"
-                                                    onChange={this.onChange} value={this.state.categoryName}
-                                                    fullWidth={true} />
-                                            </FormControl>
+                                            <TextField id="categoryName" name="categoryName" label="Category Name"
+                                                variant="standard" required fullWidth value={categoryName} onChange={this.onChange} />
                                         </Grid>
                                         <Grid item xs={12} md={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="description">Description</InputLabel>
-                                                <Input id="description" name="description"
-                                                    onChange={this.onChange} value={this.state.description}
-                                                    fullWidth={true} />
-                                            </FormControl>
+                                            <TextField id="description" name="description" label="Description"
+                                                variant="standard" fullWidth value={description} onChange={this.onChange} />
                                         </Grid>
                                         <Grid item xs={12} md={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="parent">Parent</InputLabel>
-                                                <Select id="parent" name="parent" MenuProps={{classes: { paper: this.classes.menuPaper }}}
-                                                    onChange={this.onChange} value={this.state.parent}
-                                                    fullWidth={true}>
-                                                        <MenuItem value="0"><em>None</em></MenuItem>
-                                                        {this.state.parentCategories.map(p => (
-                                                                <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
-                                                        ))}
-                                                </Select>
-                                            </FormControl>
+                                            <TextField select id="parent" name="parent" label="Parent Category"
+                                                variant="standard" fullWidth value={parent} onChange={this.onChange}>
+                                                <MenuItem value="0"><em>None</em></MenuItem>
+                                                {this.state.parentCategories.map(p => (
+                                                        <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+                                                ))}
+                                            </TextField>
                                         </Grid>
                                     </Grid>
                                 </CardContent>

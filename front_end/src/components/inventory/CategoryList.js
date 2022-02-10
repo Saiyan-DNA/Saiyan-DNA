@@ -5,21 +5,11 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Collapse = loadable(() => import('@mui/material/Collapse' /* webpackChunkName: "Material" */));
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const IconButton = loadable(() => import('@mui/material/IconButton' /* webpackChunkName: "Material-Navigation" */));
-const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemIcon = loadable(() => import('@mui/material/ListItemIcon' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Material-Layout" */));
+import { Button, Card, CardContent, Collapse, Container, Grid, IconButton, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 
 const ArrowRight = loadable(() => import('@mui/icons-material/ArrowRight' /* webpackChunkName: "Icons" */));
 const ArrowDropDown = loadable(() => import('@mui/icons-material/ArrowDropDown' /* webpackChunkName: "Icons" */));
 const Edit = loadable(() => import('@mui/icons-material/Edit' /* webpackChunkName: "Icons" */));
-
 
 import { getCategories, getCategory, clearCategory } from '../../actions/categories';
 import { setTitle } from '../../actions/navigation';

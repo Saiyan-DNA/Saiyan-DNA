@@ -1,13 +1,13 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
+import loadable from "@loadable/component";
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+import { Divider, Grid } from '@mui/material';
+
+const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
+const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "Common" */));
 
 import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
-const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
-const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "General" */));
 
 class CreditList extends React.Component {
     static propTypes = {
@@ -20,7 +20,7 @@ class CreditList extends React.Component {
 
     creditOverview = (utilization, availableAmount) => {
         return (
-            <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em", marginTop: "2px", borderBottom: "0.5px solid #DCDCDC"}}>
+            <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em", marginTop: "2px"}}>
                 <Grid item>
                     <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
                 </Grid>
@@ -29,6 +29,9 @@ class CreditList extends React.Component {
                 </Grid>
                 <Grid item>
                     <InfoTile title="Available" content={<CurrencyFormat value={availableAmount} displayType={'text'} decimalScale={2} />} />
+                </Grid>
+                <Grid item xs={12}>
+                    <Divider light={true} />
                 </Grid>
             </Grid>
         );

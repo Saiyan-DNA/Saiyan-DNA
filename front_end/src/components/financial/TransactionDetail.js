@@ -3,27 +3,11 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import DateFnsUtils from '@date-io/date-fns';
-
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import MobileDatePicker from '@mui/lab/MobileDatePicker';
-
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
-const FormControl = loadable(() => import('@mui/material/FormControl' /* webpackChunkName: "Material-Input" */));
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Input = loadable(() => import('@mui/material/Input' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@mui/material/InputLabel' /* webpackChunkName: "Material-Input" */));
-const TextField = loadable(() => import('@mui/material/TextField' /* webpackChunkName: "Material-Input" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */));
-const AccountSelect = loadable(() => import ('./controls/AccountSelect' /* webpackChunkName: "Financial" */));
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */));
+const AccountSelect = loadable(() => import('./controls/AccountSelect' /* webpackChunkName: "Financial" */));
 const FinancialCategorySelect = loadable(() => import('./controls/FinancialCategorySelect' /* webpackChunkName: "Financial" */));
 const TransactionTypeSelect = loadable(() => import('./controls/TransactionTypeSelect' /* webpackChunkName: "Financial" */));
 
@@ -38,6 +22,9 @@ const styles = theme => ({
     numberInput: {
         textAlign: "right"
     },
+    dateInput: {
+        textAlign: "right"
+    },
     deleteButton: {
         marginTop: "0.5em"
     }
@@ -49,7 +36,7 @@ class TransactionDetail extends React.Component {
         transaction: {
             transactionId: null,
             transactionDate: new Date(),
-            transactionType: "",
+            transactionType: null,
             transactionSummary: "",
             transactionDescription: "",
             transactionCategory: null,
@@ -124,7 +111,7 @@ class TransactionDetail extends React.Component {
             transaction: {
                 transactionId: null,
                 transactionDate: new Date(),
-                transactionType: "",
+                transactionType: null,
                 transactionSummary: "",
                 transactionDescription: "",
                 transactionCategory: null,
@@ -278,45 +265,33 @@ class TransactionDetail extends React.Component {
         return (
             <Grid container spacing={2} justifyContent="space-between" className={isMobile ? classes.detailContainer : null}>
                 <Grid item xs={6} sm={6}>
-                    <FormControl fullWidth={true} disabled={true}>
-                        <InputLabel htmlFor="accountName">Account</InputLabel>
-                        <Input id="accountName" name="accountName" value={account.name} fullWidth={true} />
-                    </FormControl>
+                    <TextField id="accountName" name="accountName" variant="standard" label="Account" 
+                        value={account.name} disabled fullWidth />
                 </Grid>
                 <Grid item xs={6} sm={6}>
-                    <LocalizationProvider dateAdapter={DateFnsUtils}>
-                        <MobileDatePicker disableToolbar variant={isMobile ? "dialog" : "inline"} style={{marginTop: "0px"}}
-                            format="MM/dd/yyyy" margin="normal" id="transactionDate" name="transactionDate" autoOk={ isMobile ? false : true }
-                            label="Transaction Date" value={transaction.transactionDate} onChange={this.handleDateChange}
-                            KeyboardButtonProps={{'aria-label': 'change date',}} />
-                    </LocalizationProvider>
+                    <TextField id="transactionDate" name="transactionDate" variant="standard" placeholder={"MM/DD/YYYY"}
+                        onChange={this.onChange} onBlur={this.validateTransaction} label="Date" className={classes.dateInput}
+                        value={transaction.transactionDate.toLocaleDateString()} fullWidth={true} />
                 </Grid> 
                 <Grid item xs={6} sm={6}>
                     <TransactionTypeSelect onChange={this.onChange} onBlur={this.validateTransaction}
-                        value={transaction.transactionType ? transaction.transactionType : ""}
-                        defaultValue={transaction.transactionType} />
+                        selection={transaction.transactionType} />
                 </Grid>
                 <Grid item xs={6} sm={6}>
                     <TextField id="transactionAmount" name="transactionAmount"
-                        label="Amount" className="numberFormat"
+                        label="Amount" className="numberFormat" variant="standard"
                         onChange={this.onChange} onBlur={this.validateTransaction}
-                        value={transaction.transactionAmount} fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/>                                
+                        value={transaction.transactionAmount} fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/>                         
                 </Grid>
                 <Grid item xs={12} sm={12}>
-                    <FormControl fullWidth={true}>
-                        <InputLabel htmlFor="transactionDescription">Summary</InputLabel>
-                        <Input id="transactionSummary" name="transactionSummary" 
-                            onChange={this.onChange} onBlur={this.validateTransaction}
-                            value={transaction.transactionSummary} fullWidth={true} />
-                    </FormControl>
+                    <TextField id="transactionSummary" name="transactionSummary" variant="standard"
+                        label="Summary" onChange={this.onChange} onBlur={this.validateTransaction}
+                        value={transaction.transactionSummary} fullWidth={true} />
                 </Grid>
                 <Grid item xs={12} sm={12}>
-                    <FormControl fullWidth={true}>
-                        <InputLabel htmlFor="transactionDescription">Description</InputLabel>
-                        <Input id="transactionDescription" name="transactionDescription" 
-                            onChange={this.onChange} onBlur={this.validateTransaction}
-                            value={transaction.transactionDescription} fullWidth={true} />
-                    </FormControl>
+                    <TextField id="transactionDescription" name="transactionDescription" variant="standard"
+                        label="Description" onChange={this.onChange} onBlur={this.validateTransaction}
+                        value={transaction.transactionDescription} fullWidth={true} />
                 </Grid>
                 <Grid item xs={12} sm={12}>
                     <FinancialCategorySelect id="transactionCategory" name="transactionCategory"

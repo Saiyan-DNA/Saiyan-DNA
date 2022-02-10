@@ -1,26 +1,23 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const MenuItem = loadable(() => import('@mui/material/MenuItem' /* webpackChunkName: "Material-Navigation" */));
-const Select = loadable(() => import('@mui/material/Select' /* webpackChunkName: "Material-Input" */));
+import { MenuItem, Select } from '@mui/material';
 
 import { changeMonth } from '../../actions/navigation';
 
 const styles = theme => ({
     monthSelect: {
-        maxHeight: "2.5em",
-        maxWidth: "18em",
+        height: "2.5em",
+        maxWidth: "16em",
     }
 });
 
 class MonthSelector extends React.Component {
     state = {
-        selectedMonth: "",
         availableMonths: []
     };
 
@@ -53,56 +50,39 @@ class MonthSelector extends React.Component {
                 let monthLabel = `${month.label} ${year}`
 
                 if (monthValue.localeCompare(currentMonth) < 0) {
-                    availableMonths.push({value: monthValue, label: monthLabel});
+                    availableMonths.push({id: monthValue, label: monthLabel});
                 } else if (monthValue.localeCompare(currentMonth) == 0) {
-                    availableMonths.push({value: monthValue, label: monthLabel + " (current)"});
+                    availableMonths.push({id: monthValue, label: monthLabel + " (current)"});
                   
                 } else if (!this.props.hideFuture && monthValue.localeCompare(currentMonth) > 0) {
-                    availableMonths.push({value: monthValue, label: monthLabel});
+                    availableMonths.push({id: monthValue, label: monthLabel});
                 }
             });
         });
 
-        availableMonths = availableMonths.reverse();
+        this.setState({availableMonths: availableMonths.reverse()});
 
-        this.setState({
-            selectedMonth: selectedMonth || currentMonth,
-            availableMonths: availableMonths
-        });
-
-        if (selectedMonth == "") {
-            changeMonth(currentMonth);
-        }
-
+        if (!selectedMonth) changeMonth(availableMonths.filter(m => m.id === currentMonth)[0].id);
     }
 
-    componentDidUpdate() {
-        
-    }
-
-    changeMonth = (event) => {
+    changeMonth = (e) => {
         const { selectedMonth, changeMonth } = this.props;
+        const { availableMonths } = this.state;
 
-        this.setState({selectedMonth: event.target.value});
-
-        if (selectedMonth.localeCompare(event.target.value) != 0) {
-            changeMonth(event.target.value);
-        }
-
+        let newMonth = availableMonths.filter(m => m.id === e.target.value)[0]
+        
+        if (newMonth && newMonth.id !== selectedMonth) changeMonth(newMonth.id);
     }
 
     render() {
-        const { classes, variant } = this.props;
-        
-        const { selectedMonth, availableMonths } = this.state;
+        const { classes, selectedMonth, variant } = this.props;
+        const { availableMonths } = this.state;
 
         return (
             <Select name="monthSelector" id="monthSelector" variant={variant || "outlined"} fullWidth={true}
-                className={classes.monthSelect} value={selectedMonth} onChange={this.changeMonth}>
+                className={classes.monthSelect} value={availableMonths.length > 0 ? selectedMonth : ""} onChange={this.changeMonth}>
                     { availableMonths.map((month) => {
-                            return (
-                                <MenuItem key={month.value} value={month.value}>{month.label}</MenuItem>
-                            );
+                            return (<MenuItem key={month.id} value={month.id}>{month.label}</MenuItem>);
                         })
                     }
             </Select>

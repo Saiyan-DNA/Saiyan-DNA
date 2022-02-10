@@ -6,14 +6,14 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
+const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
 
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
-const SwipeableDrawer = loadable(() => import('@mui/material/SwipeableDrawer' /* webpackChunkName: "Material-Navigation" */));
-const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Material-Layout" */));
+const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
+const SwipeableDrawer = loadable(() => import('@mui/material/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
+const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Layout" */));
+const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Layout" */));
+const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Layout" */));
 
 const ExitToAppSharp = loadable(() => import('@mui/icons-material/ExitToAppSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const HomeSharp = loadable(() => import('@mui/icons-material/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});

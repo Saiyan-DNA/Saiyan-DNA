@@ -1,16 +1,14 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+import { Container, Grid } from '@mui/material';
 
-import {BankingPanel, CreditCardsPanel, CreditScorePanel, NetWorthPanel, DebtIncomePanel, LoansPanel} from './dashboard';
-import { MonthSelector } from "../common";
+import { BankingPanel, CreditCardsPanel, CreditScorePanel, NetWorthPanel, DebtIncomePanel, LoansPanel } from './dashboard';
+import MonthSelector from "../common/MonthSelector";
 
 import { setTitle } from '../../actions/navigation';
 

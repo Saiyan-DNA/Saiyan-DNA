@@ -1,7 +1,5 @@
 import React from "react";
-import loadable from '@loadable/component';
-
-const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "General" */));
+import NumberFormat from 'react-number-format';
 
 export const CurrencyFormat = React.forwardRef((props, ref) => {
   const { inputRef, onChange, decimalScale, ...other } = props;

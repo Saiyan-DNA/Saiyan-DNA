@@ -6,12 +6,10 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
+import { Button, Grid, Typography } from '@mui/material';
 
-const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */));
-const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "General" */));
+const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "Common" */));
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */));
 
 import { deleteAccount } from '../../actions/accounts';
 
