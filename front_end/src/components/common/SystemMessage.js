@@ -1,19 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-/***************************************************************************************\
-| Lazy-loading seems to break new styling/theme system in MUI v5. Need to investigate.  |
-\***************************************************************************************/
-
-// const Alert = loadable(() => import('@mui/material/Alert' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-// const Snackbar = loadable(() => import('@mui/material/Snackbar' /* webpackChunkName: "Material" */), {fallback: <div>&nbsp;</div>});
-
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
+import { Alert, Snackbar } from '@mui/material';
 
 import { clearMessage } from '../../actions/messages';
 
@@ -67,11 +58,11 @@ class SystemMessage extends React.Component {
 
     componentDidMount() {
         this.updateWindowDimensions();
-        //window.addEventListener('resize', this.updateWindowDimensions);
+        window.addEventListener('resize', this.updateWindowDimensions);
     }
       
     componentWillUnmount() {
-        //window.removeEventListener('resize', this.updateWindowDimensions);
+        window.removeEventListener('resize', this.updateWindowDimensions);
     }
       
     updateWindowDimensions() {

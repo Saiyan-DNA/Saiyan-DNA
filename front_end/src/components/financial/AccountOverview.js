@@ -6,24 +6,15 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
+import { Button, Container, Divider, Grid, Link, Menu, MenuItem, Typography } from '@mui/material';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
-const Link = loadable(() => import('@mui/material/Link' /* webpackChunkName: "Material-Navigation" */));
-const Menu = loadable(() => import('@mui/material/Menu' /* webpackChunkName: "Material-Navigation" */));
-const MenuItem = loadable(() => import('@mui/material/MenuItem' /* webpackChunkName: "Material-Navigation" */));
-
-const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "General" */));
-import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
-
+const CurrencyFormat = loadable(() => import('../common/NumberFormats' /* webpackChunkName: "Financial" */).then(m => m.CurrencyFormat));
+const PercentageFormat = loadable(() => import('../common/NumberFormats' /* webpackChunkName: "Financial" */).then(m => m.PercentageFormat));
 const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "General" */), {fallback: <span>&nbsp;</span>});
-const TransactionList = loadable(() => import ('./TransactionList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>})
-const TransactionModal = loadable(() => import('./TransactionModal' /* webpackChunkName: "Financial" */));
+const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const TransactionList = loadable(() => import ('./TransactionList' /* webpackChunkName: "Transactions" */), {fallback: <div>&nbsp;</div>})
+const TransactionModal = loadable(() => import('./TransactionModal' /* webpackChunkName: "Transactions" */));
 
 import { setTitle } from '../../actions/navigation';
 import { getAccount } from '../../actions/accounts';
@@ -132,6 +123,7 @@ class AccountOverview extends React.Component {
         editTransaction(null);
     
         if (isMobile) {
+            console.log("On Mobile");
             history.push("/financial/transaction");
         }
     }
@@ -183,9 +175,7 @@ class AccountOverview extends React.Component {
         const { classes, account, accountLoading, accountLoaded, accountLoadError, history, editTransaction, isMobile } = this.props;
         const { actionMenuOpen, menuAnchor } = this.state;
 
-        if (accountLoadError) {
-            return <Redirect to="/financial/accounts" />
-        }
+        if (accountLoadError) return <Redirect to="/financial/accounts" />
         
         return (
             <Container>
@@ -220,9 +210,7 @@ class AccountOverview extends React.Component {
                                     </Grid>
                                     <Grid item xs={"auto"} className={classes.numberFormat}>
                                         <Typography variant="h6">
-                                            <NumberFormat value={account.current_balance} displayType={'text'} 
-                                                thousandSeparator={true} prefix={'$'} decimalScale={2} 
-                                                fixedDecimalScale={true} />
+                                            <CurrencyFormat value={account.current_balance} displayType={'text'} decimalScale={2} />
                                         </Typography>
                                     </Grid>
                                 </Grid>

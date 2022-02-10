@@ -5,28 +5,18 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
+import { Button, Container, Divider, Grid, List, ListItemButton, Typography } from '@mui/material';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Material" */));
-const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */));
 
 import { CurrencyFormat } from '../common/NumberFormats';
-
 import { getAssets, getAsset, clearAsset } from '../../actions/assets';
 import { setTitle } from '../../actions/navigation';
 
 const styles = theme => ({
     assetSummary: {
-        margin: 0,
-        padding: "2px",
-        paddingTop: "8px",
-        paddingBottom: "8px",
+        margin: "0em",
+        padding: "0.5em 0em 0em 0em",
         ['@media print']: {
             paddingTop: "4px",
             paddingBottom: "4px"
@@ -77,30 +67,22 @@ class AssetsList extends React.Component {
         const total = assets.reduce((cnt, asset) => cnt + asset.current_value, 0);
 
         return(
-            <Card elevation={4}>
-                <CardContent>
-                    <Grid container spacing={0} justifyContent={"space-between"} style={{paddingBottom: "8px"}}>
-                        <Grid item>
-                            <Typography variant="h5">Assets</Typography>
-                        </Grid>
-                        <Grid item xs={"auto"}>
-                            <Typography variant="h5">
-                                <CurrencyFormat value={total} displayType={'text'} />
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Divider />
-                    <List>
+            <SummaryCard header={
+                <Grid container spacing={0} justifyContent="space-between">
+                    <Grid item><Typography variant="h5">Assets</Typography></Grid>
+                    <Grid item><Typography variant="h5"><CurrencyFormat value={total} displayType={'text'} decimalScale={0} /></Typography></Grid>
+                </Grid>}>
+                <List>
                     { assets.map(asset => (
                         <div key={asset.id}>
-                            <ListItem button onClick={() => {this.viewAsset(asset.id)}} className={styleClasses.accountSummary}>
-                                <Grid container spacing={0} justifyContent="space-between">
+                            <ListItemButton disableGutters onClick={() => {this.viewAsset(asset.id)}}>
+                                <Grid container spacing={0} justifyContent="space-between" className={styleClasses.assetSummary}>
                                     <Grid item>
                                         <Typography variant="body1">{asset.name}</Typography>
                                     </Grid>
                                     <Grid item xs={"auto"}>
                                         <Typography variant="body1">
-                                            <CurrencyFormat value={asset.current_value} displayType={'text'} />
+                                            <CurrencyFormat value={asset.current_value} displayType={'text'} decimalScale={0} />
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -108,13 +90,12 @@ class AssetsList extends React.Component {
                                             style={{verticalAlign: "text-top", fontStyle: "italic"}}>{asset.asset_type}</Typography>
                                     </Grid>
                                 </Grid>                                
-                            </ListItem>
+                            </ListItemButton>
                             <Divider />
                         </div>                                
                     ))}
-                    </List>
-                </CardContent>
-            </Card>
+                </List>
+            </SummaryCard>
         );
     }
 

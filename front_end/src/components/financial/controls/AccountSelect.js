@@ -1,10 +1,8 @@
 import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
-const AutoComplete = loadable(() => import('@mui/lab/Autocomplete' /* webpackChunkName: "Material-Input" */));
-const TextField = loadable(() => import('@mui/material/TextField' /* webpackChunkName: "Material-Input" */));
+import { Autocomplete, TextField } from '@mui/material';
 
 import { getAccounts } from '../../../actions/accounts';
 
@@ -45,18 +43,17 @@ class AccountSelect extends React.Component {
         if (disabledAccount) filteredAccounts = filteredAccounts.filter(acct => acct.id != disabledAccount.id);
         
         return (
-            <AutoComplete id={id} name={name}
+            <Autocomplete id={id} name={name}
                 fullWidth={true} 
                 options={filteredAccounts ? filteredAccounts.sort((a, b) => a.name.localeCompare(b.name)) : []}
                 getOptionLabel={(option) => option.name}
-                getOptionSelected={(option, value) => this.accountSelected(option, value)}
+                isOptionEqualToValue={(option, value) => this.accountSelected(option, value)}
                 value={selection} onBlur={onBlur}
                 onChange={(event, value) => onChange({target: {name: name, value: value}})}                
                 renderInput={(params) => <TextField {...params} label={label || "Account"} variant="standard" />}>
-            </AutoComplete>
+            </Autocomplete>
         )
     }
-
 }
 
 const mapStateToProps = state => ({

@@ -6,14 +6,14 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Collapse = loadable(() => import('@mui/material/Collapse' /* webpackChunkName: "Material" */));
-const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemIcon = loadable(() => import('@mui/material/ListItemIcon' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Material-Layout" */));
-const Menu = loadable(() => import('@mui/material/Menu' /* webpackChunkName: "Material-Navigation" */));
-const MenuItem = loadable(() => import('@mui/material/MenuItem' /* webpackChunkName: "Material-Navigation" */));
-const SwipeableDrawer = loadable(() => import('@mui/material/SwipeableDrawer' /* webpackChunkName: "Material-Navigation" */));
+const Collapse = loadable(() => import('@mui/material/Collapse' /* webpackChunkName: "Layout" */));
+const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Layout" */));
+const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Layout" */));
+const ListItemIcon = loadable(() => import('@mui/material/ListItemIcon' /* webpackChunkName: "Layout" */));
+const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Layout" */));
+const Menu = loadable(() => import('@mui/material/Menu' /* webpackChunkName: "Navigation" */));
+const MenuItem = loadable(() => import('@mui/material/MenuItem' /* webpackChunkName: "Navigation" */));
+const SwipeableDrawer = loadable(() => import('@mui/material/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
 
 const HomeSharp = loadable(() => import('@mui/icons-material/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const AccountBalanceSharp = loadable(() => import('@mui/icons-material/AccountBalanceSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});

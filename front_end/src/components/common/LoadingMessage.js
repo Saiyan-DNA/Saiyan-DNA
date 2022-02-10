@@ -3,8 +3,8 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const CircularProgress = loadable(() => import('@mui/material/CircularProgress' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
+const CircularProgress = loadable(() => import('@mui/material/CircularProgress' /* webpackChunkName: "Layout" */));
+const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
 
 const styles = theme => ({
     loadingMessage: {

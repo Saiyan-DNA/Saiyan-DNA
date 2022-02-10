@@ -5,20 +5,9 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Autocomplete = loadable(() => import('@mui/material/Autocomplete' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const FormControl = loadable(() => import('@mui/material/FormControl' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Input = loadable(() => import('@mui/material/Input' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
-const InputLabel = loadable(() => import('@mui/material/InputLabel' /* webpackChunkName: "Material-Input" */), {fallback: <div>&nbsp;</div>});
+import { Autocomplete, Button, Card, CardContent, Container, Grid, TextField } from '@mui/material';
 
-// Lazy-Loading the TextField causes an issue with the Autocomplete component. Need to find a solution.
-import TextField from '@mui/material/TextField';
-
-const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 const DeleteAccountModal = loadable(() => import('./DeleteAccountModal' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
 
 import { createAccount, updateAccount, getInstitutions } from '../../actions/accounts';
@@ -195,12 +184,8 @@ class AccountInfo extends React.Component {
                                 <CardContent>
                                         <Grid container spacing={3}>
                                             <Grid item xs={12} sm={6}>
-                                                <FormControl fullWidth={true}>
-                                                    <InputLabel htmlFor="accountName">Account Name*</InputLabel>
-                                                    <Input id="accountName" name="accountName" 
-                                                        onChange={this.onChange} value={accountName || ""} 
-                                                        fullWidth={true} />
-                                                </FormControl>
+                                                <TextField id="accountName" name="accountName" label="Account Name" variant="standard"
+                                                    required fullWidth={true} value={accountName || ""} onChange={this.onChange} />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
                                                 <Autocomplete id="accountType" name="accountType"

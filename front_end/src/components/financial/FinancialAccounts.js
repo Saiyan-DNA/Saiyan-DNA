@@ -5,16 +5,14 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+import { Button, Container, Grid, Typography } from '@mui/material';
 
-const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
-const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
-const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
-const BankingList = loadable(() => import('./BankingList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
-const CreditList = loadable(() => import('./CreditList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
+const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */));
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */));
+
+import AccountList from './AccountList';
+import BankingList from './BankingList';
+import CreditList from './CreditList';
 
 import { getAccounts, clearAccount } from '../../actions/accounts';
 import { clearTransactions } from '../../actions/transactions';

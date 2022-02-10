@@ -1,10 +1,11 @@
 import React from 'react';
 import loadable from '@loadable/component';
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { withStyles } from '@mui/styles';
+import createTheme from '@mui/material/styles/createTheme';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
+import Button from '@mui/material/Button';
+
+const ThemeProvider = loadable(() => import('@mui/material/styles/ThemeProvider' /* webpackChunkName: "Layout" */));import { withStyles } from '@mui/styles';
 
 const theme = createTheme({
     typography: {

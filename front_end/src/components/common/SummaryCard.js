@@ -1,16 +1,14 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Card = loadable(() => import('@mui/material/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@mui/material/CardContent' /* webpackChunkName: "Material-Layout" */));
-const CardHeader = loadable(() => import('@mui/material/CardHeader' /* webpackChunkName: "Material-Layout" */));
+import { Card, CardContent, CardHeader } from '@mui/material';
 
 const styles = theme => ({
     summaryCard: {
-        backgroundColor: theme.palette.primary.main
+        backgroundColor: theme.palette.primary.main,
+        height: "100%"
     },
     summaryCardHeader: {
         backgroundColor: theme.palette.primary.main,

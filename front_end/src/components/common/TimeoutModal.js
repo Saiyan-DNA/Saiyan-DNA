@@ -5,19 +5,14 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+import { Button, Grid, Typography } from '@mui/material';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "General" */));
+const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "Common" */));
 
 import { toggleTimeoutModal } from '../../actions/navigation';
 import { refreshToken, userLogout } from '../../actions/auth';
 
-const styles = (theme) => ({
-
-});
+const styles = (theme) => ({});
 
 class TimeoutModal extends React.Component {
     static propTypes = {
@@ -26,9 +21,6 @@ class TimeoutModal extends React.Component {
         timeRemaining: PropTypes.number.isRequired,
         refreshToken: PropTypes.func.isRequired,
         userLogout: PropTypes.func.isRequired,
-    }
-
-    componentDidMount() {
     }
 
     continueSession = () => {

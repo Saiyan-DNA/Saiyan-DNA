@@ -4,17 +4,13 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import LinearProgress from '@mui/material/LinearProgress';
+import { Button, Divider, LinearProgress, Link, List, ListItem, ListItemButton, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const Link = loadable(() => import('@mui/material/Link' /* webpackChunkName: "Material-Navigation" */));
-const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Material-Layout" */));
-
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+
+const ArrowUp = loadable(() => import('@mui/icons-material/KeyboardArrowUp' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
+const ArrowDown = loadable(() => import('@mui/icons-material/KeyboardArrowDown' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 
 import { CurrencyFormat } from '../common/NumberFormats'
 
@@ -22,34 +18,32 @@ import { getAccount } from '../../actions/accounts';
 
 const styles = theme => ({
     accountSummary: {
-        margin: 0,
-        padding: theme.spacing(1,0,1),
-        borderBottom: "0.5px solid #DCDCDC",
+        margin: "0em",
+        padding: "0.5em 0em 0em 0em",
         ['@media print']: {
             paddingTop: "4px",
             paddingBottom: "4px"
         }
     },
+    showMore: {
+        fontStyle: "italic",
+        fontSize: "0.6em"
+    },
     inlineGrid: {
         display: "inline-block"
-    },
-    lowColor: {
-        backgroundColor: "#70C1B3",
-    },
-    mediumColor: {
-        backgroundColor: "#FFE066"
-    },
-    highColor: {
-        backgroundColor: "#F25F5C"
-    },
+    }
 });
 
 class AccountList extends React.Component {
+    state = {
+        accountsShown: 5
+    }
+
     static propTypes = {
         classes: PropTypes.object.isRequired,
         getAccount: PropTypes.func.isRequired,
         overviewContent: PropTypes.object,
-        accountList: PropTypes.array
+        accountList: PropTypes.array,
     }
 
     goToBankingURL(url, e) {
@@ -64,15 +58,22 @@ class AccountList extends React.Component {
         history.push("/financial/accountoverview");
     }
 
+    showMore = () => {
+        this.setState({accountsShown: this.state.accountsShown + 5});
+    }
+
+    showLess = () => {
+        this.setState({accountsShown: 5});
+    }
+
     accountSummary = (acct, classes) => {
         const utilization = acct.current_balance / acct.credit_limit * 100;
-        var utilizationColor = utilization > 60 ? "highColor" : utilization > 30 ? "mediumcolor" : "lowColor";
+        var utilizationColor = utilization > 60 ? "error" : utilization > 30 ? "warning" : utilization > 0 ? "success" : "info";
 
         return (
             <div key={acct.id}>
-                <ListItem button className={classes.accountSummary} 
-                    onClick={() => {this.viewAccount(acct.id)}}>
-                    <Grid container spacing={0} justifyContent="space-between">
+                <ListItemButton divider style={{padding: "0px" }} onClick={() => {this.viewAccount(acct.id)}}>
+                    <Grid container spacing={0} justifyContent="space-between" className={classes.accountSummary} >
                         <Grid container item spacing={0} xs={12} justifyContent="space-between">
                             <Grid item>
                                 <Typography variant="body1">{acct.name}</Typography>
@@ -85,7 +86,7 @@ class AccountList extends React.Component {
                         </Grid>
                         { acct.account_type == "CR" && 
                             <Grid item xs={12}>
-                                <LinearProgress variant="determinate" value={utilization} classes={{barColorPrimary: classes[utilizationColor]}} />
+                                <LinearProgress variant="determinate" value={utilization} color={utilizationColor} />
                             </Grid>
                         }
                         <Grid container item spacing={0} xs={12} justifyContent="space-between">
@@ -106,14 +107,18 @@ class AccountList extends React.Component {
                             }
                         </Grid>
                     </Grid>                                
-                </ListItem>
+                </ListItemButton>
             </div> 
         );
     }
 
     render() {
         const { classes, cardTitle, totalBalance, overviewContent, accountList, children } = this.props;
+        const { accountsShown } = this.state;
 
+        var showMore = accountList && accountsShown < accountList.length ? true : false;
+        var showLess = accountList && accountsShown > 5 ? true : false;
+        
         return (
             <SummaryCard header={
                 <Grid container spacing={0} justifyContent={"space-between"}>
@@ -130,7 +135,26 @@ class AccountList extends React.Component {
                 {overviewContent}
                 {accountList &&
                     <List>
-                        {accountList.map(acct => this.accountSummary(acct, classes))}
+                        {accountList.slice(0, accountsShown).map(acct => this.accountSummary(acct, classes))}
+                        { (showMore || showLess) && (
+                            <ListItem key="more" disableGutters>
+                                <Grid container spacing={0} justifyContent="center">
+                                    { showLess && 
+                                        <Grid item alignItems="center" onClick={this.showLess}>
+                                            <Button color="inherit" fullWidth={true} className={classes.showMore} size="small"
+                                                startIcon={<ArrowUp />} endIcon={<ArrowUp />}>Show Less</Button>
+                                        </Grid>
+                                    }
+                                    { (showLess && showMore) && <Grid item xs={"auto"}><Divider orientation="vertical" light={true} /></Grid> }
+                                    { showMore &&
+                                        <Grid item alignItems="center" onClick={this.showMore}>
+                                            <Button color="inherit" fullWidth={true} className={classes.showMore} size="small"
+                                                startIcon={<ArrowDown />} endIcon={<ArrowDown />}>Show More</Button>
+                                        </Grid>
+                                    }
+                                </Grid>
+                            </ListItem>
+                        )}
                     </List>
                 }
                 {children}

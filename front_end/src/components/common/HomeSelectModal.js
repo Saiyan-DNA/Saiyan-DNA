@@ -5,14 +5,9 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Material-Layout" */));
+import { Button, FormControlLabel, Grid, Radio, RadioGroup } from '@mui/material';
 
-const Button = loadable(() => import('@mui/material/Button' /* webpackChunkName: "Material-Navigation" */));
-const FormControlLabel = loadable(() => import('@mui/material/FormControlLabel' /* webpackChunkName: "Material-Input" */));
-const Radio = loadable(() => import('@mui/material/Radio' /* webpackChunkName: "Material-Input" */));
-const RadioGroup = loadable(() => import('@mui/material/RadioGroup' /* webpackChunkName: "Material-Input" */));
-
-const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "General" */));
+const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "Common" */));
 
 import { setHome, toggleHomeModal } from '../../actions/navigation';
 
