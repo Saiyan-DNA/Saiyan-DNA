@@ -206,7 +206,7 @@ class AccountOverview extends React.Component {
                                 </Grid>
                             </Grid>
                             <SummaryCard headerTitle={account.name} headerValue={account.current_balance}>                                
-                                <Grid container spacing={3} justifyContent="flex-end" style={{marginTop: "2px"}}>
+                                <Grid container spacing={3} justifyContent="flex-end">
                                     <Grid item className={classes.hideForPrint}>
                                         <Button id="addTransactionButton" variant="contained" color="primary" size="small"
                                             aria-controls="addTransactionButton" aria-haspopup={false}

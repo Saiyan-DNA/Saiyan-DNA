@@ -9,6 +9,7 @@ import { withStyles } from '@mui/styles';
 
 import { CurrencyFormat } from '../../common/NumberFormats';
 
+import CurrencyTooltip from '../controls/CurrencyTooltip';
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
@@ -18,19 +19,6 @@ import { EventTracker } from '@devexpress/dx-react-chart';
 import { getNetWorth } from '../../../actions/dashboard';
 
 const styles = theme => ({});
-
-function currencyTooltip(props) {
-    const { text, targetItem } = props;
-
-    return (
-        <>
-            {targetItem.series === "defaultSeriesName" ? null :
-                <Typography variant="body1">{targetItem.series}</Typography>
-        }
-            <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
-        </>
-    );
-}
 
 class NetWorthPanel extends React.Component {
     state = {
@@ -55,9 +43,9 @@ class NetWorthPanel extends React.Component {
         assetsLoading: PropTypes.bool.isRequired,
     }
 
-    componentDidMount() {
-        this.refreshData();
-    }
+    componentDidMount() { this.refreshData(); }
+
+    componentDidUpdate() { this.refreshData(); }
 
     refreshData = () => {
         const { netWorthLoading, netWorthLoaded, getNetWorth, netWorthData} = this.props;
@@ -85,31 +73,7 @@ class NetWorthPanel extends React.Component {
                 current: true
             });
         }
-    }
-
-    componentDidUpdate() {
-        this.refreshData();
-    }
-
-    netWorthHeader = () => {
-        const { netWorthLoaded } = this.props;
-        const { netWorth } = this.state;
-        
-        return (
-            <Grid container spacing={0} justifyContent={"space-between"}>
-                <Grid item>
-                    <Typography variant="h5">Net Worth</Typography>
-                </Grid>
-                { netWorthLoaded && 
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={netWorth} displayType={'text'} decimalScale={0} />
-                        </Typography>
-                    </Grid>           
-                }             
-            </Grid>
-        );
-    }
+    }    
 
     render() {
         const { netWorthLoaded, netWorthLoading, netWorthData, ...otherProps } = this.props;
@@ -155,7 +119,7 @@ class NetWorthPanel extends React.Component {
                         <Divider light={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <Chart data={data} height={200}>
+                        <Chart data={data} height={180}>
                             { investments.count > 0 &&
                                 <BarSeries name="Investments" valueField="investments" argumentField="argument" color={"#004d25"} />
                             }
@@ -172,7 +136,7 @@ class NetWorthPanel extends React.Component {
                                 <BarSeries name="Credit Cards" valueField="cards" argumentField="argument" color={"#ffb21b"} />
                             }
                             <EventTracker />
-                            <Tooltip contentComponent={currencyTooltip} />
+                            <Tooltip contentComponent={CurrencyTooltip} />
                         </Chart>
                     </Grid>
                 </Grid>
