@@ -4,21 +4,16 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Container, Divider, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Layout" */));
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
 
 import { CurrencyFormat } from '../../common/NumberFormats';
 
-const LoadingMessage = loadable(() => import('../../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
-// import { Chart, BarSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-// import { EventTracker } from '@devexpress/dx-react-chart';
+import { Chart, BarSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
+import { EventTracker } from '@devexpress/dx-react-chart';
 
 import { getNetWorth } from '../../../actions/dashboard';
 
@@ -160,10 +155,7 @@ class NetWorthPanel extends React.Component {
                         <Divider light={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <LoadingMessage message="Loading Net Worth" />
-                    </Grid>
-                    {/* <Grid item xs={12}>
-                        <Chart data={data} height={180}>
+                        <Chart data={data} height={200}>
                             { investments.count > 0 &&
                                 <BarSeries name="Investments" valueField="investments" argumentField="argument" color={"#004d25"} />
                             }
@@ -182,7 +174,7 @@ class NetWorthPanel extends React.Component {
                             <EventTracker />
                             <Tooltip contentComponent={currencyTooltip} />
                         </Chart>
-                    </Grid> */}
+                    </Grid>
                 </Grid>
             </SummaryCard>
         )
