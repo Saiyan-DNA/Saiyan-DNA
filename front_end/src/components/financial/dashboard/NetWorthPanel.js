@@ -11,9 +11,9 @@ const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "La
 const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
 const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
 
-import { CurrencyFormat } from '../../common/NumberFormats'
+import { CurrencyFormat } from '../../common/NumberFormats';
 
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const LoadingMessage = loadable(() => import('../../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
@@ -21,11 +21,8 @@ const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackC
 // import { EventTracker } from '@devexpress/dx-react-chart';
 
 import { getNetWorth } from '../../../actions/dashboard';
-import SelectInput from "@mui/material/Select/SelectInput";
 
-const styles = theme => ({
-    
-});
+const styles = theme => ({});
 
 function currencyTooltip(props) {
     const { text, targetItem } = props;
@@ -124,12 +121,12 @@ class NetWorthPanel extends React.Component {
         const { totalAssets, totalLiabilities, checkingAccounts, savingsAccounts, property, investments, loans, creditCards } = this.state;
 
         if (netWorthLoading && !netWorthLoaded) {
-            return <span>Loading...</span>
+            return <LoadingMessage message="Loading Net Worth" />;
         }
         
         if (!netWorthLoading && !netWorthLoaded) {
             return (
-                <SummaryCard header={this.netWorthHeader()}>
+                <SummaryCard headerTitle="Net Worth">
                     <Container>
                         <Typography variant="body1">
                             No data available.
@@ -148,7 +145,7 @@ class NetWorthPanel extends React.Component {
         ];
         
         return (
-            <SummaryCard header={this.netWorthHeader()}>
+            <SummaryCard headerTitle="Net Worth" headerValue={netWorthData.netWorth}>
                 <Grid container spacing={2} justifyContent={"center"}>
                     <Grid item xs={5}>
                         <InfoTile title="Assets" content={<CurrencyFormat value={totalAssets} displayType={'text'} decimalScale={0} />} />
@@ -161,6 +158,9 @@ class NetWorthPanel extends React.Component {
                     </Grid>
                     <Grid item xs={12}>
                         <Divider light={true} />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <LoadingMessage message="Loading Net Worth" />
                     </Grid>
                     {/* <Grid item xs={12}>
                         <Chart data={data} height={180}>

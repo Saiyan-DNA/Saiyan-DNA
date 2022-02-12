@@ -44,6 +44,7 @@ class AccountList extends React.Component {
         getAccount: PropTypes.func.isRequired,
         overviewContent: PropTypes.object,
         accountList: PropTypes.array,
+        groupByType: PropTypes.bool,
     }
 
     goToBankingURL(url, e) {
@@ -84,7 +85,7 @@ class AccountList extends React.Component {
                                 </Typography>
                             </Grid>
                         </Grid>
-                        { acct.account_type == "CR" && 
+                        { acct.account_type.value === "CR" && 
                             <Grid item xs={12}>
                                 <LinearProgress variant="determinate" value={utilization} color={utilizationColor} />
                             </Grid>
@@ -98,7 +99,7 @@ class AccountList extends React.Component {
                                     }
                                 </Typography>
                             </Grid>
-                            { acct.account_type == "CR" &&
+                            { acct.account_type.value === "CR" &&
                                 <Grid item xs={"auto"}>
                                     <Typography variant="caption"  style={{verticalAlign: "text-top", fontStyle: "italic"}}>
                                         <CurrencyFormat value={acct.credit_limit - acct.current_balance} displayType={'text'} decimalScale={2} />&nbsp;available
@@ -113,25 +114,14 @@ class AccountList extends React.Component {
     }
 
     render() {
-        const { classes, cardTitle, totalBalance, overviewContent, accountList, children } = this.props;
+        const { classes, cardTitle, totalBalance, overviewContent, accountList, children, groupByType } = this.props;
         const { accountsShown } = this.state;
 
         var showMore = accountList && accountsShown < accountList.length ? true : false;
         var showLess = accountList && accountsShown > 5 ? true : false;
         
         return (
-            <SummaryCard header={
-                <Grid container spacing={0} justifyContent={"space-between"}>
-                    <Grid item>
-                        <Typography variant="h5">{cardTitle}</Typography>
-                    </Grid>
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={totalBalance} displayType={'text'} decimalScale={2} />
-                        </Typography>
-                    </Grid>                        
-                </Grid>
-            }>
+            <SummaryCard headerTitle={cardTitle} headerValue={totalBalance}>
                 {overviewContent}
                 {accountList &&
                     <List>

@@ -40,11 +40,11 @@ function currencyTooltip(props) {
 
 class BankingPanel extends React.Component {
     state = {
-        totalCash: 0,
-        totalChecking: 0,
-        checkingCount: 0,
-        totalSavings: 0,
-        savingsCount: 0,
+        totalCash: 0.00,
+        totalChecking: 0.00,
+        checkingCount: 0.00,
+        totalSavings: 0.00,
+        savingsCount: 0.00,
         current: false
     };
 
@@ -98,17 +98,7 @@ class BankingPanel extends React.Component {
         const bankingdata = [{argument: "Checking", value: totalChecking}, {argument: "Savings", value: totalSavings}];
 
         return (
-            <SummaryCard header={
-                <Grid container spacing={0} justifyContent={"space-between"}>
-                    <Grid item>
-                        <Typography variant="h5">Banking</Typography>
-                    </Grid>
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={totalCash} displayType={'text'} decimalScale={0} />
-                        </Typography>
-                    </Grid>                        
-                </Grid>}>
+            <SummaryCard headerTitle="Banking" headerValue={totalCash || 0} valueScale={0}>
                 <Grid container spacing={2} justifyContent={"center"}>
                     <Grid item>
                         <InfoTile title="Checking" content={<CurrencyFormat value={totalChecking} displayType={'text'} decimalScale={0} />} />

@@ -145,17 +145,7 @@ class LoansPanel extends React.Component {
         const loandata = [{argument: "Paid", value: totalPaid}, {argument: "Owed", value: totalOwed}];
 
         return (
-            <SummaryCard header={
-                <Grid container spacing={0} justifyContent={"space-between"}>
-                    <Grid item>
-                        <Typography variant="h5">Loans</Typography>
-                    </Grid>
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={totalOwed} displayType={'text'} decimalScale={0} />
-                        </Typography>
-                    </Grid>                        
-                </Grid>}>
+            <SummaryCard headerTitle="Loans" headerValue={totalOwed} valueScale={0}>
                 <Grid container spacing={2} justifyContent={"center"}>
                     <Grid item>
                         <InfoTile title="Paid" content={<PercentageFormat value={percentPaid} displayType={'text'} decimalScale={2} />} />

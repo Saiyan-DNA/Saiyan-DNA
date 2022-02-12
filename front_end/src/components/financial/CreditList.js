@@ -40,7 +40,7 @@ class CreditList extends React.Component {
     render() {
         const { accountList } = this.props;
         
-        var creditAccounts = accountList.filter(this.accountTypeFilter, "CR").sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));
+        var creditAccounts = accountList.sort((a, b) => b.current_balance - a.current_balance || a.name.localeCompare(b.name));
         var totalBalance = creditAccounts.reduce((cnt, acct) => cnt + acct.current_balance, 0);
         var totalLimit = creditAccounts.reduce((cnt, acct) => cnt + acct.credit_limit, 0);
         var totalAvailable = totalLimit - totalBalance;

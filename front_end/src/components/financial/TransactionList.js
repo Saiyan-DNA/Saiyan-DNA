@@ -99,6 +99,18 @@ class TransactionList extends React.Component {
         return trns.organization ? trns.summary : trns.description
     }
 
+    getAmountPrefix = (acctType, transactionType, transferCredit) => {
+        if (['CR', 'LN'].includes(acctType) && transactionType === 'CRD') return '-$';
+        if (['CK', 'SV'].includes(acctType) && transactionType === 'DBT') return '-$';
+
+        if (transactionType === 'TRN') {
+            if (['CR', 'LN'].includes(acctType) && transferCredit) return '-$';
+            if (['CK', 'SV'].includes(acctType) && !transferCredit) return '-$';
+        }        
+
+        return '$';
+    }
+
     showMore = () => {
         this.setState({transactionsShown: this.state.transactionsShown + 10});
     }
@@ -109,7 +121,7 @@ class TransactionList extends React.Component {
     }
 
     render() {
-        const { account, transactions, transactionsLoading, transactionsLoaded, editTransaction, isMobile, classes } = this.props
+        const { account, transactions, transactionsLoading, transactionsLoaded, isMobile, classes } = this.props
         const { transactionsShown } = this.state;
 
         if (transactionsLoading) {
@@ -145,14 +157,9 @@ class TransactionList extends React.Component {
                                         <Grid item xs={4} sm={2} className={classes.numberFormat}>
                                             {/* Transaction Amount */}
                                             <Typography variant="body1">
-                                                <NumberFormat value={trns.amount} displayType={'text'}
-                                                    thousandSeparator={true} decimalScale={2} fixedDecimalScale={true}
-                                                    prefix={
-                                                        (acctType == 'CR' || acctType == 'LN') && trns.transaction_type == 'CRD' ? '-$' : 
-                                                        (acctType == 'CK' || acctType == 'SV') && trns.transaction_type == 'DBT' ? '-$' : 
-                                                        (acctType == 'CR' || acctType == 'LN') && trns.transaction_type == 'TRN' && trns.transfer_detail_credit ? '-$' :
-                                                        (acctType == 'CK' || acctType == 'SV') && trns.transaction_type == 'TRN' && trns.transfer_detail_debit ? '-$' : '$'
-                                                        }  />
+                                                <NumberFormat value={trns.amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} 
+                                                    style={{color: trns.transaction_type === 'CRD' || (trns.transaction_type === 'TRN' && trns.transfer_detail_credit) ? 'green' : 'inherit'}}
+                                                    prefix={this.getAmountPrefix(acctType.value, trns.transaction_type, trns.transfer_detail_credit)} />
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={8} sm={6}>

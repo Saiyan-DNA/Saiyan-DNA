@@ -96,17 +96,7 @@ class CreditCardsPanel extends React.Component {
         const creditdata = [{argument: "Owed", value: totalOwed}, {argument: "Available", value: totalAvailable}];
 
         return (
-            <SummaryCard header={
-                <Grid container spacing={0} justifyContent={"space-between"}>
-                    <Grid item>
-                        <Typography variant="h5">Credit Cards</Typography>
-                    </Grid>
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={totalOwed} displayType={'text'} decimalScale={0} />
-                        </Typography>
-                    </Grid>                        
-                </Grid>}>
+            <SummaryCard headerTitle="Credit Cards" headerValue={totalOwed} valueScale={0}>
                 <Grid container spacing={2} justifyContent={"center"}>
                     <Grid item>
                         <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
