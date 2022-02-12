@@ -6,9 +6,7 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
+import { Divider, Grid, Typography } from '@mui/material';
 
 import { CurrencyFormat } from '../../common/NumberFormats'
 
@@ -107,7 +105,7 @@ class DebtIncomePanel extends React.Component {
         const { ...otherProps } = this.props;
         
         return (
-            <SummaryCard header="Debt-to-Income">
+            <SummaryCard headerTitle="Debt-to-Income">
                 <Grid container spacing={2} justifyContent={"center"}>
                 </Grid>
             </SummaryCard>

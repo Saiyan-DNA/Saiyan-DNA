@@ -6,9 +6,7 @@ import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
+import { Divider, Grid, List, ListItemButton, ListSubheader, Typography } from '@mui/material';
 
 import { CurrencyFormat } from '../../common/NumberFormats'
 
@@ -107,8 +105,16 @@ class CreditScorePanel extends React.Component {
         const { ...otherProps } = this.props;
         
         return (
-            <SummaryCard header="Credit Score">
-                <Grid container spacing={2} justifyContent={"center"}>
+            <SummaryCard headerTitle="Credit Score">
+                <Grid container spacing={2} justifyContent={"space-between"}>
+                    <Grid item xs={12}>
+                        <List>
+                            <ListSubheader>Experian</ListSubheader>
+                            <ListSubheader>Equifax</ListSubheader>
+                            <ListSubheader>TransUnion</ListSubheader>
+                        </List>
+                    </Grid>
+                    
                 </Grid>
             </SummaryCard>
         );

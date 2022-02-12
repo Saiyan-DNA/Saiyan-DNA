@@ -4,6 +4,11 @@ import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
 import { Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from '@mui/material';
+
+import DatePicker from '@mui/lab/DatePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+
 import { withStyles } from '@mui/styles';
 
 const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */));
@@ -16,18 +21,10 @@ import { toggleTransactionModal, clearTransaction, createTransaction, updateTran
 import { setTitle } from '../../actions/navigation';
 
 const styles = theme => ({
-    detailContainer: {
-        padding: "0px"
-    },
-    numberInput: {
-        textAlign: "right"
-    },
-    dateInput: {
-        textAlign: "right"
-    },
-    deleteButton: {
-        marginTop: "0.5em"
-    }
+    detailContainer: { padding: "0px" },
+    numberInput: { textAlign: "right" },
+    dateInput: { textAlign: "right" },
+    deleteButton: { marginTop: "0.5em" }
 });
 
 class TransactionDetail extends React.Component {
@@ -148,7 +145,7 @@ class TransactionDetail extends React.Component {
     }
 
     onChange = (e) => {
-        const { accounts, account } = this.props;
+        const { account } = this.props;
 
         if (e.target) {
             var updatedTransaction = {...this.state.transaction};
@@ -160,8 +157,7 @@ class TransactionDetail extends React.Component {
             var trnsAmount = updatedTransaction.transactionAmount
             if (trnsAmount < 0) {
                 updatedTransaction.transactionAmount = Math.abs(trnsAmount);
-            }
-            
+            }      
             
             // Determine whether Transfer Details are applicable and if so, ensure one of the two accounts involved is the currently selected account.
             var showTransferDetails = false;
@@ -211,7 +207,9 @@ class TransactionDetail extends React.Component {
         }
     }
 
-    saveTransaction = () => {
+    saveTransaction = (e) => {
+        e.preventDefault();
+        
         const { createTransaction, updateTransaction, account, currentUser } = this.props;
         const { transaction } = this.state;
 
@@ -269,9 +267,12 @@ class TransactionDetail extends React.Component {
                         value={account.name} disabled fullWidth />
                 </Grid>
                 <Grid item xs={6} sm={6}>
-                    <TextField id="transactionDate" name="transactionDate" variant="standard" placeholder={"MM/DD/YYYY"}
-                        onChange={this.onChange} onBlur={this.validateTransaction} label="Date" className={classes.dateInput}
-                        value={transaction.transactionDate.toLocaleDateString()} fullWidth={true} />
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker id="transactionDate" name="transactionDate" label="Date" 
+                            onChange={(value) => this.onChange({target: {name: "transactionDate", value: value}})}
+                            value={transaction.transactionDate} fullWidth={true}
+                            renderInput={(params) => <TextField {...params} fullWidth={true} variant="standard" />} />
+                    </LocalizationProvider>
                 </Grid> 
                 <Grid item xs={6} sm={6}>
                     <TransactionTypeSelect onChange={this.onChange} onBlur={this.validateTransaction}
@@ -280,7 +281,7 @@ class TransactionDetail extends React.Component {
                 <Grid item xs={6} sm={6}>
                     <TextField id="transactionAmount" name="transactionAmount"
                         label="Amount" className="numberFormat" variant="standard"
-                        onChange={this.onChange} onBlur={this.validateTransaction}
+                        onChange={this.onChange} onBlur={this.validateTransaction} className={classes.numberInput}
                         value={transaction.transactionAmount} fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/>                         
                 </Grid>
                 <Grid item xs={12} sm={12}>
@@ -326,7 +327,7 @@ class TransactionDetail extends React.Component {
                     <form onSubmit={this.saveTransaction} autoComplete="off">
                         <Grid container spacing={3} justifyContent="space-between">
                             <Grid item>
-                                <Button color="primary" variant="outlined" size="small" onClick={this.onClose}>Back</Button>
+                                <Button type="button" color="primary" variant="outlined" size="small" onClick={this.onClose}>Back</Button>
                             </Grid>
                             <Grid item>
                                 <Button type="submit" color="primary" variant="contained" size="small"
@@ -363,10 +364,7 @@ class TransactionDetail extends React.Component {
                     </Grid>
                     <Grid container item xs={12} justifyContent="space-between">
                         <Grid item xs={4}>
-                            {transaction.transactionId ? 
-                                <DestructiveButton onClick={this.deleteTransaction}>Delete</DestructiveButton> :
-                                <Typography>&nbsp;</Typography>
-                            }
+                            { transaction.transactionId && <DestructiveButton onClick={this.deleteTransaction}>Delete</DestructiveButton> }
                         </Grid>                             
                         <Grid container item xs={8} justifyContent="flex-end">
                             <Grid item>

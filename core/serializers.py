@@ -9,7 +9,6 @@ from rest_framework import serializers
 from .models import Home, Organization, Person
 
 
-
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission

@@ -2,7 +2,7 @@ import React from "react";
 import NumberFormat from 'react-number-format';
 
 export const CurrencyFormat = React.forwardRef((props, ref) => {
-  const { inputRef, onChange, decimalScale, ...other } = props;
+  const { inputRef, onChange, decimalScale, color, ...other } = props;
 
   return (
     <NumberFormat

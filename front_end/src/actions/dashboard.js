@@ -24,11 +24,11 @@ export const getNetWorth = () => (dispatch, getState) => {
 
         var accounts = getState().accounts.accounts;
         var assets = getState().assets.assets;
-        var checkingAccounts = accounts.filter(account => account.account_type === "CK");
-        var savingsAccounts = accounts.filter(account => account.account_type === "SV");
-        var investments = accounts.filter(account => account.account_type === "IN");
-        var creditCards = accounts.filter(account => account.account_type === "CR");
-        var loans = accounts.filter(account => account.account_type === "LN");
+        var checkingAccounts = accounts.filter(account => account.account_type.value === "CK");
+        var savingsAccounts = accounts.filter(account => account.account_type.value === "SV");
+        var investments = accounts.filter(account => account.account_type.value === "IN");
+        var creditCards = accounts.filter(account => account.account_type.value === "CR");
+        var loans = accounts.filter(account => account.account_type.value === "LN");
         
         var totalAssets = 0
         totalAssets += checkingAccounts.map(acct => acct.current_balance).reduce((prev, curr) => prev + curr, 0);

@@ -204,11 +204,11 @@ class OrganizationsList extends React.Component {
     }
 
     actionViewOrganization = (id) => {
-        const { currentOrganization, getOrganization } = this.props;
+        const { currentOrganization, getOrganization, history } = this.props;
 
         if (!currentOrganization || currentOrganization.id != id) {
             getOrganization(id);
-            this.props.history.push("/manage/organizationdetail");
+            history.push("/manage/organizationdetail");
         }
     }
 

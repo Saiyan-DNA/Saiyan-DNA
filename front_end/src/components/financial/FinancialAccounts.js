@@ -126,10 +126,10 @@ class FinancialAccounts extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    bankAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("CK") || acct.account_type.includes("SV")),
-    creditAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("CR")),
-    loanAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("LN")),
-    investmentAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("IN")),
+    bankAccounts: state.accounts.accounts.filter(acct => acct.account_type.value.includes("CK") || acct.account_type.value.includes("SV")),
+    creditAccounts: state.accounts.accounts.filter(acct => acct.account_type.value.includes("CR")),
+    loanAccounts: state.accounts.accounts.filter(acct => acct.account_type.value.includes("LN")),
+    investmentAccounts: state.accounts.accounts.filter(acct => acct.account_type.value.includes("IN")),
     accountsLoading: state.accounts.accountsLoading,
     accountsLoaded: state.accounts.accountsLoaded,
     accountDeleting: state.accounts.accountDeleting

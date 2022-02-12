@@ -8,6 +8,7 @@ from rest_framework_recursive.fields import RecursiveField
 from core.serializers import HomeSerializer, OrganizationSerializer
 from .models import Account, AccountStatement, Asset, FinancialCategory, TransactionLog, TransferDetail
 
+
 # Accounts
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,7 +16,27 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = '__all__' 
 
 class AccountReadSerializer(serializers.ModelSerializer):
-    organization = OrganizationSerializer(read_only=True)    
+    class TypeField(serializers.ChoiceField):
+
+        def to_representation(self, obj):
+            if obj == '' and self.allow_blank:
+                return obj
+                
+            choice = [x for x in self._choices.items() if x[0] == obj]
+            return {'value': obj, 'label': choice[0][1]}
+
+        def to_internal_value(self, data):
+            # To support inserts with the value
+            if data == '' and self.allow_blank:
+                return ''
+
+            for key, val in self._choices.items():
+                if val == data:
+                    return key
+            self.fail('invalid_choice', input=data)
+
+    organization = OrganizationSerializer(read_only=True)
+    account_type = TypeField(choices=Account.AccountType.choices, read_only=True) 
 
     class Meta:
         model = Account

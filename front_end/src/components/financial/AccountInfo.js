@@ -7,10 +7,13 @@ import { withStyles } from '@mui/styles';
 
 import { Autocomplete, Button, Card, CardContent, Container, Grid, TextField } from '@mui/material';
 
+const OrganizationSelect = loadable(() => import('../common/OrganizationSelect' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
+
+const AccountTypeSelect = loadable(() => import('./controls/AccountTypeSelect' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
 const DeleteAccountModal = loadable(() => import('./DeleteAccountModal' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
 
-import { createAccount, updateAccount, getInstitutions } from '../../actions/accounts';
+import { createAccount, updateAccount } from '../../actions/accounts';
 import { setTitle } from '../../actions/navigation';
 
 import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
@@ -29,7 +32,6 @@ class AccountInfo extends React.Component {
         id: null,
         accountName: null,
         organization: null,
-        financialInstitutions: [],
         accountType: null,
         currentBalance: null,
         creditLimit: "",
@@ -41,18 +43,14 @@ class AccountInfo extends React.Component {
 
     static propTypes = {
         account: PropTypes.object,
-        financialInstitutions: PropTypes.array.isRequired,
         currentUser: PropTypes.object.isRequired,
-        getInstitutions: PropTypes.func.isRequired,
         createAccount: PropTypes.func.isRequired,
         updateAccount: PropTypes.func.isRequired,
         setTitle: PropTypes.func.isRequired
     }
 
     componentDidMount() {
-        const { getInstitutions, setTitle, account } = this.props;
-
-        getInstitutions();
+        const { setTitle, account } = this.props;
 
         if(account.id) {
             setTitle("Edit Account");
@@ -78,7 +76,7 @@ class AccountInfo extends React.Component {
         if (accountInfo.name && accountInfo.name.length == 0) isValid = false;
         if (!accountInfo.accountType) isValid = false;
         if (!accountInfo.organization) isValid = false;
-        if (accountInfo.accountType && accountInfo.accountType == "CR") {
+        if (accountInfo.accountType && accountInfo.accountType.value === 'CR') {
             if (!accountInfo.creditLimit) isValid = false;
         }
 
@@ -94,39 +92,20 @@ class AccountInfo extends React.Component {
         this.setState(currentState);
     }
 
-    accountTypeSelected = (option, selection) => {
-        if (selection && option.value == selection.value) {
-            return true;
-        }
-        return false;
-    }
-
-    institutionSelected = (option, selection) => {
-        if (selection && option.id == selection.id) {
-            return true;
-        }
-        return false;
-    }
-
     creditFields = (classes) => {
-        const { creditLimit, interestRate } = this.state;
+        const { creditLimit, interestRate, accountType } = this.state;
 
         return (
             <>
                 <Grid item xs={6}>
-                    <TextField id="creditLimit" name="creditLimit"
-                        label="Credit Limit*" variant="standard"
-                        className={classes.numberInput}
-                        onChange={this.onChange.bind(this)} 
-                        value={creditLimit} 
-                        fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}} /> 
+                    <TextField id="creditLimit" name="creditLimit" label={accountType && accountType.value === 'LN' ? 'Loan Amount*' : "Credit Limit*"}
+                        variant="standard" value={creditLimit} className={classes.numberInput} fullWidth={true} 
+                        onChange={this.onChange.bind(this)} InputProps={{inputComponent: CurrencyFormat,}} /> 
                 </Grid>
                 <Grid item xs={6}>
-                    <TextField id="interestRate" name="interestRate"
-                        label="Interest Rate*" variant="standard"
-                        onChange={this.onChange.bind(this)}
-                        value={interestRate}
-                        fullWidth={true} InputProps={{inputComponent: PercentageFormat,}} />
+                    <TextField id="interestRate" name="interestRate" label="Interest Rate*" variant="standard"
+                        value={interestRate} fullWidth={true} onChange={this.onChange.bind(this)} 
+                        InputProps={{inputComponent: PercentageFormat,}} />
                 </Grid>
             </>
         );
@@ -142,7 +121,7 @@ class AccountInfo extends React.Component {
 
         let accountObject = {
             "name": accountName,
-            "account_type": accountType,
+            "account_type": accountType.value,
             "organization": organization.id,
             "current_balance": parseFloat(currentBalance) || 0.00,
             "credit_limit": parseFloat(creditLimit) || 0.00,
@@ -156,16 +135,8 @@ class AccountInfo extends React.Component {
     }
 
     render() {
-        const { classes, financialInstitutions, history } = this.props;
+        const { classes, history } = this.props;
         const { id, accountName, accountType, organization, currentBalance, isValid, deleteModalOpen } = this.state;
-
-        const accountTypes = [
-            {value: "CK", label: "Checking"},
-            {value: "SV", label: "Savings"},
-            {value: "CR", label: "Credit Card"},
-            {value: "IN", label: "Investment"},
-            {value: "LN", label: "Loan"}
-        ];
 
         return (
             <Container>
@@ -188,26 +159,13 @@ class AccountInfo extends React.Component {
                                                     required fullWidth={true} value={accountName || ""} onChange={this.onChange} />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                                <Autocomplete id="accountType" name="accountType"
-                                                    fullWidth={true} 
-                                                    options={accountTypes}
-                                                    getOptionLabel={(option) => option.label}
-                                                    isOptionEqualToValue={(option, value) => this.accountTypeSelected(option, value)}
-                                                    value={accountTypes.filter(acctType => {return acctType.value == accountType})[0] || null}
-                                                    onChange={(event, selection) => {if (selection) this.onChange({target: {name: "accountType", value: selection.value}})}}
-                                                    renderInput={props => <TextField {...props} label="Account Type*" variant="standard" />}>
-                                                </Autocomplete>
+                                                <AccountTypeSelect id="accountType" name="accountType" selection={accountType} required={true}
+                                                    onChange={(event, selection) => {if (selection) this.onChange({target: {name: "accountType", value: selection}})}} />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                                <Autocomplete id="organization" name="organization"
-                                                    fullWidth={true} 
-                                                    options={financialInstitutions || []}
-                                                    getOptionLabel={(option) => option.name}
-                                                    isOptionEqualToValue={(option, value) => this.institutionSelected(option, value)}
-                                                    value={organization || null}
-                                                    onChange={(event, value) => this.onChange({target: {name: "organization", value: value}})}
-                                                    renderInput={(props) => <TextField {...props} label="Financial Institution*" variant="standard" />}>
-                                                </Autocomplete>
+                                                <OrganizationSelect id="organization" name="organization" selection={organization || null} allowAdd={true}
+                                                    typeFilter="Financial" label="Financial Institution" variant="standard" required={true} history={this.props.history}
+                                                    onChange={(event, value) => this.onChange({target: {name: "organization", value: value}})} />
                                             </Grid>
                                             <Grid item xs={6}>
                                                 <TextField id="currentBalance" name="currentBalance"
@@ -217,7 +175,7 @@ class AccountInfo extends React.Component {
                                                     value={currentBalance} 
                                                     fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/> 
                                             </Grid>
-                                            { accountType === "CR" ? this.creditFields(classes) : null }
+                                            { accountType && ['CR', 'LN'].includes(accountType.value) ? this.creditFields(classes) : null }
                                         </Grid>
                                 </CardContent>
                             </Card>
@@ -249,7 +207,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     createAccount,
     updateAccount,
-    getInstitutions,
     setTitle,
 }
 

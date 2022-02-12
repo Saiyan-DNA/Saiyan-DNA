@@ -43,7 +43,7 @@ class BankingList extends React.Component {
     }
 
     accountTypeFilter(acct) {
-        return acct.account_type == this;        
+        return acct.account_type.value == this;        
     }
 
     goToBankingURL(url, e) {

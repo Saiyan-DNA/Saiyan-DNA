@@ -150,25 +150,23 @@ class AccountOverview extends React.Component {
     creditInfo() {
         const { account } = this.props;
 
-        if (account.account_type == "CR") {
-            let utilization = account.current_balance/account.credit_limit*100;
-            let available = account.credit_limit - account.current_balance;
+        let utilization = account.current_balance/account.credit_limit*100;
+        let available = account.credit_limit - account.current_balance;
 
-            return (
-                <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em"}}>
-                    <Grid item xs={4}>
-                        <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
-                    </Grid>
-                    <Grid item xs={"auto"}>
-                        <Divider orientation="vertical" light={true} />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <InfoTile title="Available" content={<CurrencyFormat value={available} displayType={'text'} decimalScale={2} />}
-                            caption={<>Limit: <CurrencyFormat value={account.credit_limit} displayType={'text'} decimalScale={2} /></>} />
-                    </Grid>
+        return (
+            <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em"}}>
+                <Grid item xs={4}>
+                    <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
                 </Grid>
-            );
-        }
+                <Grid item xs={"auto"}>
+                    <Divider orientation="vertical" light={true} />
+                </Grid>
+                <Grid item xs={4}>
+                    <InfoTile title="Available" content={<CurrencyFormat value={available} displayType={'text'} decimalScale={2} />}
+                        caption={<>Limit: <CurrencyFormat value={account.credit_limit} displayType={'text'} decimalScale={2} /></>} />
+                </Grid>
+            </Grid>
+        );
     }
 
     render() {
@@ -181,12 +179,16 @@ class AccountOverview extends React.Component {
             <Container>
                 <Grid container spacing={3}>
                     <Grid item container xs={12} justifyContent="space-between">
-                        <Button variant="outlined" color="primary" size="small" className={classes.hideForPrint}
-                            onClick={this.goToList}>Back</Button>
-                        <Button id="actionButton" variant="contained" color="primary" size="small"
-                            disabled={account.id ? false : true} className={classes.hideForPrint}
-                            aria-controls="actionMenu" aria-haspopup={true}
-                            onClick={this.toggleActionMenu}>Actions</Button>
+                        <Grid item xs={6} align={"left"} mt={2} className={classes.hideForPrint}>
+                            <Button variant="outlined" color="primary" size="small" 
+                                onClick={this.goToList}>Back</Button>
+                        </Grid>
+                        <Grid item xs={6} align={"right"} mt={2} className={classes.hideForPrint}>
+                            <Button id="actionButton" variant="contained" color="primary" size="small"
+                                disabled={account.id ? false : true} className={classes.hideForPrint}
+                                aria-controls="actionMenu" aria-haspopup={true}
+                                onClick={this.toggleActionMenu}>Actions</Button>
+                        </Grid>
                     </Grid>
                     <Grid item xs={12}>
                         { !accountLoading && accountLoaded && account.id ?
@@ -203,28 +205,16 @@ class AccountOverview extends React.Component {
                                     </Typography>
                                 </Grid>
                             </Grid>
-                            <SummaryCard header={
-                                <Grid container spacing={3} justifyContent="space-between">
-                                    <Grid item xs>
-                                        <Typography variant="h6">{account.name}</Typography>
-                                    </Grid>
-                                    <Grid item xs={"auto"} className={classes.numberFormat}>
-                                        <Typography variant="h6">
-                                            <CurrencyFormat value={account.current_balance} displayType={'text'} decimalScale={2} />
-                                        </Typography>
+                            <SummaryCard headerTitle={account.name} headerValue={account.current_balance}>                                
+                                <Grid container spacing={3} justifyContent="flex-end" style={{marginTop: "2px"}}>
+                                    <Grid item className={classes.hideForPrint}>
+                                        <Button id="addTransactionButton" variant="contained" color="primary" size="small"
+                                            aria-controls="addTransactionButton" aria-haspopup={false}
+                                            onClick={this.addTransaction}>Add Transaction</Button>
                                     </Grid>
                                 </Grid>
-                            }>
-                                
-                                    <Grid container spacing={3} justifyContent="flex-end" style={{marginTop: "2px"}}>
-                                        <Grid item className={classes.hideForPrint}>
-                                            <Button id="addTransactionButton" variant="contained" color="primary" size="small"
-                                                aria-controls="addTransactionButton" aria-haspopup={false}
-                                                onClick={this.addTransaction}>Add Transaction</Button>
-                                        </Grid>
-                                    </Grid>
-                                    { account.id ? this.creditInfo() : null }
-                                    { account.id ? <TransactionList /> : null }
+                                { account.id && account.account_type.value === 'CR' && this.creditInfo()}
+                                { account.id ? <TransactionList /> : null }
                             </SummaryCard>
                         </> : <LoadingMessage message="Loading Account Details" />
                         }
