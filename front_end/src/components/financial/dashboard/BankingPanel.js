@@ -4,11 +4,8 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Divider, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
 
 import { CurrencyFormat } from '../../common/NumberFormats'
 
@@ -16,14 +13,12 @@ import { CurrencyFormat } from '../../common/NumberFormats'
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
-// import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-// import { EventTracker, Palette } from '@devexpress/dx-react-chart';
+import { Chart, Legend, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
+import { EventTracker, Palette } from '@devexpress/dx-react-chart';
 
 import { getNetWorth } from '../../../actions/dashboard';
 
-const styles = theme => ({
-    
-});
+const styles = theme => ({ });
 
 function currencyTooltip(props) {
     const { text, targetItem } = props;
@@ -35,6 +30,14 @@ function currencyTooltip(props) {
             }
             <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
         </>
+    );
+}
+
+const LegendComponent = props => {
+    return (
+        <Grid container justifyContent="space-between">
+            { props.children.map(i => (<Grid item key={i.key} xs={6}>{i}</Grid>)) }
+        </Grid>
     );
 }
 
@@ -101,25 +104,28 @@ class BankingPanel extends React.Component {
             <SummaryCard headerTitle="Banking" headerValue={totalCash || 0} valueScale={0}>
                 <Grid container spacing={2} justifyContent={"center"}>
                     <Grid item>
-                        <InfoTile title="Checking" content={<CurrencyFormat value={totalChecking} displayType={'text'} decimalScale={0} />} />
+                        <InfoTile title={"Checking (" + checkingCount + ")"} content={<CurrencyFormat value={totalChecking} 
+                            displayType={'text'} decimalScale={0} />} />
                     </Grid>
                     <Grid item>
                         <Divider dir={"vertical"} orientation="vertical" light={true} />
                     </Grid>
                     <Grid item>
-                        <InfoTile title="Savings" content={<CurrencyFormat value={totalSavings} displayType={'text'} decimalScale={0} />} />
+                        <InfoTile title={"Savings (" + savingsCount + ")"} content={<CurrencyFormat value={totalSavings}
+                            displayType={'text'} decimalScale={0} />} />
                     </Grid>
                     <Grid item xs={12}>
                         <Divider light={true} />
                     </Grid>
-                    {/* <Grid item xs={12}>
+                    <Grid item xs={12}>
                         <Chart data={bankingdata} height={180}>
                             <Palette scheme={["#48bf53", "#11823b"]} />
+                            <Legend position="bottom" rootComponent={LegendComponent} />
                             <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
                             <EventTracker />
                             <Tooltip contentComponent={currencyTooltip} />
                         </Chart>
-                    </Grid> */}
+                    </Grid>
                 </Grid>
             </SummaryCard>
         );
