@@ -3,15 +3,12 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+import { Container, Grid } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Container, Grid } from '@mui/material';
-
 import { BankingPanel, CreditCardsPanel, CreditScorePanel, NetWorthPanel, DebtIncomePanel, LoansPanel } from './dashboard';
-import MonthSelector from "../common/MonthSelector";
 
 import { setTitle } from '../../actions/navigation';
-
 
 const styles = theme => ({
     dashboard: {
@@ -41,9 +38,6 @@ class FinancialDashboard extends React.Component {
         return (
             <Container>
                 <Grid container spacing={2} justifyContent={"flex-start"}>
-                    <Grid item xs={12}>
-                        <MonthSelector variant="outlined" hideFuture={true} />
-                    </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}><NetWorthPanel month={selectedMonth} /></Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}><BankingPanel month={selectedMonth} /></Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}><CreditCardsPanel month={selectedMonth} /></Grid>

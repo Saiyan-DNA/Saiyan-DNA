@@ -52,13 +52,9 @@ class BankingPanel extends React.Component {
         assetsLoading: PropTypes.bool.isRequired,
     }
 
-    componentDidMount() {
-        this.refreshAccounts();
-    }
+    componentDidMount() { this.refreshAccounts(); }
 
-    componentDidUpdate() {
-        this.refreshAccounts();
-    }
+    componentDidUpdate() { this.refreshAccounts(); }
 
     refreshAccounts() {
         const { netWorthLoading, netWorthLoaded, getNetWorth, netWorthData} = this.props;
