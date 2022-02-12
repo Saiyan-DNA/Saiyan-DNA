@@ -13,7 +13,7 @@ import { CurrencyFormat } from '../../common/NumberFormats'
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
-import { Chart, Legend, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
+import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
 import { EventTracker, Palette } from '@devexpress/dx-react-chart';
 
 import { getNetWorth } from '../../../actions/dashboard';
@@ -30,14 +30,6 @@ function currencyTooltip(props) {
             }
             <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
         </>
-    );
-}
-
-const LegendComponent = props => {
-    return (
-        <Grid container justifyContent="space-between">
-            { props.children.map(i => (<Grid item key={i.key} xs={6}>{i}</Grid>)) }
-        </Grid>
     );
 }
 
@@ -101,7 +93,7 @@ class BankingPanel extends React.Component {
         const bankingdata = [{argument: "Checking", value: totalChecking}, {argument: "Savings", value: totalSavings}];
 
         return (
-            <SummaryCard headerTitle="Banking" headerValue={totalCash || 0} valueScale={0}>
+            <SummaryCard headerTitle="Banking" headerValue={totalCash} valueScale={0}>
                 <Grid container spacing={2} justifyContent={"center"}>
                     <Grid item>
                         <InfoTile title={"Checking (" + checkingCount + ")"} content={<CurrencyFormat value={totalChecking} 
@@ -118,9 +110,8 @@ class BankingPanel extends React.Component {
                         <Divider light={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <Chart data={bankingdata} height={180}>
+                        <Chart data={bankingdata} height={200}>
                             <Palette scheme={["#48bf53", "#11823b"]} />
-                            <Legend position="bottom" rootComponent={LegendComponent} />
                             <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
                             <EventTracker />
                             <Tooltip contentComponent={currencyTooltip} />

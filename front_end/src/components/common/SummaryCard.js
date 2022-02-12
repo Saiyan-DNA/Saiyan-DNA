@@ -58,7 +58,8 @@ class SummaryCard extends React.Component {
                         { headerValue &&
                             <Grid item xs={"auto"} className={classes.headerValue}>
                                 <Typography variant="h6">
-                                    <CurrencyFormat value={headerValue} displayType={'text'} decimalScale={valueScale || 2} />
+                                    <CurrencyFormat value={headerValue} displayType={'text'}
+                                        decimalScale={valueScale === null || valueScale === "" || valueScale === undefined ? 2 : valueScale} />
                                 </Typography>
                             </Grid>
                         }
