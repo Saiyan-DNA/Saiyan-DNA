@@ -7,6 +7,7 @@ import loadable from '@loadable/component';
 import { Divider, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
+import CurrencyTooltip from '../controls/CurrencyTooltip';
 import { CurrencyFormat } from '../../common/NumberFormats'
 
 // const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
@@ -19,19 +20,6 @@ import { EventTracker, Palette } from '@devexpress/dx-react-chart';
 import { getNetWorth } from '../../../actions/dashboard';
 
 const styles = theme => ({ });
-
-function currencyTooltip(props) {
-    const { text, targetItem } = props;
-
-    return (
-        <>
-            { targetItem.series === "defaultSeriesName" ? null :
-                <Typography variant="body1">{targetItem.series}</Typography>
-            }
-            <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
-        </>
-    );
-}
 
 class BankingPanel extends React.Component {
     state = {
@@ -106,11 +94,11 @@ class BankingPanel extends React.Component {
                         <Divider light={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <Chart data={bankingdata} height={200}>
+                        <Chart data={bankingdata} height={180}>
                             <Palette scheme={["#48bf53", "#11823b"]} />
                             <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
                             <EventTracker />
-                            <Tooltip contentComponent={currencyTooltip} />
+                            <Tooltip contentComponent={CurrencyTooltip} />
                         </Chart>
                     </Grid>
                 </Grid>

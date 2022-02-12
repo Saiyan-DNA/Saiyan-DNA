@@ -11,27 +11,14 @@ import { CurrencyFormat, PercentageFormat } from '../../common/NumberFormats'
 
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
+import CurrencyTooltip from '../controls/CurrencyTooltip';
 
 import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
 import { EventTracker, Palette } from '@devexpress/dx-react-chart';
 
 import { getNetWorth } from '../../../actions/dashboard';
 
-
 const styles = theme => ({ });
-
-function currencyTooltip(props) {
-    const { text, targetItem } = props;
-
-    return (
-        <>
-            {targetItem.series === "defaultSeriesName" ? null :
-                <Typography variant="body1">{targetItem.series}</Typography>
-        }
-            <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
-        </>
-    );
-}
 
 class CreditCardsPanel extends React.Component {
     state = {
@@ -52,13 +39,9 @@ class CreditCardsPanel extends React.Component {
         assetsLoading: PropTypes.bool.isRequired,
     }
 
-    componentDidMount() {
-        this.refreshAccounts();
-    }
+    componentDidMount() { this.refreshAccounts(); }
 
-    componentDidUpdate() {
-        this.refreshAccounts();
-    }
+    componentDidUpdate() { this.refreshAccounts(); }
 
     refreshAccounts() {
         const { netWorthLoading, netWorthLoaded, getNetWorth, netWorthData} = this.props;
@@ -105,11 +88,11 @@ class CreditCardsPanel extends React.Component {
                         <Divider light={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <Chart data={creditdata} height={200}>
+                        <Chart data={creditdata} height={180}>
                             <Palette scheme={["#ffb21b", "#11823b"]} />
                             <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
                             <EventTracker />
-                            <Tooltip contentComponent={currencyTooltip} />
+                            <Tooltip contentComponent={CurrencyTooltip} />
                         </Chart>
                     </Grid>
                 </Grid>
