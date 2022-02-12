@@ -16,8 +16,8 @@ import { CurrencyFormat, PercentageFormat } from '../../common/NumberFormats'
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
-// import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-// import { EventTracker, Palette } from '@devexpress/dx-react-chart';
+import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
+import { EventTracker, Palette } from '@devexpress/dx-react-chart';
 
 import { getNetWorth } from '../../../actions/dashboard';
 
@@ -110,14 +110,14 @@ class CreditCardsPanel extends React.Component {
                     <Grid item xs={12}>
                         <Divider light={true} />
                     </Grid>
-                    {/* <Grid item xs={12}>
-                        <Chart data={creditdata} height={180}>
+                    <Grid item xs={12}>
+                        <Chart data={creditdata} height={200}>
                             <Palette scheme={["#ffb21b", "#11823b"]} />
                             <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
                             <EventTracker />
                             <Tooltip contentComponent={currencyTooltip} />
                         </Chart>
-                    </Grid> */}
+                    </Grid>
                 </Grid>
             </SummaryCard>
         );
