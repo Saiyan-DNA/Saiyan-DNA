@@ -4,15 +4,11 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Divider, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
 
 import { CurrencyFormat, PercentageFormat } from '../../common/NumberFormats'
 
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
@@ -22,9 +18,7 @@ import { EventTracker, Palette } from '@devexpress/dx-react-chart';
 import { getNetWorth } from '../../../actions/dashboard';
 
 
-const styles = theme => ({
-    
-});
+const styles = theme => ({ });
 
 function currencyTooltip(props) {
     const { text, targetItem } = props;

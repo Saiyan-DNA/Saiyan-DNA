@@ -4,75 +4,20 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Divider, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-const Grid = loadable(() => import('@mui/material/Grid' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
-const Divider = loadable(() => import('@mui/material/Divider' /* webpackChunkName: "Layout" */));
 
 import { CurrencyFormat, PercentageFormat } from '../../common/NumberFormats'
 
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
-// import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-// import { EventTracker, Palette } from '@devexpress/dx-react-chart';
+import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
+import { EventTracker, Palette } from '@devexpress/dx-react-chart';
 
 import { getNetWorth } from '../../../actions/dashboard';
 
-const styles = theme => ({
-    listCard: {
-        backgroundColor: theme.palette.primary.main
-    },
-    listCardHeader: {
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
-        padding: theme.spacing(1,1,1),
-        ['@media print']: {
-            backgroundColor: "inherit",
-            color: "inherit",
-            borderBottom: "0.5px solid #DCDCDC"
-        }
-    },
-    listCardContent: {
-        backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(0,1,0)
-    },
-    transactionSummary: {
-        margin: 0,
-        padding: "2px",
-        paddingTop: "8px",
-        paddingBottom: "8px",
-        borderBottom: "0.5px solid #DCDCDC",
-        ['@media print']: {
-            paddingTop: "4px",
-            paddingBottom: "4px"
-        }
-    },
-    emptyMessage: {
-        textAlign: "center",
-        fontStyle: "italic",
-        marginTop: "12px",
-        marginBottom: "12px",
-        marginLeft: "auto",
-        marginRight: "auto"
-    },
-    numberFormat: {
-        textAlign: "right"
-    },
-    hideForPrint: {
-        ['@media print']: { // eslint-disable-line no-useless-computed-key
-            display: "none",
-        }
-    },
-    listCaption: {
-        verticalAlign: "text-top", 
-        fontStyle: "italic",
-        overflow: "hidden",
-        textOverflow: "ellipsis"
-    }
-});
+const styles = theme => ({ });
 
 function currencyTooltip(props) {
     const { text, targetItem } = props;
@@ -139,9 +84,7 @@ class LoansPanel extends React.Component {
     }
 
     render() {
-        const { ...otherProps } = this.props;
-        const { totalOwed, totalPaid, percentPaid } = this.state;
-        
+        const { totalOwed, totalPaid, percentPaid } = this.state;        
         const loandata = [{argument: "Paid", value: totalPaid}, {argument: "Owed", value: totalOwed}];
 
         return (
@@ -153,14 +96,14 @@ class LoansPanel extends React.Component {
                     <Grid item xs={12}>
                         <Divider light={true} />
                     </Grid>
-                    {/* <Grid item xs={12}>
-                        <Chart data={loandata} height={180}>
+                    <Grid item xs={12}>
+                        <Chart data={loandata} height={200}>
                             <Palette scheme={["#11823b", "#ffb21b"]} />
                             <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
                             <EventTracker />
                             <Tooltip contentComponent={currencyTooltip} />
                         </Chart>
-                    </Grid> */}
+                    </Grid>
                 </Grid>
             </SummaryCard>
         );

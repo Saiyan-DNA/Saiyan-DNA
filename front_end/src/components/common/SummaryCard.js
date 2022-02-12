@@ -11,7 +11,7 @@ const CurrencyFormat = loadable(() => import('../common/NumberFormats' /* webpac
 const styles = theme => ({
     summaryCard: {
         backgroundColor: theme.palette.primary.main,
-        height: "100%"
+        height: "100%",
     },
     summaryCardHeader: {
         backgroundColor: theme.palette.primary.main,
@@ -19,7 +19,7 @@ const styles = theme => ({
         minHeight: "2em !important",
         maxHeight: "2em !important",
         height: "2em !important",
-        padding: "0.25em !important",
+        padding: "0.25em 0.5em 0.25em 0.5em !important",
         ['@media print']: {
             backgroundColor: "inherit",
             color: "inherit",
@@ -55,13 +55,13 @@ class SummaryCard extends React.Component {
                         <Grid item xs>
                             <Typography variant="h6">{headerTitle}</Typography>
                         </Grid>
-                        { headerValue &&
+                        { !headerValue ? <span>&nbsp;</span> :
                             <Grid item xs={"auto"} className={classes.headerValue}>
                                 <Typography variant="h6">
                                     <CurrencyFormat value={headerValue} displayType={'text'}
-                                        decimalScale={valueScale === null || valueScale === "" || valueScale === undefined ? 2 : valueScale} />
+                                        decimalScale={valueScale == null || valueScale == undefined ? 2 : valueScale} />
                                 </Typography>
-                            </Grid>
+                            </Grid> 
                         }
                     </Grid>
                 } />
