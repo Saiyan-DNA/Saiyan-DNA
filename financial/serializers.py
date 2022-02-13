@@ -6,8 +6,9 @@ from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
 
 from core.serializers import HomeSerializer, OrganizationSerializer
-from .models import Account, AccountStatement, Asset, FinancialCategory, TransactionLog, TransferDetail
-
+from .models import Account, AccountStatement, Asset
+from .models import CreditReport, CreditReportDetail
+from .models import FinancialCategory, TransactionLog, TransferDetail
 
 # Accounts
 class AccountSerializer(serializers.ModelSerializer):
@@ -47,6 +48,30 @@ class AccountReadSerializer(serializers.ModelSerializer):
 class AssetSerializer(serializers.ModelSerializer):    
     class Meta:
         model = Asset
+        fields = '__all__'
+
+
+# Credit Report Details
+class CreditReportDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CreditReportDetail
+        fields = '__all__'
+
+
+# Credit Reports
+class CreditReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CreditReport
+        fields = '__all__'
+
+
+# Credit Reports
+class CreditReportReadSerializer(serializers.ModelSerializer):
+    agency = OrganizationSerializer(read_only=True)
+    details = CreditReportDetailSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = CreditReport
         fields = '__all__'
 
 

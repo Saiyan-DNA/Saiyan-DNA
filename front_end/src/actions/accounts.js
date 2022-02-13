@@ -35,7 +35,7 @@ export const createAccount = (acct) => (dispatch, getState) => {
         }
     };
 
-    axios.post('/api/financial/account/', JSON.stringify(acct), config)
+    axios.post('/api/financial/account', JSON.stringify(acct), config)
     .then(res => {
         dispatch({
             type: CREATE_ACCOUNT,

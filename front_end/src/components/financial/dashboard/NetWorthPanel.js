@@ -9,7 +9,8 @@ import { withStyles } from '@mui/styles';
 
 import { CurrencyFormat } from '../../common/NumberFormats';
 
-import CurrencyTooltip from '../controls/CurrencyTooltip';
+const CurrencyTooltip = loadable(() => import('../controls/CurrencyTooltip' /* webpackChunkName: "Financial" */), { fallback: <div>&nbsp;</div> });
+const LoadingMessage = loadable(() => import('../../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
@@ -79,20 +80,8 @@ class NetWorthPanel extends React.Component {
         const { netWorthLoaded, netWorthLoading, netWorthData, ...otherProps } = this.props;
         const { totalAssets, totalLiabilities, checkingAccounts, savingsAccounts, property, investments, loans, creditCards } = this.state;
 
-        if (netWorthLoading && !netWorthLoaded) {
+        if (!netWorthLoaded) {
             return <LoadingMessage message="Loading Net Worth" />;
-        }
-        
-        if (!netWorthLoading && !netWorthLoaded) {
-            return (
-                <SummaryCard headerTitle="Net Worth">
-                    <Container>
-                        <Typography variant="body1">
-                            No data available.
-                        </Typography>
-                    </Container>
-                </SummaryCard>
-            );
         }
 
         const data = [

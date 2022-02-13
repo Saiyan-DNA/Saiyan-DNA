@@ -1,60 +1,19 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
 import { withStyles } from '@mui/styles';
 
-import { Divider, Grid, List, ListItemButton, ListSubheader, Typography } from '@mui/material';
+import { Grid, LinearProgress, List, ListItemButton, Typography } from '@mui/material';
 
-import { CurrencyFormat } from '../../common/NumberFormats'
-
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const LoadingMessage = loadable(() => import('../../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
-// import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-// import { EventTracker, Palette } from '@devexpress/dx-react-chart';
-
+import { getCreditReports } from "../../../actions/creditReports";
 
 const styles = theme => ({
-    listCard: {
-        backgroundColor: theme.palette.primary.main
-    },
-    listCardHeader: {
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
-        padding: theme.spacing(1,1,1),
-        ['@media print']: {
-            backgroundColor: "inherit",
-            color: "inherit",
-            borderBottom: "0.5px solid #DCDCDC"
-        }
-    },
-    listCardContent: {
-        backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(0,1,0)
-    },
-    transactionSummary: {
-        margin: 0,
-        padding: "2px",
-        paddingTop: "8px",
-        paddingBottom: "8px",
-        borderBottom: "0.5px solid #DCDCDC",
-        ['@media print']: {
-            paddingTop: "4px",
-            paddingBottom: "4px"
-        }
-    },
-    emptyMessage: {
-        textAlign: "center",
-        fontStyle: "italic",
-        marginTop: "12px",
-        marginBottom: "12px",
-        marginLeft: "auto",
-        marginRight: "auto"
-    },
     numberFormat: {
         textAlign: "right"
     },
@@ -63,58 +22,131 @@ const styles = theme => ({
             display: "none",
         }
     },
-    listCaption: {
-        verticalAlign: "text-top", 
+    caption: {
+        verticalAlign: "text-top",
         fontStyle: "italic",
         overflow: "hidden",
         textOverflow: "ellipsis"
     }
 });
 
-function currencyTooltip(props) {
-    const { text, targetItem } = props;
-
-    return (
-        <>
-            {targetItem.series === "defaultSeriesName" ? null :
-                <Typography variant="body1">{targetItem.series}</Typography>
-        }
-            <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
-        </>
-    );
-}
-
 class CreditScorePanel extends React.Component {
     state = {
-
+        latestReports: [],
+        agencies: ["Equifax", "Experian", "TransUnion"],
+        ratings: [
+            {minScore: 0, maxScore: 579, label: "Poor"},
+            {minScore: 580, maxScore: 669, label: "Fair"},
+            {minScore: 670, maxScore: 739, label: "Good"},
+            {minScore: 740, maxScore: 799, label: "Very Good"},
+            {minScore: 800, maxScore: 850, label: "Exceptional"}
+        ],
     };
 
     static propTypes = {
-        
+        classes: PropTypes.object.isRequired,
+        getCreditReports: PropTypes.func.isRequired,
+        creditReports: PropTypes.array.isRequired,
+        creditReportsLoading: PropTypes.bool.isRequired,
+        creditReportsLoaded: PropTypes.bool.isRequired,
+        creditReportsLoadError: PropTypes.bool.isRequired,        
     }
 
     componentDidMount() {
+        const { getCreditReports, creditReportsLoading, creditReportsLoaded, creditReportsLoadError } = this.props;
+
+        if (!creditReportsLoading && !creditReportsLoaded) {
+            getCreditReports();
+        }
+
+        if (creditReportsLoaded) {
+            this.getLatestReports();
+        }
         
     }
 
     componentDidUpdate() {
-        
+        const { creditReportsLoaded } = this.props;
+        const { latestReports } = this.state;
+
+        if (creditReportsLoaded && latestReports.length === 0) {
+            this.getLatestReports();
+        }
+    }
+
+    getLatestReports = () => {
+        const { creditReports } = this.props;
+        const { agencies, ratings } = this.state;
+
+        var orderedReports = creditReports.sort((a, b) => {a.date < b.date ? 1 : -1});
+        var latestReports = [];
+
+        agencies.forEach(agency => {
+            let report = orderedReports.find(report => report.agency.name === agency);
+            let rating = ratings.find(rating => report.credit_score <= rating.maxScore);
+
+            latestReports.push({agency: agency, score: report.credit_score, lastUpdated: report.date, rating: rating.label});
+
+        })
+
+        this.setState({latestReports: latestReports});
+    }
+
+    scoreSummary = (summary, index, classes) => {
+        const { ratings } = this.state;
+
+        return (
+            <ListItemButton key={index} divider disableGutters dense>
+                <Grid container spacing={2}>
+                    <Grid item container xs direction="column">
+                        <Grid item><Typography variant="body1">{summary.agency}</Typography></Grid>
+                        <Grid item><Typography variant="caption" className={classes.caption}>Updated: {summary.lastUpdated}</Typography></Grid>
+                    </Grid>
+                    <Grid item xs={"auto"}><Typography variant="h4" className={classes.numberFormat}>{summary.score}</Typography></Grid>
+                    <Grid item container spacing={0.25} xs={12} style={{paddingTop: "0px", paddingBottom: "0px", marginTop: "0px", marginBottom: "0px"}}>
+                        {ratings.map((rating, index) => {
+                            let percentage = (summary.score - rating.minScore) / (rating.maxScore - rating.minScore) * 100;
+
+                            return (
+                                <Grid item xs={2.4} key={rating.label}>
+                                    <LinearProgress variant="determinate" style={{height: "0.5em"}} value={percentage < 100 ? percentage : 100} 
+                                        color={percentage >= 100 ? "success" : "warning"} />
+                                </Grid>
+                            )
+                        })}
+                        { summary.score >= 580 && (
+                            <Grid item xs={summary.score <= 669 ? 2.4 : summary.score <= 739 ? 4.8 : summary.score <= 799 ? 7.2 : 8.6}>
+                                &nbsp;
+                            </Grid>
+                        )}
+                        <Grid item>
+                            <Typography variant="caption" className={classes.caption}>{summary.rating}</Typography>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </ListItemButton>
+        )
     }
 
     render() {
-        const { ...otherProps } = this.props;
+        const { classes, creditReports, creditReportsLoading, creditReportsLoaded, creditReportsLoadError, ...otherProps } = this.props;
+        const { latestReports } = this.state;
         
         return (
             <SummaryCard headerTitle="Credit Score">
                 <Grid container spacing={2} justifyContent={"space-between"}>
-                    <Grid item xs={12}>
-                        <List>
-                            <ListSubheader>Experian</ListSubheader>
-                            <ListSubheader>Equifax</ListSubheader>
-                            <ListSubheader>TransUnion</ListSubheader>
-                        </List>
-                    </Grid>
-                    
+                    { creditReportsLoading && !creditReportsLoaded && 
+                        <Grid item xs={12} alignContent="center">
+                            <LoadingMessage message="Getting Credit Reports..." /> 
+                        </Grid>
+                    }
+                    { creditReportsLoaded && latestReports.length > 0 &&
+                        <Grid item xs={12}>
+                            <List>
+                                {latestReports.map((summary, index) => this.scoreSummary(summary, index, classes))}
+                            </List>
+                        </Grid>
+                    }
                 </Grid>
             </SummaryCard>
         );
@@ -122,12 +154,15 @@ class CreditScorePanel extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    
+    creditReports: state.creditReports.creditReports,
+    creditReportsLoading: state.creditReports.creditReportsLoading,
+    creditReportsLoaded: state.creditReports.creditReportsLoaded,
+    creditReportsLoadError: state.creditReports.creditReportsLoadError,
 });
 
 const mapDispatchToProps = {
-    
+    getCreditReports
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
-    (CreditScorePanel)));
+    (CreditScorePanel)));2
