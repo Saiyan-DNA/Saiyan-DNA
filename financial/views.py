@@ -13,9 +13,11 @@ from core.models import Organization
 from core.serializers import OrganizationSerializer
 from .serializers import AccountSerializer, AccountReadSerializer, AssetSerializer
 from .serializers import AccountStatementSerializer, AccountStatementReadSerializer
+from .serializers import CreditReportSerializer, CreditReportReadSerializer
 from .serializers import FinancialCategorySerializer, FinancialCategoryReadSerializer
 from .serializers import TransactionReadSerializer, TransactionSerializer, TransferSerializer
-from .models import TransactionLog, TransferDetail, Account, AccountStatement, FinancialCategory
+from .models import Account, AccountStatement, FinancialCategory
+from .models import TransactionLog, TransferDetail
 
 
 def clear_cache_item(key):
@@ -199,6 +201,40 @@ class AssetListView(viewsets.ModelViewSet):
             clear_cache_item(f"assets_{self.request.user.id}")
                 
         return assets
+
+
+class CreditReportView(viewsets.ModelViewSet):
+    '''
+    ListCreate API View for Assets
+    '''
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    
+    def get_serializer_class(self):
+        if self.request.method in ['GET']:
+            return CreditReportReadSerializer
+        return CreditReportSerializer
+
+    def get_queryset(self):
+
+        agency_id = self.request.query_params.get('agency')
+
+        if (self.request.method in ['GET']):
+            cache_key = f"credit_reports_{self.request.user.id}"
+
+            reports = cache.get(cache_key)
+
+            if (not reports):
+                reports = self.request.user.credit_reports.all()
+                cache.set(cache_key, reports)
+
+        else:
+            reports = CreditReport.objects.all()
+            clear_cache_item(f"credit_reports_{self.request.user.id}")
+                
+        return reports
 
 
 class FinancialCategoryListView(viewsets.ModelViewSet):

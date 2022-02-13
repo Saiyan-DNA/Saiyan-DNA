@@ -1,16 +1,15 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { Divider, Grid, Typography } from '@mui/material';
+import { Divider, Grid } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
 import CurrencyTooltip from '../controls/CurrencyTooltip';
 import { CurrencyFormat } from '../../common/NumberFormats'
 
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
@@ -72,7 +71,7 @@ class BankingPanel extends React.Component {
 
     render() {
         const { ...otherProps } = this.props;
-        const { totalCash, totalChecking, checkingCount, totalSavings, savingsCount } = this.state;
+        const { totalCash, totalChecking, totalSavings } = this.state;
         
         const bankingdata = [{argument: "Checking", value: totalChecking}, {argument: "Savings", value: totalSavings}];
 
@@ -80,15 +79,13 @@ class BankingPanel extends React.Component {
             <SummaryCard headerTitle="Banking" headerValue={totalCash} valueScale={0}>
                 <Grid container spacing={2} justifyContent={"center"}>
                     <Grid item>
-                        <InfoTile title={"Checking (" + checkingCount + ")"} content={<CurrencyFormat value={totalChecking} 
-                            displayType={'text'} decimalScale={0} />} />
+                        <InfoTile title="Checking" content={<CurrencyFormat value={totalChecking} displayType={'text'} decimalScale={0} />} />
                     </Grid>
                     <Grid item>
                         <Divider dir={"vertical"} orientation="vertical" light={true} />
                     </Grid>
                     <Grid item>
-                        <InfoTile title={"Savings (" + savingsCount + ")"} content={<CurrencyFormat value={totalSavings}
-                            displayType={'text'} decimalScale={0} />} />
+                        <InfoTile title="Savings" content={<CurrencyFormat value={totalSavings} displayType={'text'} decimalScale={0} />} />
                     </Grid>
                     <Grid item xs={12}>
                         <Divider light={true} />

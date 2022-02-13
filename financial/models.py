@@ -175,17 +175,17 @@ class CreditReport(models.Model):
     Retains Credit Reports for a Person.
     """
 
-    person = models.ForeignKey(Person, related_name="credit_reports", verbose_name="Person", on_delete=models.CASCADE, null=False, blank=False)
-    agency = models.ForeignKey(Organization, related_name="credit_reports", verbose_name="Agency", on_delete=models.CASCADE, null=False, blank=False)
-    date = models.DateField(verbose_name="Date", null=False, blank=False)
-    credit_score = models.IntegerField(verbose_name="Credit Score", null=False, blank=False)
+    owner = models.ForeignKey(User, related_name="credit_reports", verbose_name="Owner", on_delete=models.CASCADE)
+    agency = models.ForeignKey(Organization, related_name="credit_reports", verbose_name="Agency", on_delete=models.CASCADE)
+    date = models.DateField(verbose_name="Date")
+    credit_score = models.IntegerField(verbose_name="Credit Score")
     
     def __str__(self):
-        return f"{self.person} - {self.agency.name} ({self.date})"
+        return f"{self.owner} - {self.agency.name} ({self.date})"
 
     class Meta:
         verbose_name = "Credit Report"
-        ordering = ['person', 'agency', '-date']
+        ordering = ['owner', '-date', 'agency']
 
 
 class CreditReportDetail(models.Model):
