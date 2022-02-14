@@ -1,10 +1,10 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { Container, Divider, Grid, Typography } from '@mui/material';
+import { Divider, Grid } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
 import { CurrencyFormat } from '../../common/NumberFormats';
@@ -95,13 +95,13 @@ class NetWorthPanel extends React.Component {
         return (
             <SummaryCard headerTitle="Net Worth" headerValue={netWorthData.netWorth}>
                 <Grid container spacing={2} justifyContent={"center"}>
-                    <Grid item xs={5}>
+                    <Grid item>
                         <InfoTile title="Assets" content={<CurrencyFormat value={totalAssets} displayType={'text'} decimalScale={0} />} />
                     </Grid>
-                    <Grid item xs={"auto"}>
+                    <Grid item>
                         <Divider dir={"vertical"} orientation="vertical" light={true} />
                     </Grid>
-                    <Grid item xs={5}>
+                    <Grid item>
                         <InfoTile title="Liabilities" content={<CurrencyFormat value={totalLiabilities} displayType={'text'} decimalScale={0} />} />
                     </Grid>
                     <Grid item xs={12}>

@@ -11,6 +11,8 @@ import { Grid, LinearProgress, List, ListItemButton, Typography } from '@mui/mat
 const LoadingMessage = loadable(() => import('../../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
 
+import EmptyMessage from '../../common/EmptyMessage';
+
 import { getCreditReports } from "../../../actions/creditReports";
 
 const styles = theme => ({
@@ -32,7 +34,7 @@ const styles = theme => ({
 
 class CreditScorePanel extends React.Component {
     state = {
-        latestReports: [],
+        latestReports: null,
         agencies: ["Equifax", "Experian", "TransUnion"],
         ratings: [
             {minScore: 0, maxScore: 579, label: "Poor"},
@@ -53,25 +55,17 @@ class CreditScorePanel extends React.Component {
     }
 
     componentDidMount() {
-        const { getCreditReports, creditReportsLoading, creditReportsLoaded, creditReportsLoadError } = this.props;
+        const { getCreditReports, creditReportsLoading, creditReportsLoaded } = this.props;
 
-        if (!creditReportsLoading && !creditReportsLoaded) {
-            getCreditReports();
-        }
-
-        if (creditReportsLoaded) {
-            this.getLatestReports();
-        }
-        
+        if (!creditReportsLoading && !creditReportsLoaded) getCreditReports();
+        if (creditReportsLoaded) this.getLatestReports();        
     }
 
     componentDidUpdate() {
         const { creditReportsLoaded } = this.props;
         const { latestReports } = this.state;
 
-        if (creditReportsLoaded && latestReports.length === 0) {
-            this.getLatestReports();
-        }
+        if (creditReportsLoaded && !latestReports) this.getLatestReports();
     }
 
     getLatestReports = () => {
@@ -83,10 +77,11 @@ class CreditScorePanel extends React.Component {
 
         agencies.forEach(agency => {
             let report = orderedReports.find(report => report.agency.name === agency);
-            let rating = ratings.find(rating => report.credit_score <= rating.maxScore);
-
-            latestReports.push({agency: agency, score: report.credit_score, lastUpdated: report.date, rating: rating.label});
-
+            
+            if (report) {
+                let rating = ratings.find(rating => report.credit_score <= rating.maxScore);
+                latestReports.push({agency: agency, score: report.credit_score, lastUpdated: report.date, rating: rating.label});
+            }
         })
 
         this.setState({latestReports: latestReports});
@@ -131,7 +126,7 @@ class CreditScorePanel extends React.Component {
     render() {
         const { classes, creditReports, creditReportsLoading, creditReportsLoaded, creditReportsLoadError, ...otherProps } = this.props;
         const { latestReports } = this.state;
-        
+
         return (
             <SummaryCard headerTitle="Credit Score">
                 <Grid container spacing={2} justifyContent={"space-between"}>
@@ -140,11 +135,16 @@ class CreditScorePanel extends React.Component {
                             <LoadingMessage message="Getting Credit Reports..." /> 
                         </Grid>
                     }
-                    { creditReportsLoaded && latestReports.length > 0 &&
+                    { creditReportsLoaded && latestReports && latestReports.length > 0 &&
                         <Grid item xs={12}>
                             <List>
                                 {latestReports.map((summary, index) => this.scoreSummary(summary, index, classes))}
                             </List>
+                        </Grid>
+                    }
+                    { creditReportsLoaded && latestReports && !(latestReports.length > 0) && 
+                        <Grid item xs={12}>
+                            <EmptyMessage message="Credit Score information not found." />
                         </Grid>
                     }
                 </Grid>

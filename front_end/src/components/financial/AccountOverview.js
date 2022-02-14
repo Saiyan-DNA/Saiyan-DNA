@@ -155,13 +155,13 @@ class AccountOverview extends React.Component {
 
         return (
             <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em"}}>
-                <Grid item xs={4}>
+                <Grid item>
                     <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
                 </Grid>
-                <Grid item xs={"auto"}>
+                <Grid item>
                     <Divider orientation="vertical" light={true} />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item>
                     <InfoTile title="Available" content={<CurrencyFormat value={available} displayType={'text'} decimalScale={2} />}
                         caption={<>Limit: <CurrencyFormat value={account.credit_limit} displayType={'text'} decimalScale={2} /></>} />
                 </Grid>
@@ -206,7 +206,7 @@ class AccountOverview extends React.Component {
                                 </Grid>
                             </Grid>
                             <SummaryCard headerTitle={account.name} headerValue={account.current_balance}>                                
-                                <Grid container spacing={3} justifyContent="flex-end">
+                                <Grid container spacing={3} justifyContent="flex-end" style={{marginBottom: "0.5em"}}>
                                     <Grid item className={classes.hideForPrint}>
                                         <Button id="addTransactionButton" variant="contained" color="primary" size="small"
                                             aria-controls="addTransactionButton" aria-haspopup={false}

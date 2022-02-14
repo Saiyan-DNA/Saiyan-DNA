@@ -40,9 +40,6 @@ import { checkTokenExpiration, loadUser } from '../actions/auth';
 import store from '../store';
 
 const theme = createTheme({
-    typography: {
-      fontFamily: "inherit"
-    },
     palette: {
         primary: {
             main: "#0ca2d0",
@@ -53,6 +50,15 @@ const theme = createTheme({
         secondary: {
             main: "#1769aa",
             contrastText: "#ffffff"
+        },
+        text: {
+            primary:  "#2b373f"
+        },
+        success: {
+            main: "#4a934a"
+        },
+        warning: {
+            main: "#ff9900"
         }
     },
     status: {

@@ -11,6 +11,8 @@ import { CurrencyFormat, PercentageFormat } from '../../common/NumberFormats'
 
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
+
+import EmptyMessage from '../../common/EmptyMessage';
 import CurrencyTooltip from '../controls/CurrencyTooltip';
 
 import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
@@ -60,6 +62,7 @@ class CreditCardsPanel extends React.Component {
                     totalAvailable: netWorthData.creditCards.available,
                     totalLimit: netWorthData.creditCards.limit,
                     utilization: netWorthData.creditCards.utilization,
+                    count: netWorthData.creditCards.count,
                     current: true
                 });
             }
@@ -74,28 +77,31 @@ class CreditCardsPanel extends React.Component {
 
         return (
             <SummaryCard headerTitle="Credit Cards" headerValue={totalOwed} valueScale={0}>
-                <Grid container spacing={2} justifyContent={"center"}>
-                    <Grid item>
-                        <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
+                { count == 0 && <EmptyMessage message="No Credit Card information found." />}
+                { count > 0 && 
+                    <Grid container spacing={2} justifyContent={"center"}>
+                        <Grid item>
+                            <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
+                        </Grid>
+                        <Grid item>
+                            <Divider dir={"vertical"} orientation="vertical" light={true} />
+                        </Grid>
+                        <Grid item>
+                            <InfoTile title="Available" content={<CurrencyFormat value={totalAvailable} displayType={'text'} decimalScale={0} />} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Divider light={true} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Chart data={creditdata} height={180}>
+                                <Palette scheme={["#ffb21b", "#11823b"]} />
+                                <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
+                                <EventTracker />
+                                <Tooltip contentComponent={CurrencyTooltip} />
+                            </Chart>
+                        </Grid>
                     </Grid>
-                    <Grid item>
-                        <Divider dir={"vertical"} orientation="vertical" light={true} />
-                    </Grid>
-                    <Grid item>
-                        <InfoTile title="Available" content={<CurrencyFormat value={totalAvailable} displayType={'text'} decimalScale={0} />} />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Divider light={true} />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Chart data={creditdata} height={180}>
-                            <Palette scheme={["#ffb21b", "#11823b"]} />
-                            <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
-                            <EventTracker />
-                            <Tooltip contentComponent={CurrencyTooltip} />
-                        </Chart>
-                    </Grid>
-                </Grid>
+                }
             </SummaryCard>
         );
     }
