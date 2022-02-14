@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
-import { withStyles } from '@mui/styles';
+import loadable from '@loadable/component';
 
 import { Button, Card, CardContent, Container, Grid, List, ListItem, ListItemText } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 import { setTitle } from '../../actions/navigation';
 import { getHomes } from '../../actions/homes';

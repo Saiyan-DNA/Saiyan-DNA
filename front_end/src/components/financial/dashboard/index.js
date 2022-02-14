@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import loadable from '@loadable/component';
 
 const BankingPanel = loadable(() => import('./BankingPanel' /* webpackChunkName: "Dashboard" */), {fallback: <span>&nbsp;</span>});

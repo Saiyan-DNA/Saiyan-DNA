@@ -1,17 +1,15 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Divider, Grid, Link, List, ListItemButton, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-import { Divider, Grid, Link, List, ListItem, ListItemButton, Typography } from '@mui/material';
 
 const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
 const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "Common" */));
-
-import { CurrencyFormat } from '../common/NumberFormats'
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 import { getAccount } from '../../actions/accounts';
 

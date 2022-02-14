@@ -1,12 +1,11 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Card, CardContent, CardHeader, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Card, CardContent, CardHeader, Grid, Typography } from '@mui/material';
-
-const CurrencyFormat = loadable(() => import('../common/NumberFormats' /* webpackChunkName: "Financial" */).then(m => m.CurrencyFormat));
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 const styles = theme => ({
     summaryCard: {

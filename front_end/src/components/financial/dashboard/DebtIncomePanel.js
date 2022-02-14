@@ -1,22 +1,14 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Divider, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Divider, Grid, Typography } from '@mui/material';
-
-import { CurrencyFormat } from '../../common/NumberFormats'
-
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const CurrencyFormat = loadable(() => import('../../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
-const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
-
-// import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-// import { EventTracker, Palette } from '@devexpress/dx-react-chart';
-
+const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 const styles = theme => ({
     listCard: {
@@ -121,5 +113,5 @@ const mapDispatchToProps = {
     
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
-    (DebtIncomePanel)));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
+    (DebtIncomePanel));

@@ -1,11 +1,10 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@mui/styles';
-
 import { Button, Grid, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "Common" */));
 

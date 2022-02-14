@@ -3,13 +3,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Button, Container, Divider, Grid, List, ListItemButton, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Button, Container, Divider, Grid, List, ListItemButton, Typography } from '@mui/material';
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Common" */));
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
-const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */));
-
-import { CurrencyFormat } from '../common/NumberFormats';
 import { getAssets, getAsset, clearAsset } from '../../actions/assets';
 import { setTitle } from '../../actions/navigation';
 
@@ -67,11 +66,7 @@ class AssetsList extends React.Component {
         const total = assets.reduce((cnt, asset) => cnt + asset.current_value, 0);
 
         return(
-            <SummaryCard header={
-                <Grid container spacing={0} justifyContent="space-between">
-                    <Grid item><Typography variant="h5">Assets</Typography></Grid>
-                    <Grid item><Typography variant="h5"><CurrencyFormat value={total} displayType={'text'} decimalScale={0} /></Typography></Grid>
-                </Grid>}>
+            <SummaryCard headerTitle="Assets" headerValue={total} valueScale={0}>
                 <List>
                     { assets.map(asset => (
                         <div key={asset.id}>

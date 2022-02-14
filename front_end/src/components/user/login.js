@@ -3,9 +3,8 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+import { Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-import { Button, Card, CardContent, Container, FormControl, Grid, Input, InputLabel, TextField, Typography } from '@mui/material';
 
 import { userLogin, clearLoginError } from '../../actions/auth';
 import { setTitle } from '../../actions/navigation';

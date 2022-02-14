@@ -3,16 +3,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@mui/styles';
-
 import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 import { setTitle } from '../../actions/navigation';
 import { saveOrganization, deleteOrganization } from '../../actions/organizations';
 
 const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "Common" */));
 const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */));
-const OrganizationTypeSelect = loadable(() => import('./controls/OrganizationTypeSelect' /* webpackChunkName: "Manage" */));
+const OrganizationTypeSelect = loadable(() => import('./controls/OrganizationTypeSelect' /* webpackChunkName: "Common" */));
 
 const styles = theme => ({
     hideForPrint: {

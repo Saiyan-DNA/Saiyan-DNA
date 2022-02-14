@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
@@ -6,7 +6,7 @@ import loadable from '@loadable/component';
 import { withStyles } from '@mui/styles';
 
 const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "Common" */));
-const TransactionDetail = loadable(() => import('./TransactionDetail' /* webpackChunkName: "Transactions" */));
+const TransactionDetail = loadable(() => import('./TransactionDetail' /* webpackChunkName: "Financial" */));
 
 import { toggleTransactionModal } from "../../actions/transactions";
 

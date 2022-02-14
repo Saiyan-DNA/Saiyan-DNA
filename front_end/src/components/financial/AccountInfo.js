@@ -1,12 +1,13 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Button, Card, CardContent, Container, Grid, TextField } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Autocomplete, Button, Card, CardContent, Container, Grid, TextField } from '@mui/material';
-
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const PercentageFormat = loadable(() => import('../common/PercentageFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const OrganizationSelect = loadable(() => import('../common/OrganizationSelect' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 
@@ -15,8 +16,6 @@ const DeleteAccountModal = loadable(() => import('./DeleteAccountModal' /* webpa
 
 import { createAccount, updateAccount } from '../../actions/accounts';
 import { setTitle } from '../../actions/navigation';
-
-import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
 
 const styles = theme => ({
     numberInput: {

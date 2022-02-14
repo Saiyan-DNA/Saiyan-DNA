@@ -2,9 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { withStyles } from '@mui/styles';
-
 import { Alert, Snackbar } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 import { clearMessage } from '../../actions/messages';
 
@@ -82,7 +81,7 @@ class SystemMessage extends React.Component {
         }
 
         if (message) {
-            return ( 
+            return (
                 <Snackbar className={classes.systemMessage} open={isVisible} autoHideDuration={3000} onClose={this.handleClose} anchorOrigin={anchor}>
                     <Alert elevation={6} variant = "filled" severity={message.type} className={classes.systemMessage}>
                         { message.title }

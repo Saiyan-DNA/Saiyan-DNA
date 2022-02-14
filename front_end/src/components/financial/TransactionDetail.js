@@ -1,22 +1,21 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
-
-import { Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from '@mui/material';
 
 import DatePicker from '@mui/lab/DatePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
+import { Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */));
 const AccountSelect = loadable(() => import('./controls/AccountSelect' /* webpackChunkName: "Financial" */));
 const FinancialCategorySelect = loadable(() => import('./controls/FinancialCategorySelect' /* webpackChunkName: "Financial" */));
 const TransactionTypeSelect = loadable(() => import('./controls/TransactionTypeSelect' /* webpackChunkName: "Financial" */));
 
-import { CurrencyFormat } from '../common/NumberFormats'
 import { toggleTransactionModal, clearTransaction, createTransaction, updateTransaction, deleteTransaction } from '../../actions/transactions';
 import { setTitle } from '../../actions/navigation';
 

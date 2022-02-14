@@ -1,20 +1,19 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Button, Container, Divider, Grid, Link, Menu, MenuItem, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Button, Container, Divider, Grid, Link, Menu, MenuItem, Typography } from '@mui/material';
-
-const CurrencyFormat = loadable(() => import('../common/NumberFormats' /* webpackChunkName: "Financial" */).then(m => m.CurrencyFormat));
-const PercentageFormat = loadable(() => import('../common/NumberFormats' /* webpackChunkName: "Financial" */).then(m => m.PercentageFormat));
-const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const PercentageFormat = loadable(() => import('../common/PercentageFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
-const TransactionList = loadable(() => import ('./TransactionList' /* webpackChunkName: "Transactions" */), {fallback: <div>&nbsp;</div>})
-const TransactionModal = loadable(() => import('./TransactionModal' /* webpackChunkName: "Transactions" */));
+const TransactionList = loadable(() => import ('./TransactionList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>})
+const TransactionModal = loadable(() => import('./TransactionModal' /* webpackChunkName: "Financial" */));
 
 import { setTitle } from '../../actions/navigation';
 import { getAccount } from '../../actions/accounts';

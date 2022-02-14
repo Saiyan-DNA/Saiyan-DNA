@@ -4,16 +4,15 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Button, Chip, Divider, Grid, List, ListItem, ListItemButton, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Button, Chip, Divider, Grid, List, ListItem, ListItemButton, Typography } from '@mui/material';
+const NumberFormat = loadable(() => import('react-number-format' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 const ArrowUp = loadable(() => import('@mui/icons-material/KeyboardArrowUp' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 const ArrowDown = loadable(() => import('@mui/icons-material/KeyboardArrowDown' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 
-import NumberFormat from 'react-number-format';
-
-import LoadingMessage from '../common/LoadingMessage';
+const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 import { editTransaction } from '../../actions/transactions';
 

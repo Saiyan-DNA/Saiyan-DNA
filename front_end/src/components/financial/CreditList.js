@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 import loadable from "@loadable/component";
 
@@ -6,8 +6,8 @@ import { Divider, Grid } from '@mui/material';
 
 const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
 const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "Common" */));
-
-import { PercentageFormat, CurrencyFormat } from '../common/NumberFormats'
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const PercentageFormat = loadable(() => import('../common/PercentageFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 class CreditList extends React.Component {
     static propTypes = {

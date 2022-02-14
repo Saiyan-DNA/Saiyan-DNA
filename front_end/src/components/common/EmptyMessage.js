@@ -1,9 +1,8 @@
 import React from 'react';
 import loadable from '@loadable/component';
 
+import { Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-import Typography from '@mui/material/Typography';
 
 const WarningIcon = loadable(() => import('@mui/icons-material/Warning' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
