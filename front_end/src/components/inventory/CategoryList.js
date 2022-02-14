@@ -3,9 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@mui/styles';
-
 import { Button, Card, CardContent, Collapse, Container, Grid, IconButton, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 const ArrowRight = loadable(() => import('@mui/icons-material/ArrowRight' /* webpackChunkName: "Icons" */));
 const ArrowDropDown = loadable(() => import('@mui/icons-material/ArrowDropDown' /* webpackChunkName: "Icons" */));

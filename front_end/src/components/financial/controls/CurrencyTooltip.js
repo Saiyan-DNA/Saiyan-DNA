@@ -1,6 +1,9 @@
-import React from "react";
+import React from 'react';
+import loadable from "@loadable/component";
+
 import { Typography } from '@mui/material';
-import { CurrencyFormat } from '../../common/NumberFormats'
+
+const CurrencyFormat = loadable(() => import('../../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 class CurrencyTooltip extends React.Component {
     render() {

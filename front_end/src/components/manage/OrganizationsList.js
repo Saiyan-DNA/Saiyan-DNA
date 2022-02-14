@@ -3,16 +3,16 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@mui/styles';
-
 import { Button, Card, Container, Grid, List, ListItem, ListItemButton, TextField, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 const ArrowUp = loadable(() => import('@mui/icons-material/KeyboardArrowUp' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 const ArrowDown = loadable(() => import('@mui/icons-material/KeyboardArrowDown' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 
+const OrganizationTypeSelect = loadable(() => import('./controls/OrganizationTypeSelect' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
+
 import { setTitle } from '../../actions/navigation';
 import { getOrganizations, getOrganization, clearOrganization } from '../../actions/organizations';
-import OrganizationTypeSelect from './controls/OrganizationTypeSelect';
 
 const styles = theme => ({
     hideForPrint: {

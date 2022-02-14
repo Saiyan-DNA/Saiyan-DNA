@@ -1,12 +1,18 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import loadable from '@loadable/component';
 
 import { Container, Grid } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { BankingPanel, CreditCardsPanel, CreditScorePanel, NetWorthPanel, DebtIncomePanel, LoansPanel } from './dashboard';
+const BankingPanel = loadable(() => import('./dashboard/BankingPanel' /* webpackChunkName: "Dashboard" */), {fallback: <div>&nbsp;</div>});
+const CreditCardsPanel = loadable(() => import('./dashboard/CreditCardsPanel' /* webpackChunkName: "Dashboard" */), {fallback: <div>&nbsp;</div>});
+const CreditScorePanel = loadable(() => import('./dashboard/CreditScorePanel' /* webpackChunkName: "Dashboard" */), {fallback: <div>&nbsp;</div>});
+const NetWorthPanel = loadable(() => import('./dashboard/NetWorthPanel' /* webpackChunkName: "Dashboard" */), {fallback: <div>&nbsp;</div>});
+const DebtIncomePanel = loadable(() => import('./dashboard/DebtIncomePanel' /* webpackChunkName: "Dashboard" */), {fallback: <div>&nbsp;</div>});
+const LoansPanel = loadable(() => import('./dashboard/LoansPanel' /* webpackChunkName: "Dashboard" */), {fallback: <div>&nbsp;</div>});
 
 import { setTitle } from '../../actions/navigation';
 

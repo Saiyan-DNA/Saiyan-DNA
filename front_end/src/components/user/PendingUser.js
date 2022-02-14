@@ -4,11 +4,10 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Button, Container, Grid, TextField, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Button, Container, Grid, TextField, Typography } from '@mui/material';
-
-const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */));
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Common" */));
 
 import { userLogout, verifyUserAccount } from '../../actions/auth';
 import { requestVerificationEmail } from '../../actions/email';

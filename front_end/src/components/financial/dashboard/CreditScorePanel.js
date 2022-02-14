@@ -1,17 +1,14 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Grid, LinearProgress, List, ListItemButton, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Grid, LinearProgress, List, ListItemButton, Typography } from '@mui/material';
-
-const LoadingMessage = loadable(() => import('../../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
-
-import EmptyMessage from '../../common/EmptyMessage';
+const EmptyMessage = loadable(() => import('../../common/EmptyMessage' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
+const LoadingMessage = loadable(() => import('../../common/LoadingMessage' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
+const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 import { getCreditReports } from "../../../actions/creditReports";
 
@@ -164,5 +161,5 @@ const mapDispatchToProps = {
     getCreditReports
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
-    (CreditScorePanel)));2
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
+    (CreditScorePanel));

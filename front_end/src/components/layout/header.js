@@ -4,20 +4,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { AppBar, Container, IconButton, Toolbar, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-const AppBar = loadable(() => import('@mui/material/AppBar' /* webpackChunkName: "Layout" */));
-const Container = loadable(() => import('@mui/material/Container' /* webpackChunkName: "Layout" */));
-const IconButton = loadable(() => import('@mui/material/IconButton' /* webpackChunkName: "Navigation" */));
-const Toolbar = loadable(() => import('@mui/material/Toolbar' /* webpackChunkName: "Layout" */));
-const Typography = loadable(() => import('@mui/material/Typography' /* webpackChunkName: "Layout" */));
 
 const MenuRounded = loadable(() => import('@mui/icons-material/MenuRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const PersonRounded = loadable(() => import('@mui/icons-material/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
 import { checkTokenExpiration } from '../../actions/auth';
 import { toggleNavMenu, toggleUserMenu } from '../../actions/menu';
-
 
 const styles = (theme) => ({
     homeBar: {

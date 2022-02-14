@@ -1,8 +1,9 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
+import loadable from '@loadable/component';
 
-import LoadingMessage from '../common/LoadingMessage';
+const LoadingMessage = loadable(() => import('./LoadingMessage' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 
 const PrivateRoute = ({component: Component, auth, ...rest }) => (
     <Route {...rest}

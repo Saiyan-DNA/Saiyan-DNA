@@ -3,16 +3,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Button, Container, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-import { Button, Container, Grid, Typography } from '@mui/material';
+const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Common" */));
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Common" */));
 
-const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */));
-const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */));
-
-import AccountList from './AccountList';
-import BankingList from './BankingList';
-import CreditList from './CreditList';
+const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
+const BankingList = loadable(() => import('./BankingList' /* webpackChunkName: "Financial" */));
+const CreditList = loadable(() => import('./CreditList' /* webpackChunkName: "Financial" */));
 
 import { getAccounts, clearAccount } from '../../actions/accounts';
 import { clearTransactions } from '../../actions/transactions';

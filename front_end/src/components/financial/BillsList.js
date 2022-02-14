@@ -1,12 +1,11 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Container, Grid } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-import { Container, Grid } from '@mui/material'
 
 const MonthSelector = loadable(() => import('../common/MonthSelector' /* webpackChunkName: "Common" */ ));
 

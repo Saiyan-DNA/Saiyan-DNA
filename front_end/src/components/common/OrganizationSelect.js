@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
@@ -44,25 +44,29 @@ class OrganizationSelect extends React.Component {
 
         var filteredOrganizations = !typeFilter ? organizations : organizations.filter(org => org.organization_type.label === typeFilter);
 
-        return (
-            <Grid container spacing={0} alignItems="flex-end">
-                <Grid item xs>
-                    <Autocomplete id={id} name={name}
-                        options={filteredOrganizations ? filteredOrganizations.sort((a, b) => a.name.localeCompare(b.name)) : []}
-                        getOptionLabel={(option) => option.name} isOptionEqualToValue={(option, value) => this.organizationSelected(option, value)}
-                        value={selection} onBlur={onBlur} onChange={onChange} fullWidth={true} 
-                        renderInput={(params) => <TextField {...params} label={label || "Organization"} variant={variant || "standard"} required={required} />}>
-                    </Autocomplete>
-                </Grid>
-                {allowAdd && 
-                    <Grid item xs={"auto"}>
-                        <IconButton aria-label="add" onClick={() => history.push("/manage/organizationdetail")} size="small" variant="outlined" color="success">
-                            <AddIcon fontSize="small" />
-                        </IconButton>
+        if ( Autocomplete && TextField) {
+            return (
+                <Grid container spacing={0} alignItems="flex-end">
+                    <Grid item xs>
+                        <Autocomplete id={id} name={name}
+                            options={filteredOrganizations ? filteredOrganizations.sort((a, b) => a.name.localeCompare(b.name)) : []}
+                            getOptionLabel={(option) => option.name} isOptionEqualToValue={(option, value) => this.organizationSelected(option, value)}
+                            value={selection} onBlur={onBlur} onChange={onChange} fullWidth={true} 
+                            renderInput={(params) => <TextField {...params} label={label || "Organization"} variant={variant || "standard"} required={required} />}>
+                        </Autocomplete>
                     </Grid>
-                }
-            </Grid>
-        )
+                    {allowAdd && 
+                        <Grid item xs={"auto"}>
+                            <IconButton aria-label="add" onClick={() => history.push("/manage/organizationdetail")} size="small" variant="outlined" color="success">
+                                <AddIcon fontSize="small" />
+                            </IconButton>
+                        </Grid>
+                    }
+                </Grid>
+            )
+        }
+
+        return <div>&nbsp;</div>
     }
 }
 

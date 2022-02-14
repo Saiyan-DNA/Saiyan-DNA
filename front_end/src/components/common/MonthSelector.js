@@ -1,11 +1,9 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { withStyles } from '@mui/styles';
-
 import { MenuItem, Select } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 import { changeMonth } from '../../actions/navigation';
 
@@ -98,5 +96,5 @@ const mapDispatchToProps = {
     changeMonth,
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
-    (MonthSelector)));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
+    (MonthSelector));

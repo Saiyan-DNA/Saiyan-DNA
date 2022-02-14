@@ -4,16 +4,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
+import { Collapse, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, SwipeableDrawer } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
-const Collapse = loadable(() => import('@mui/material/Collapse' /* webpackChunkName: "Layout" */));
-const List = loadable(() => import('@mui/material/List' /* webpackChunkName: "Layout" */));
-const ListItem = loadable(() => import('@mui/material/ListItem' /* webpackChunkName: "Layout" */));
-const ListItemIcon = loadable(() => import('@mui/material/ListItemIcon' /* webpackChunkName: "Layout" */));
-const ListItemText = loadable(() => import('@mui/material/ListItemText' /* webpackChunkName: "Layout" */));
-const Menu = loadable(() => import('@mui/material/Menu' /* webpackChunkName: "Navigation" */));
-const MenuItem = loadable(() => import('@mui/material/MenuItem' /* webpackChunkName: "Navigation" */));
-const SwipeableDrawer = loadable(() => import('@mui/material/SwipeableDrawer' /* webpackChunkName: "Navigation" */));
 
 const HomeSharp = loadable(() => import('@mui/icons-material/HomeSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 const AccountBalanceSharp = loadable(() => import('@mui/icons-material/AccountBalanceSharp' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});

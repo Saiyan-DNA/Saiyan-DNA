@@ -1,7 +1,7 @@
 import React from 'react';
+
 import { LinearProgress, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
-
 
 const styles = theme => ({
     passwordStrengthMeter: { marginTop: "5px" }

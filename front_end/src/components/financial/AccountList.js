@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -7,12 +7,11 @@ import loadable from '@loadable/component';
 import { Button, Divider, LinearProgress, Link, List, ListItem, ListItemButton, Grid, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
-const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-
 const ArrowUp = loadable(() => import('@mui/icons-material/KeyboardArrowUp' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 const ArrowDown = loadable(() => import('@mui/icons-material/KeyboardArrowDown' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 
-import { CurrencyFormat } from '../common/NumberFormats'
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 
 import { getAccount } from '../../actions/accounts';
 

@@ -5,7 +5,7 @@ import createTheme from '@mui/material/styles/createTheme';
 
 import Button from '@mui/material/Button';
 
-const ThemeProvider = loadable(() => import('@mui/material/styles/ThemeProvider' /* webpackChunkName: "Layout" */));import { withStyles } from '@mui/styles';
+const ThemeProvider = loadable(() => import('@mui/material/styles/ThemeProvider' /* webpackChunkName: "Common" */));import { withStyles } from '@mui/styles';
 
 const theme = createTheme({
     typography: {

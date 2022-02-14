@@ -3,9 +3,9 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
-import zxcvbn from 'zxcvbn';
+// import zxcvbn from 'zxcvbn';
 
-import { Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
+import { Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material'
 import { withStyles } from '@mui/styles';
 
 const PasswordStrengthMeter = loadable(() => import('./PasswordStrengthMeter' /*webpackChunkName: "Common" */));
@@ -112,9 +112,9 @@ class RegisterUser extends React.Component {
         }
         
         // Password Validation - Validate Password Strength (using zxcvbn)
-        if (zxcvbn(userInfo.password).score < 3) {
-            isValid = false;
-        }
+        //if (zxcvbn(userInfo.password).score < 3) {
+        //    isValid = false;
+        //}
 
         return isValid;
     }
@@ -211,7 +211,7 @@ class RegisterUser extends React.Component {
                                                 inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
                                                 autoComplete="new-password" value={userInfo.password} onChange={this.onChange} label="Password" fullWidth required />
                                             { userInfo.password &&
-                                                <PasswordStrengthMeter score={zxcvbn(userInfo.password).score} />    
+                                                <PasswordStrengthMeter score={/*zxcvbn(userInfo.password).score*/ 100} />    
                                             }
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
