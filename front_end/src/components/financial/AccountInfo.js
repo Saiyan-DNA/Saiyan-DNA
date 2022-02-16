@@ -15,6 +15,7 @@ const AccountTypeSelect = loadable(() => import('./controls/AccountTypeSelect' /
 const DeleteAccountModal = loadable(() => import('./DeleteAccountModal' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
 
 import { createAccount, updateAccount } from '../../actions/accounts';
+import { userHasPermission} from '../../actions/auth';
 import { setTitle } from '../../actions/navigation';
 
 const styles = theme => ({
@@ -37,7 +38,8 @@ class AccountInfo extends React.Component {
         interestRate: "",
         owner: null,
         isValid: false,
-        deleteModalOpen: false
+        deleteModalOpen: false,
+        balanceEditable: false,
     }
 
     static propTypes = {
@@ -45,11 +47,14 @@ class AccountInfo extends React.Component {
         currentUser: PropTypes.object.isRequired,
         createAccount: PropTypes.func.isRequired,
         updateAccount: PropTypes.func.isRequired,
+        userHasPermission: PropTypes.func.isRequired,
         setTitle: PropTypes.func.isRequired
     }
 
     componentDidMount() {
-        const { setTitle, account } = this.props;
+        const { setTitle, account, userHasPermission } = this.props;
+
+        var balanceEditable = userHasPermission('can_edit_balance');
 
         if(account.id) {
             setTitle("Edit Account");
@@ -63,6 +68,7 @@ class AccountInfo extends React.Component {
                 creditLimit: account.credit_limit,
                 interestRate: account.interest_rate,
                 owner: account.owner,
+                balanceEditable: balanceEditable
             })
         } else {
             setTitle("Add Account");
@@ -135,7 +141,7 @@ class AccountInfo extends React.Component {
 
     render() {
         const { classes, history } = this.props;
-        const { id, accountName, accountType, organization, currentBalance, isValid, deleteModalOpen } = this.state;
+        const { id, accountName, accountType, organization, currentBalance, isValid, deleteModalOpen, balanceEditable } = this.state;
 
         return (
             <Container>
@@ -166,14 +172,14 @@ class AccountInfo extends React.Component {
                                                     typeFilter="Financial" label="Financial Institution" variant="standard" required={true} history={this.props.history}
                                                     onChange={(event, value) => this.onChange({target: {name: "organization", value: value}})} />
                                             </Grid>
-                                            <Grid item xs={6}>
-                                                <TextField id="currentBalance" name="currentBalance"
-                                                    label="Balance" variant="standard"
-                                                    className={classes.numberInput}
-                                                    onChange={this.onChange.bind(this)} 
-                                                    value={currentBalance} 
-                                                    fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/> 
-                                            </Grid>
+                                            { balanceEditable &&
+                                                <Grid item xs={6}>
+                                                    <TextField id="currentBalance" name="currentBalance"
+                                                        label="Balance" variant="standard" className={classes.numberInput}
+                                                        value={currentBalance} onChange={this.onChange.bind(this)} 
+                                                        fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/> 
+                                                </Grid>
+                                            }
                                             { accountType && ['CR', 'LN'].includes(accountType.value) ? this.creditFields(classes) : null }
                                         </Grid>
                                 </CardContent>
@@ -206,6 +212,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     createAccount,
     updateAccount,
+    userHasPermission,
     setTitle,
 }
 
