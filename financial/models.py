@@ -71,6 +71,7 @@ class Account(models.Model):
 
     class Meta:
         ordering = ['organization', 'account_type', 'name']
+        permissions = [('can_edit_balance', 'Can edit account balance')]
 
 
 class Asset(models.Model):
