@@ -5,9 +5,20 @@ Django Models for the Accounting Application Data
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.forms.models import model_to_dict
 
 from core.models import Home, Organization, Person
+
+
+def clear_cache_item(key):
+    '''
+    Clear a cache item
+    '''
+    try:
+        cache.delete(key)
+    except KeyError:
+        print(f"Warning: Cannot delete cached data '{key}'. It could not be found.")
 
 
 class Account(models.Model):
@@ -36,6 +47,27 @@ class Account(models.Model):
     def __str__(self):
         balance_string = "${:,.2f}".format(self.current_balance)
         return '{} - {} ({})'.format(self.organization.name, self.name, balance_string)
+
+    def update_balance(self, transaction_type, amount):
+        '''
+        Update the current balance of the account.
+        '''
+
+        # Debit transactions
+        if transaction_type == 'DBT' and self.account_type in ('CK', 'SV', 'IV'):
+            self.current_balance -= amount
+        elif transaction_type == 'DBT' and self.account_type in ('CR', 'LN', 'BL'):
+            self.current_balance += amount
+        elif transaction_type == 'CRD' and self.account_type in ('CK', 'SV', 'IV'):    
+            self.current_balance += amount
+        elif transaction_type == 'CRD' and self.account_type in ('CR', 'LN', 'BL'):
+            self.current_balance -= amount
+
+        # Save the update to the account.
+        self.save()
+
+        # Clear the Accounts Cache for the user to ensure updated account balances are reported.
+        clear_cache_item(f"accounts_{self.owner.id}")
 
     class Meta:
         ordering = ['organization', 'account_type', 'name']
@@ -411,6 +443,51 @@ class TransactionLog(models.Model):
     def __str__(self):
         return '{} - {} ({})'.format(self.summary, self.amount, self.account)
 
+    def __init__(self, *args, **kwargs):
+        super(TransactionLog, self).__init__(*args, **kwargs)
+        self.__original_amount = self.amount
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        '''
+        On save of any transactions, update the associated account balance.
+
+        Notes:
+            - Deletions are better handled through Signals per django docs.
+            - Updates to account balances for newly created transfers are handled 
+              by the TransferDetail model's save() method
+        '''
+
+        account = Account.objects.get(id=self.account_id)
+        
+        if self.id is None and self.transaction_type != 'TRN':
+            # Non-Transfer Type transaction Transaction Added
+            account.update_balance(transaction_type=self.transaction_type, amount=self.amount)
+        else:
+            if self.amount != self.__original_amount:
+                delta = self.amount - self.__original_amount
+
+                # Debit and Credit Transactions
+                if self.transaction_type != 'TRN':
+                    account.update_balance(transaction_type=self.transaction_type, amount=delta)
+                
+                # Transfer Transactions
+                if self.transaction_type == 'TRN':
+                    transfer_detail = TransferDetail.objects.filter(Q(transfer_credit_transaction=self.id) | Q(transfer_debit_transaction=self.id))
+                    if (transfer_detail.__len__() != 1):
+                        print("Could not find the transfer detail for this transaction.")
+                        return False
+
+                    transfer_debit = transfer_detail.first().transfer_debit_transaction
+                    transfer_credit = transfer_detail.first().transfer_credit_transaction
+
+                    if self.id == transfer_debit.id:    
+                        account.update_balance(transaction_type='DBT', amount=delta)
+                    elif self.id == transfer_credit.id:
+                        account.update_balance(transaction_type='CRD', amount=delta)
+
+        super(TransactionLog, self).save(force_insert, force_update, *args, **kwargs)
+        self.__original_amount = self.amount
+
     class Meta:
         verbose_name = "Transaction Log"
         ordering = ['account', '-transaction_date']
@@ -427,6 +504,31 @@ class TransferDetail(models.Model):
 
     def __str__(self):
         return '{} - {} ({})'.format(self.transfer_debit_transaction.account, self.transfer_credit_transaction.account, self.transfer_credit_transaction.amount)
+
+    def __init__(self, *args, **kwargs):
+        super(TransferDetail, self).__init__(*args, **kwargs)
+        self.__original_debit = self.transfer_debit_transaction
+        self.__original_credit = self.transfer_credit_transaction
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        '''
+        On save of any new transfer records, update the associated account balances.
+        Note - deletions are better handled through Signals per django docs.
+        '''
+
+        if self.id is None:
+            transfer_debit = self.transfer_debit_transaction
+            debit_account = Account.objects.get(id=transfer_debit.account_id)
+            transfer_credit = self.transfer_credit_transaction
+            credit_account = Account.objects.get(id=transfer_credit.account_id)
+
+            debit_account.update_balance(transaction_type='DBT', amount=transfer_debit.amount)
+            credit_account.update_balance(transaction_type='CRD', amount=transfer_credit.amount)
+        else:
+            # Transfer Transaction was modified.
+            print('Modified transfer transaction. Not yet properly handled!')
+
+        super(TransferDetail, self).save(force_insert, force_update, *args, **kwargs)        
 
     class Meta:
         verbose_name = "Transfer Detail"

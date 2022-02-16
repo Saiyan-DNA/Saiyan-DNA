@@ -36,19 +36,18 @@ class AccountSelect extends React.Component {
     }
 
     render() {
-        const { id, name, label, accounts, onChange, onBlur, selection, disabledAccount } = this.props;
+        const { id, name, label, accounts, onChange, onBlur, selection, disabledAccount, disabled } = this.props;
 
         var filteredAccounts = accounts.filter(acct => acct.account_type != "BL");
         
         if (disabledAccount) filteredAccounts = filteredAccounts.filter(acct => acct.id != disabledAccount.id);
         
         return (
-            <Autocomplete id={id} name={name}
-                fullWidth={true} 
+            <Autocomplete id={id} name={name} 
                 options={filteredAccounts ? filteredAccounts.sort((a, b) => a.name.localeCompare(b.name)) : []}
                 getOptionLabel={(option) => option.name}
                 isOptionEqualToValue={(option, value) => this.accountSelected(option, value)}
-                value={selection} onBlur={onBlur}
+                value={selection} onBlur={onBlur} fullWidth={true} disabled={disabled}
                 onChange={(event, value) => onChange({target: {name: name, value: value}})}                
                 renderInput={(params) => <TextField {...params} label={label || "Account"} variant="standard" />}>
             </Autocomplete>

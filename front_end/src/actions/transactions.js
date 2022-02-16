@@ -5,6 +5,7 @@ import { TRANSACTIONS_LOADING, TRANSACTIONS_LOADED, CLEAR_TRANSACTIONS } from '.
 import { CREATE_TRANSACTION, UPDATE_TRANSACTION, DELETE_TRANSACTION } from './types';
 
 import { createMessage } from './messages';
+import { getAccounts, getAccount } from './accounts';
 
 // GET ACCOUNT Transactions
 export const getTransactions = (acct_id, startDate, endDate) => (dispatch, getState) => {
@@ -69,7 +70,12 @@ export const createTransaction = (transactionDetails, transferDetail) => (dispat
         axios.post('/api/financial/transaction/', JSON.stringify(transactionDetails), config)
         .then(res => {
             dispatch({type: CREATE_TRANSACTION, payload: res.data});
+
+            // Refresh Accounts to reflect the change in balance
+            dispatch(getAccounts());
+            dispatch(getAccount(account.id));
             dispatch(getTransactions(account.id));
+
             dispatch(createMessage({type: "success", title: "Added Transaction"}));
         }).catch(err => {
             dispatch(createMessage({type: "error", title: "Failed to Add Transaction", detail: err}));
@@ -83,7 +89,12 @@ export const createTransaction = (transactionDetails, transferDetail) => (dispat
         axios.post('/api/financial/transfer/', JSON.stringify({transaction: transactionDetails, transfer_detail: transferDetail}), config)
         .then(res => {
             dispatch({type: CREATE_TRANSACTION, payload: res.data});
+            
+            // Refresh Accounts to reflect the change in balance
+            dispatch(getAccounts());
+            dispatch(getAccount(account.id));
             dispatch(getTransactions(account.id));
+
             dispatch(createMessage({type: "success", title: "Added Transfer Transaction"}));
         }).catch(err => {
             dispatch(createMessage({type: "error", title: "Failed to Add Transaction", detail: err}));
@@ -106,7 +117,12 @@ export const updateTransaction = (transactionDetails, transferDetail) => (dispat
         axios.put(`/api/financial/transaction/${transactionDetails.id}/`, JSON.stringify(transactionDetails), config)
         .then(res => {
             dispatch({type: UPDATE_TRANSACTION, payload: res.data});
+            
+            // Refresh Accounts to reflect the change in balance
+            dispatch(getAccounts());
+            dispatch(getAccount(account.id));
             dispatch(getTransactions(account.id));
+
             dispatch(createMessage({type: "success", title: "Updated Transaction"}));
         }).catch(err => {
             dispatch(createMessage({type: "error", title: "Failed to Update Transaction", detail: err}));
@@ -117,7 +133,12 @@ export const updateTransaction = (transactionDetails, transferDetail) => (dispat
         axios.put('/api/financial/transfer/', JSON.stringify({transaction: transactionDetails, transfer_detail: transferDetail}), config)
         .then(res => {
             dispatch({type: CREATE_TRANSACTION, payload: res.data});
+            
+            // Refresh Accounts to reflect the change in balance
+            dispatch(getAccounts());
+            dispatch(getAccount(account.id));
             dispatch(getTransactions(account.id));
+
             dispatch(createMessage({type: "success", title: "Updated Transfer Transaction"}));
         }).catch(err => {
             dispatch(createMessage({type: "error", title: "Failed to Update Transaction", detail: err}));
@@ -128,6 +149,7 @@ export const updateTransaction = (transactionDetails, transferDetail) => (dispat
 // DELETE_TRANSACTION
 export const deleteTransaction = (transaction) => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
+    const account = getState().accounts.currentAccount;
 
     const config = {
         headers: {
@@ -141,6 +163,11 @@ export const deleteTransaction = (transaction) => (dispatch, getState) => {
         axios.delete(`/api/financial/transfer/?transaction_id=${transaction.transactionId}`, config)
         .then(res => {
             dispatch({type: DELETE_TRANSACTION, payload: transaction.transactionId});
+
+            // Refresh Accounts to reflect the change in balance
+            dispatch(getAccounts());
+            dispatch(getAccount(account.id));
+
             dispatch(createMessage({type: "success", title: "Transaction Deleted"}));
         }).catch(err => dispatch(createMessage({type: "error", title: "Unable to Delete Transfer!", detail: err})));
         return;
@@ -149,10 +176,11 @@ export const deleteTransaction = (transaction) => (dispatch, getState) => {
     // Use the Transaction API if the transaction is of any other type (Credit, Debit)
     axios.delete(`/api/financial/transaction/${transaction.transactionId}/`, config)
     .then(res => {
-        dispatch({
-            type: DELETE_TRANSACTION,
-            payload: transaction.transactionId
-        });
+        dispatch({type: DELETE_TRANSACTION, payload: transaction.transactionId});
+
+        // Refresh Accounts to reflect the change in balance
+        dispatch(getAccounts());
+        dispatch(getAccount(account.id));
 
         dispatch(createMessage({type: "success", title: "Transaction Deleted"}));
         return;

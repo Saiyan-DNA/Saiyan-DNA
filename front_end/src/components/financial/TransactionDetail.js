@@ -302,12 +302,14 @@ class TransactionDetail extends React.Component {
                         <Grid item xs={12} sm={12}>
                             <AccountSelect id="transferFromAccount" name="transferFromAccount"
                                 label="Transfer From" selection={transaction.transferFromAccount} 
-                                onChange={this.onChange} onBlur={this.validateTransaction} />       
+                                onChange={this.onChange} onBlur={this.validateTransaction}
+                                disabled={transaction.transactionId ? true : false} />       
                         </Grid>
                         <Grid item xs={12} sm={12}>
                             <AccountSelect id="transferToAccount" name="transferToAccount"
                                 label="Transfer To" selection={transaction.transferToAccount}
-                                onChange={this.onChange} onBlur={this.validateTransaction} />
+                                onChange={this.onChange} onBlur={this.validateTransaction}
+                                disabled={transaction.transactionId ? true : false} />
                         </Grid>
                     </>
                 }

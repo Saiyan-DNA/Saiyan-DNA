@@ -469,7 +469,6 @@ class TransferAPIView(APIView):
 
         transfer_out_transaction["account"] = request.data["transfer_detail"]["transfer_from"]
         transfer_in_transaction["account"] = request.data["transfer_detail"]["transfer_to"]
-
         
         transfer_detail = TransferDetail.objects.filter(Q(transfer_credit_transaction=transaction_id) | Q(transfer_debit_transaction=transaction_id))
 
