@@ -4,7 +4,7 @@ import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { Button, Container, Divider, Grid, Link, Menu, MenuItem, Typography } from '@mui/material';
+import { Button, Container, Divider, Grid, Link, Menu, MenuItem, Select, Typography } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
 const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
@@ -12,12 +12,13 @@ const PercentageFormat = loadable(() => import('../common/PercentageFormat' /* w
 const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const DateRangeSelector = loadable(() => import('../common/DateRangeSelector' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const TransactionList = loadable(() => import ('./TransactionList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>})
 const TransactionModal = loadable(() => import('./TransactionModal' /* webpackChunkName: "Financial" */));
 
 import { setTitle } from '../../actions/navigation';
 import { getAccount } from '../../actions/accounts';
-import { getTransactions, clearTransaction, editTransaction } from '../../actions/transactions';
+import { clearTransaction, editTransaction } from '../../actions/transactions';
 import { getFinancialCategories } from '../../actions/financial_categories';
 
 const styles = theme => ({
@@ -78,8 +79,7 @@ class AccountOverview extends React.Component {
     state = {
         actionMenuOpen: false,
         menuAnchor: null,
-        startDate: new Date(),
-        endDate: new Date()
+        filterType: "stmt",
     };
 
     static propTypes = {
@@ -90,7 +90,6 @@ class AccountOverview extends React.Component {
         account: PropTypes.object.isRequired,
         currentUser: PropTypes.object.isRequired,
         getAccount: PropTypes.func.isRequired,
-        getTransactions: PropTypes.func.isRequired,
         transactionsLoading: PropTypes.bool.isRequired,
         transactionsLoaded: PropTypes.bool.isRequired,
     }
@@ -99,20 +98,6 @@ class AccountOverview extends React.Component {
         const { setTitle } = this.props;
         
         setTitle("Account Overview");
-        this.loadAccount();
-    }
-
-    componentDidUpdate() {
-        this.loadAccount();
-    }
-
-    loadAccount() {
-        const { account, getTransactions, transactionsLoading, transactionsLoaded } = this.props;
-        const { startDate, endDate } = this.state;
-
-        if (account.id && !transactionsLoading && !transactionsLoaded) {
-            getTransactions(account.id, startDate, endDate);
-        }
     }
 
     addTransaction = () => {
@@ -132,6 +117,10 @@ class AccountOverview extends React.Component {
         this.setState({actionMenuOpen: true, menuAnchor: event.currentTarget});
     }
 
+    changeFilter = (event) => {
+        this.setState({filterType: event.target.value});
+    }
+
     closeMenu = () => {
         this.setState({actionMenuOpen: false});
     }
@@ -139,11 +128,6 @@ class AccountOverview extends React.Component {
     goToBankingURL(url, e) {
         e.stopPropagation();
         window.open(url,"target=_blank");
-    }
-
-    goToList = (e) => {
-        e.stopPropagation();
-        this.props.history.push("/financial/accounts")
     }
 
     creditInfo() {
@@ -169,8 +153,8 @@ class AccountOverview extends React.Component {
     }
 
     render() {
-        const { classes, account, accountLoading, accountLoaded, accountLoadError, history, editTransaction, isMobile } = this.props;
-        const { actionMenuOpen, menuAnchor } = this.state;
+        const { classes, account, accountLoading, accountLoaded, accountLoadError, history, isMobile } = this.props;
+        const { actionMenuOpen, filterType, menuAnchor } = this.state;
 
         if (accountLoadError) return <Redirect to="/financial/accounts" />
         
@@ -180,7 +164,7 @@ class AccountOverview extends React.Component {
                     <Grid item container xs={12} justifyContent="space-between">
                         <Grid item xs={6} align={"left"} mt={2} className={classes.hideForPrint}>
                             <Button variant="outlined" color="primary" size="small" 
-                                onClick={this.goToList}>Back</Button>
+                                onClick={() => history.push("/financial/accounts")}>Back</Button>
                         </Grid>
                         <Grid item xs={6} align={"right"} mt={2} className={classes.hideForPrint}>
                             <Button id="actionButton" variant="contained" color="primary" size="small"
@@ -205,12 +189,36 @@ class AccountOverview extends React.Component {
                                 </Grid>
                             </Grid>
                             <SummaryCard headerTitle={account.name} headerValue={account.current_balance}>                                
-                                <Grid container spacing={3} justifyContent="flex-end" style={{marginBottom: "0.5em"}}>
-                                    <Grid item className={classes.hideForPrint}>
+                                <Grid container spacing={2} justifyContent="space-between" style={{marginBottom: "0.5em"}}>
+                                    <Grid item xs>
+                                        <Select value={filterType} onChange={this.changeFilter} variant="outlined" size="small"
+                                            style={{width: "100%"}}>
+                                            <MenuItem value="stmt">Statement Period</MenuItem>
+                                            <MenuItem value="range">Date Range</MenuItem>
+                                        </Select>
+                                    </Grid>
+                                    { !isMobile && <>
+                                        <Grid item xs>
+                                            { filterType === "stmt" ? <div>&nbsp;</div> :
+                                                <DateRangeSelector />
+                                            }
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            &nbsp;
+                                        </Grid>
+                                    </>}
+                                    <Grid item xs={"auto"} className={classes.hideForPrint}>
                                         <Button id="addTransactionButton" variant="contained" color="primary" size="small"
                                             aria-controls="addTransactionButton" aria-haspopup={false}
                                             onClick={this.addTransaction}>Add Transaction</Button>
                                     </Grid>
+                                    { isMobile && 
+                                        <Grid item xs={12}>
+                                            { filterType === "stmt" ? <div>&nbsp;</div> :
+                                                <DateRangeSelector />
+                                            }
+                                        </Grid>
+                                    }
                                 </Grid>
                                 { account.id && account.account_type.value === 'CR' && this.creditInfo()}
                                 { account.id ? <TransactionList /> : null }
@@ -255,7 +263,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     setTitle,
     getAccount,
-    getTransactions,
     getFinancialCategories,
     clearTransaction,
     editTransaction

@@ -1,11 +1,15 @@
 import { SET_TITLE, USER_NAV, USER_HOME, TOGGLE_HOME_MODAL, TOGGLE_TIMEOUT_MODAL } from '../actions/types.js';
-import { CHANGE_MONTH, CLEAR_HOME } from '../actions/types.js';
+import { CHANGE_DATE_RANGE, CHANGE_MONTH, CLEAR_HOME } from '../actions/types.js';
+
+import { addDays } from '../utils/dateutils';
 
 const initialState = {
     headerTitle: "Home Central",
     currentPath: localStorage.getItem("path") || "/",
     selectedHome: {},
     selectedMonth: localStorage.getItem("selectedMonth") || "",
+    selectedStartDate: addDays(new Date(), -7),
+    selectedEndDate: new Date(),
     homeModalOpen: false,
     timeoutModalOpen: false,
 }
@@ -28,6 +32,12 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 selectedHome: action.payload
+            };
+        case CHANGE_DATE_RANGE:
+            return {
+                ...state,
+                selectedStartDate: action.payload.startDate,
+                selectedEndDate: action.payload.endDate
             };
         case CHANGE_MONTH:
             localStorage.setItem("selectedMonth", action.payload, {expires: 1});
