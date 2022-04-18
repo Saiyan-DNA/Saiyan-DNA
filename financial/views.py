@@ -1,6 +1,7 @@
 '''
 Views for the Accounting Application
 '''
+
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import Q
@@ -368,22 +369,17 @@ class TransactionListView(viewsets.ModelViewSet):
         filtered_set = []
 
         if (self.request.method in ['GET'] and account_id):
-            cache_key = f"transactions_{account_id}"
 
-            start_date = self.request.query_params.get('startDate')
-            end_date = self.request.query_params.get('endDate')
+            start_date = self.request.query_params.get('start_date')
+            end_date = self.request.query_params.get('end_date')
+            
+            if (start_date and end_date):
+                return TransactionLog.objects.filter(owner=self.request.user,account=account_id, transaction_date__range=[start_date, end_date])
 
-            transactions = cache.get(cache_key)
-
-            if (transactions):
-                filtered_set = transactions
-            else:
-                filtered_set = TransactionLog.objects.filter(owner=self.request.user, account=account_id)
-                cache.set(cache_key, filtered_set)
+            return TransactionLog.objects.filter(owner=self.request.user, account=account_id)
         else:
-            filtered_set = TransactionLog.objects.filter(owner=self.request.user)
-                 
-        return filtered_set
+            return TransactionLog.objects.filter(owner=self.request.user)
+
 
     def destroy(self, request, *args, **kwargs):
         try:

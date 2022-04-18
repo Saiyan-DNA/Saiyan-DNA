@@ -14,7 +14,7 @@ const ArrowDown = loadable(() => import('@mui/icons-material/KeyboardArrowDown' 
 
 const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
-import { editTransaction } from '../../actions/transactions';
+import { editTransaction, getTransactions } from '../../actions/transactions';
 
 const styles = theme => ({
     transactionSummary: {
@@ -50,15 +50,40 @@ const styles = theme => ({
 
 class TransactionList extends React.Component {
     state = {
+        startDate: null,
+        endDate: null,
         transactionsShown: 10
     }
 
     static propTypes = {
         account: PropTypes.object.isRequired,
         editTransaction: PropTypes.func.isRequired,
+        getTransactions: PropTypes.func.isRequired,
         transactionsLoading: PropTypes.bool.isRequired,
         transactionsLoaded: PropTypes.bool.isRequired,
+        startDate: PropTypes.object.isRequired,
+        endDate: PropTypes.object.isRequired,
         transactions: PropTypes.array
+    }
+
+    componentDidMount() {
+        const { account, transactionsLoaded, transactionsLoading, getTransactions } = this.props;
+
+        if (account.id && !transactionsLoaded && !transactionsLoading) {
+            getTransactions(account.id);
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        const prevStartDate = prevProps.startDate;
+        const prevEndDate = prevProps.endDate;
+
+        const { startDate, endDate } = this.props;
+
+        // If Date Range has changed, reload transactions
+        if (prevStartDate !== startDate || prevEndDate !== endDate) {
+            this.loadTransactions();
+        }
     }
 
     editTransaction = (trns) => {
@@ -70,6 +95,14 @@ class TransactionList extends React.Component {
             history.push("/financial/transaction");
         }
 
+    }
+
+    loadTransactions() {
+        const { account, transactionsLoaded, transactionsLoading, getTransactions } = this.props;
+
+        if (account.id && !transactionsLoading) {
+            getTransactions(account.id);
+        }
     }
 
     dynamicSummary = (trns) => {
@@ -196,9 +229,9 @@ class TransactionList extends React.Component {
                         </ListItem>
                     )}
                 </List>
-            );
-            
+            );            
         }
+        
         return (
             <Typography variant="body1" className={classes.emptyMessage}>No transactions available</Typography>
         );
@@ -209,12 +242,15 @@ const mapStateToProps = state => ({
     account: state.accounts.currentAccount,
     transactionsLoading: state.transactions.transactionsLoading,
     transactionsLoaded: state.transactions.transactionsLoaded,
+    startDate: state.navigation.selectedStartDate,
+    endDate: state.navigation.selectedEndDate,
     transactions: state.transactions.transactions,
     isMobile: state.auth.isMobile
 });
 
 const mapDispatchToProps = {
-    editTransaction
+    editTransaction,
+    getTransactions,
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})

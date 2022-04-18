@@ -8,9 +8,16 @@ import { createMessage } from './messages';
 import { getAccounts, getAccount } from './accounts';
 
 // GET ACCOUNT Transactions
-export const getTransactions = (acct_id, startDate, endDate) => (dispatch, getState) => {
+export const getTransactions = (acct_id) => (dispatch, getState) => {
     if (acct_id) {
         const jwt_token = getState().auth.token;
+        var start_date = getState().navigation.selectedStartDate;
+        var end_date = getState().navigation.selectedEndDate
+
+        start_date.setHours(0,0,0,0);
+        end_date.setHours(23,59,59,999);
+        start_date = start_date.toISOString();
+        end_date = end_date.toISOString();
 
         dispatch({type: TRANSACTIONS_LOADING});
 
@@ -20,7 +27,7 @@ export const getTransactions = (acct_id, startDate, endDate) => (dispatch, getSt
             }
         };
 
-        axios.get(`/api/financial/transaction/?acct_id=${acct_id}`, config)
+        axios.get(`/api/financial/transaction/?acct_id=${acct_id}&start_date=${start_date}&end_date=${end_date}`, config)
         .then(res => {
             dispatch({
                 type: TRANSACTIONS_LOADED,

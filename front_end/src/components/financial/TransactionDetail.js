@@ -69,10 +69,13 @@ class TransactionDetail extends React.Component {
         
         // Apply transaction details to component state for potential edit by the end-user.
         if (transaction && transaction.id != localTransaction.transactionId) {
+            var transactionDate = new Date(transaction.transaction_date)
+            transactionDate.setHours(0,0,0,0);
+
             if (transaction.id) {
                 var transactionDetail = {
                     transactionId: transaction.id,
-                    transactionDate: new Date(transaction.transaction_date),
+                    transactionDate: transactionDate,
                     transactionType: transaction.transaction_type,
                     transactionSummary: transaction.summary, 
                     transactionDescription: transaction.description,
@@ -102,11 +105,14 @@ class TransactionDetail extends React.Component {
     }
 
     resetState = () => {
+        var today = new Date();
+        today.setHours(0,0,0,0);
+
         this.setState({
             transferDetailsVisible: false,
             transaction: {
                 transactionId: null,
-                transactionDate: new Date(),
+                transactionDate: today,
                 transactionType: null,
                 transactionSummary: "",
                 transactionDescription: "",
@@ -279,9 +285,9 @@ class TransactionDetail extends React.Component {
                 </Grid>
                 <Grid item xs={6} sm={6}>
                     <TextField id="transactionAmount" name="transactionAmount"
-                        label="Amount" className="numberFormat" variant="standard"
-                        onChange={this.onChange} onBlur={this.validateTransaction} className={classes.numberInput}
-                        value={transaction.transactionAmount} fullWidth={true} InputProps={{inputComponent: CurrencyFormat,}}/>                         
+                        label="Amount" variant="standard" className={classes.numberInput}
+                        onChange={this.onChange} onBlur={this.validateTransaction} fullWidth={true}
+                        value={transaction.transactionAmount} InputProps={{inputComponent: CurrencyFormat,}}/>                         
                 </Grid>
                 <Grid item xs={12} sm={12}>
                     <TextField id="transactionSummary" name="transactionSummary" variant="standard"
