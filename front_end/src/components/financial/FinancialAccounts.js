@@ -3,18 +3,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Container, Grid, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */), {fallback: <div>&nbsp;</div>});
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Common" */));
+const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "Common" */));
 
-const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
-const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "General" */), {fallback: <div>&nbsp;</div>});
-const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
-const BankingList = loadable(() => import('./BankingList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
-const CreditList = loadable(() => import('./CreditList' /* webpackChunkName: "Financial" */), {fallback: <div>&nbsp;</div>});
+const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
+const BankingList = loadable(() => import('./BankingList' /* webpackChunkName: "Financial" */));
+const CreditList = loadable(() => import('./CreditList' /* webpackChunkName: "Financial" */));
 
 import { getAccounts, clearAccount } from '../../actions/accounts';
 import { clearTransactions } from '../../actions/transactions';
@@ -128,10 +125,10 @@ class FinancialAccounts extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    bankAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("CK") || acct.account_type.includes("SV")),
-    creditAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("CR")),
-    loanAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("LN")),
-    investmentAccounts: state.accounts.accounts.filter(acct => acct.account_type.includes("IN")),
+    bankAccounts: state.accounts.accounts.filter(acct => acct.account_type.value.includes("CK") || acct.account_type.value.includes("SV")),
+    creditAccounts: state.accounts.accounts.filter(acct => acct.account_type.value.includes("CR")),
+    loanAccounts: state.accounts.accounts.filter(acct => acct.account_type.value.includes("LN")),
+    investmentAccounts: state.accounts.accounts.filter(acct => acct.account_type.value.includes("IN")),
     accountsLoading: state.accounts.accountsLoading,
     accountsLoaded: state.accounts.accountsLoaded,
     accountDeleting: state.accounts.accountDeleting

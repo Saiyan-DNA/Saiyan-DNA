@@ -1,15 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
-
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
+import { Button, Card, CardContent, Container, Grid, List } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 import { setTitle } from '../../actions/navigation';
 

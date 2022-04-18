@@ -3,22 +3,16 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Card, Container, Grid, List, ListItem, ListItemButton, TextField, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
+const ArrowUp = loadable(() => import('@mui/icons-material/KeyboardArrowUp' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
+const ArrowDown = loadable(() => import('@mui/icons-material/KeyboardArrowDown' /* webpackChunkName: "Icons" */), {fallback: <div>&nbsp;</div>});
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material-Layout" */));
-const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material-Input" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+const OrganizationTypeSelect = loadable(() => import('./controls/OrganizationTypeSelect' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
 
 import { setTitle } from '../../actions/navigation';
 import { getOrganizations, getOrganization, clearOrganization } from '../../actions/organizations';
-import OrganizationTypeSelect from './controls/OrganizationTypeSelect';
 
 const styles = theme => ({
     hideForPrint: {
@@ -52,10 +46,6 @@ const styles = theme => ({
 });
 
 class OrganizationsList extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     state = {
         filter: "ALL",
         filteredOrganizations: [],
@@ -133,11 +123,12 @@ class OrganizationsList extends React.Component {
         var { classes } = this.props;
 
         var showMore = numToShow < organizations.length ? true : false;
+        var showLess = numToShow > 10 ? true : false;
 
         return (
             <List>
                 {organizations.slice(0, numToShow).map(org => (
-                    <ListItem key={org.id} button divider onClick={() => {this.actionViewOrganization(org.id)}}>
+                    <ListItemButton key={org.id} divider onClick={() => {this.actionViewOrganization(org.id)}}>
                         <Grid container spacing={0} justifyContent="space-between">
                             <Grid item xs={12}>
                                 <Typography variant="body1">{org.name}</Typography>
@@ -146,14 +137,24 @@ class OrganizationsList extends React.Component {
                                 <Typography variant="caption" color="primary" className={classes.listCaption}>{org.organization_type.label}</Typography>
                             </Grid>
                         </Grid>
-                    </ListItem>
+                    </ListItemButton>
                 ))}
-                { showMore && (
-                    <ListItem key="more" button divider onClick={this.showMore}>
+                { (showLess || showMore) && (
+                    <ListItem disableGutters>
                         <Grid container spacing={0} justifyContent="center">
-                            <Grid item>
-                                <ListItemText primary="Show More..." className={classes.showMore} />
-                            </Grid>
+                            { showLess && 
+                                <Grid item alignItems="center" onClick={this.showLess}>
+                                    <Button color="inherit" fullWidth={true} className={classes.showMore} size="small"
+                                        startIcon={<ArrowUp />} endIcon={<ArrowUp />}>Show Less</Button>
+                                </Grid>
+                            }
+                            { (showLess && showMore) && <Grid item xs={"auto"}><Divider orientation="vertical" light={true} /></Grid> }
+                            { showMore &&
+                                <Grid item alignItems="center" onClick={this.showMore}>
+                                    <Button color="inherit" fullWidth={true} className={classes.showMore} size="small"
+                                        startIcon={<ArrowDown />} endIcon={<ArrowDown />}>Show More</Button>
+                                </Grid>
+                            }
                         </Grid>
                     </ListItem>
                 )}
@@ -164,6 +165,11 @@ class OrganizationsList extends React.Component {
     showMore = () => {
         const { numOrganizations } = this.state;
         this.setState({numOrganizations: numOrganizations + 10});
+    }
+
+    showLess = () => {
+        let newCount = this.state.numOrganizations - 10;
+        this.setState({numOrganizations: newCount < 10 ? 10 : newCount});
     }
 
     searchList = (e) => {
@@ -198,11 +204,11 @@ class OrganizationsList extends React.Component {
     }
 
     actionViewOrganization = (id) => {
-        const { currentOrganization, getOrganization } = this.props;
+        const { currentOrganization, getOrganization, history } = this.props;
 
         if (!currentOrganization || currentOrganization.id != id) {
             getOrganization(id);
-            this.props.history.push("/manage/organizationdetail");
+            history.push("/manage/organizationdetail");
         }
     }
 

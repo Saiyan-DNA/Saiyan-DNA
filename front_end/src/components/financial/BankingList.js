@@ -1,25 +1,17 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
-
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const Link = loadable(() => import('@material-ui/core/Link' /* webpackChunkName: "Material-Navigation" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
+import { Divider, Grid, Link, List, ListItemButton, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 const AccountList = loadable(() => import('./AccountList' /* webpackChunkName: "Financial" */));
-const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "General" */));
-
-import { CurrencyFormat } from '../common/NumberFormats'
+const InfoTile = loadable(() => import('../common/InfoTile' /* webpackChunkName: "Common" */));
+const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 import { getAccount } from '../../actions/accounts';
-import { Divider } from "@material-ui/core";
 
 const styles = theme => ({
     listCardSubHeader: {
@@ -29,11 +21,8 @@ const styles = theme => ({
         paddingTop: "10px"
     },
     accountSummary: {
-        margin: 0,
-        padding: "2px",
-        paddingTop: "8px",
-        paddingBottom: "8px",
-        borderBottom: "0.5px solid #DCDCDC",
+        margin: "0em",
+        padding: "0.5em 0em 0em 0em",
         ['@media print']: {
             paddingTop: "4px",
             paddingBottom: "4px"
@@ -52,7 +41,7 @@ class BankingList extends React.Component {
     }
 
     accountTypeFilter(acct) {
-        return acct.account_type == this;        
+        return acct.account_type.value == this;        
     }
 
     goToBankingURL(url, e) {
@@ -70,9 +59,8 @@ class BankingList extends React.Component {
     accountSummary = (acct, classes) => {
         return (
             <div key={acct.id}>
-                <ListItem button className={classes.accountSummary} 
-                    onClick={() => {this.viewAccount(acct.id)}}>
-                    <Grid container spacing={0} justifyContent="space-between">
+                <ListItemButton divider style={{padding: "0px" }} onClick={() => {this.viewAccount(acct.id)}}>
+                    <Grid container spacing={0} justifyContent="space-between" className={classes.accountSummary} >
                         <Grid container item spacing={0} xs={12} justifyContent="space-between">
                             <Grid item>
                                 <Typography variant="body1">{acct.name}</Typography>
@@ -88,20 +76,20 @@ class BankingList extends React.Component {
                                 <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
                                     {acct.organization.website_url != null ?
                                         <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, acct.organization.website_url)}>{acct.organization.name}</Link> :
-                                        acct.financial_institution.name
+                                        acct.organization.name
                                     }
                                 </Typography>
                             </Grid>
                         </Grid>
                     </Grid>                                
-                </ListItem>
+                </ListItemButton>
             </div> 
         );
     }
 
     bankingOverview = (checkingTotal, savingsTotal) => {
         return (
-            <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em", marginTop: "2px", borderBottom: "0.5px solid #DCDCDC"}}>
+            <Grid container spacing={2} justifyContent={"center"} style={{padding: "0em 0.5em 0.5em 0.5em", marginTop: "2px"}}>
                 <Grid item>
                     <InfoTile title="Checking" content={<CurrencyFormat value={checkingTotal} displayType={'text'} decimalScale={2} />} />
                 </Grid>
@@ -110,6 +98,9 @@ class BankingList extends React.Component {
                 </Grid>
                 <Grid item>
                     <InfoTile title="Savings" content={<CurrencyFormat value={savingsTotal} displayType={'text'} decimalScale={2} />} />
+                </Grid>
+                <Grid item xs={12}>
+                    <Divider light={true} />
                 </Grid>
             </Grid>
         );
@@ -136,18 +127,13 @@ class BankingList extends React.Component {
                             </List>
                         </React.Fragment>
                     }
-                    { !!checkingAccounts.length && !!savingsAccounts.length &&
-                        <React.Fragment>
-                            <Divider light={true} />
-                        </React.Fragment>
-                    }
                     { !!savingsAccounts.length &&
                         <React.Fragment>
-                        <Typography variant="body1" className={classes.listCardSubHeader}>Savings</Typography>
-                        <List>
-                            {savingsAccounts.map(acct => this.accountSummary(acct, classes))}
-                        </List>
-                    </React.Fragment>
+                            <Typography variant="body1" className={classes.listCardSubHeader}>Savings</Typography>
+                            <List>
+                                {savingsAccounts.map(acct => this.accountSummary(acct, classes))}
+                            </List>
+                        </React.Fragment>
                     }
                 </React.Fragment>
             </AccountList>

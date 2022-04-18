@@ -1,10 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+import { Container, Typography } from '@mui/material';
 
 import { setTitle } from '../actions/navigation';
 

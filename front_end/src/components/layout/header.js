@@ -4,20 +4,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { AppBar, Container, IconButton, Toolbar, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const AppBar = loadable(() => import('@material-ui/core/AppBar' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material-Navigation" */));
-const Toolbar = loadable(() => import('@material-ui/core/Toolbar' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const MenuRounded = loadable(() => import('@material-ui/icons/MenuRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
-const PersonRounded = loadable(() => import('@material-ui/icons/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const MenuRounded = loadable(() => import('@mui/icons-material/MenuRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
+const PersonRounded = loadable(() => import('@mui/icons-material/PersonRounded' /* webpackChunkName: "Icons" */), {fallback: <span>&nbsp;</span>});
 
 import { checkTokenExpiration } from '../../actions/auth';
 import { toggleNavMenu, toggleUserMenu } from '../../actions/menu';
-
 
 const styles = (theme) => ({
     homeBar: {
@@ -81,7 +75,7 @@ class Header extends React.Component {
         toggleUserMenu: PropTypes.func.isRequired,
         checkTokenExpiration: PropTypes.func.isRequired,
         headerTitle: PropTypes.string.isRequired,
-        currentHome: PropTypes.object.isRequired,
+        selectedHome: PropTypes.object.isRequired,
         user: PropTypes.object.isRequired,
         userHomes: PropTypes.array.isRequired,
     }
@@ -94,10 +88,10 @@ class Header extends React.Component {
     }
 
     homeSubtitle() {
-        const { classes, currentHome } = this.props;
+        const { classes, selectedHome } = this.props;
 
         return(
-            <Typography variant="caption" className={classes.subTitle} paragraph={false}>{ currentHome.name}</Typography>
+            <Typography variant="caption" className={classes.subTitle} paragraph={false}>{ selectedHome.name}</Typography>
         );
     }
 
@@ -121,7 +115,7 @@ class Header extends React.Component {
     }
 
     render() {
-        const { classes, isAuthenticated, currentHome, headerTitle, toggleNavMenu, toggleUserMenu, user } = this.props;
+        const { classes, isAuthenticated, selectedHome, headerTitle, toggleNavMenu, toggleUserMenu, user } = this.props;
         
         return (
             <React.Fragment>
@@ -135,7 +129,7 @@ class Header extends React.Component {
                         }
                         <Container className={classes.headerText}>
                                 <Typography variant="h5" className={classes.title} paragraph={false}>{headerTitle}</Typography>
-                                {currentHome && user.profile && user.profile.status == "A" ? this.homeSubtitle() : null}
+                                {selectedHome && user.profile && user.profile.status == "A" ? this.homeSubtitle() : null}
                         </Container>                        
                         {!isAuthenticated || (user.profile && user.profile.status != "A") ? null :
                             <IconButton edge="end" className={classes.profileButton} id="userButton" name="userButton" 
@@ -151,7 +145,7 @@ class Header extends React.Component {
 const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated,
     headerTitle: state.navigation.headerTitle,
-    currentHome: state.navigation.currentHome,
+    selectedHome: state.navigation.selectedHome,
     user: state.auth.user,
     userHomes: state.auth.user.homes || [],
 });

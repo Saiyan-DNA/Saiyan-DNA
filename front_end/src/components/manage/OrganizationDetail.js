@@ -3,26 +3,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
-
-const Box = loadable(() => import('@material-ui/core/Box' /* webpackChunkName: "Material-Layout" */));
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
+import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 import { setTitle } from '../../actions/navigation';
 import { saveOrganization, deleteOrganization } from '../../actions/organizations';
 
-const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "General" */));
-const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */));
-const OrganizationTypeSelect = loadable(() => import('./controls/OrganizationTypeSelect' /* webpackChunkName: "Manage" */));
+const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "Common" */));
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */));
+const OrganizationTypeSelect = loadable(() => import('./controls/OrganizationTypeSelect' /* webpackChunkName: "Common" */));
 
 const styles = theme => ({
     hideForPrint: {
@@ -153,22 +142,17 @@ class OrganizationDetail extends React.Component {
                                 <CardContent>
                                     <Grid container spacing={2} justifyContent="space-between">
                                         <Grid item xs={12} md={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="name">Name</InputLabel>
-                                                <Input id="name" name="name" placeholder="Organization Name" required value={name} disabled={readOnly}
-                                                    onChange={(e) => this.setState({name: e.target.value, isDirty: true})} />
-                                            </FormControl>                                        
+                                            <TextField id="name" name="name" label="Organization Name" required value={name} 
+                                                disabled={readOnly} variant="standard" fullWidth={true}
+                                                onChange={(e) => this.setState({name: e.target.value, isDirty: true})} />
                                         </Grid>
                                         <Grid item xs={12} md={6}>
                                             <OrganizationTypeSelect required value={organizationType} showAllTypes={false} disabled={readOnly}
-                                                onChange={(e) => this.setState({organizationType: e.target.value, isDirty: true})} />
+                                                variant="standard" onChange={(e) => this.setState({organizationType: e.target.value, isDirty: true})} />
                                         </Grid>
                                         <Grid item xs={12} md={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="url">Website</InputLabel>
-                                                <Input id="url" name="url" placeholder="Website" value={url} disabled={readOnly}
-                                                    onChange={(e) => this.setState({url: e.target.value, isDirty: true})} />
-                                            </FormControl>                                        
+                                            <TextField id="url" name="url" label="Website" variant="standard" fullWidth={true}
+                                                value={url} disabled={readOnly} onChange={(e) => this.setState({url: e.target.value, isDirty: true})} />
                                         </Grid>
                                     </Grid>
                                 </CardContent>

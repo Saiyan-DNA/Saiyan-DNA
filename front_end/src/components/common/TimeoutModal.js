@@ -1,23 +1,17 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Grid, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "General" */));
+const BasicModal = loadable(() => import('./BasicModal' /* webpackChunkName: "Common" */));
 
 import { toggleTimeoutModal } from '../../actions/navigation';
 import { refreshToken, userLogout } from '../../actions/auth';
 
-const styles = (theme) => ({
-
-});
+const styles = (theme) => ({});
 
 class TimeoutModal extends React.Component {
     static propTypes = {
@@ -26,9 +20,6 @@ class TimeoutModal extends React.Component {
         timeRemaining: PropTypes.number.isRequired,
         refreshToken: PropTypes.func.isRequired,
         userLogout: PropTypes.func.isRequired,
-    }
-
-    componentDidMount() {
     }
 
     continueSession = () => {

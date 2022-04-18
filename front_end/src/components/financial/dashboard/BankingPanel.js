@@ -1,50 +1,33 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Divider, Grid } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const CurrencyFormat = loadable(() => import('../../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const CurrencyTooltip = loadable(() => import('../controls/CurrencyTooltip' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
-import { CurrencyFormat } from '../../common/NumberFormats'
-
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "General" */), {fallback: <span>&nbsp;</span>});
-const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
-
-import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-import { EventTracker, Palette } from '@devexpress/dx-react-chart';
+const Chart = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.Chart), {fallback: <span>&nbsp;</span>});
+const PieSeries = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.PieSeries), {fallback: <span>&nbsp;</span>});
+const Tooltip = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.Tooltip), {fallback: <span>&nbsp;</span>});
+const EventTracker = loadable(() => import('@devexpress/dx-react-chart' /* webpackChunkName: "Chart" */).then(m => m.EventTracker), {fallback: <span>&nbsp;</span>});
+const Palette = loadable(() => import('@devexpress/dx-react-chart' /* webpackChunkName: "Chart" */).then(m => m.Palette), {fallback: <span>&nbsp;</span>});
 
 import { getNetWorth } from '../../../actions/dashboard';
 
-const styles = theme => ({
-    
-});
-
-function currencyTooltip(props) {
-    const { text, targetItem } = props;
-
-    return (
-        <>
-            { targetItem.series === "defaultSeriesName" ? null :
-                <Typography variant="body1">{targetItem.series}</Typography>
-            }
-            <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
-        </>
-    );
-}
+const styles = theme => ({ });
 
 class BankingPanel extends React.Component {
     state = {
-        totalCash: 0,
-        totalChecking: 0,
-        checkingCount: 0,
-        totalSavings: 0,
-        savingsCount: 0,
+        totalCash: 0.00,
+        totalChecking: 0.00,
+        checkingCount: 0.00,
+        totalSavings: 0.00,
+        savingsCount: 0.00,
         current: false
     };
 
@@ -57,13 +40,9 @@ class BankingPanel extends React.Component {
         assetsLoading: PropTypes.bool.isRequired,
     }
 
-    componentDidMount() {
-        this.refreshAccounts();
-    }
+    componentDidMount() { this.refreshAccounts(); }
 
-    componentDidUpdate() {
-        this.refreshAccounts();
-    }
+    componentDidUpdate() { this.refreshAccounts(); }
 
     refreshAccounts() {
         const { netWorthLoading, netWorthLoaded, getNetWorth, netWorthData} = this.props;
@@ -93,22 +72,12 @@ class BankingPanel extends React.Component {
 
     render() {
         const { ...otherProps } = this.props;
-        const { totalCash, totalChecking, checkingCount, totalSavings, savingsCount } = this.state;
+        const { totalCash, totalChecking, totalSavings } = this.state;
         
         const bankingdata = [{argument: "Checking", value: totalChecking}, {argument: "Savings", value: totalSavings}];
 
         return (
-            <SummaryCard header={
-                <Grid container spacing={0} justifyContent={"space-between"}>
-                    <Grid item>
-                        <Typography variant="h5">Banking</Typography>
-                    </Grid>
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={totalCash} displayType={'text'} decimalScale={0} />
-                        </Typography>
-                    </Grid>                        
-                </Grid>}>
+            <SummaryCard headerTitle="Banking" headerValue={totalCash} valueScale={0}>
                 <Grid container spacing={2} justifyContent={"center"}>
                     <Grid item>
                         <InfoTile title="Checking" content={<CurrencyFormat value={totalChecking} displayType={'text'} decimalScale={0} />} />
@@ -127,7 +96,7 @@ class BankingPanel extends React.Component {
                             <Palette scheme={["#48bf53", "#11823b"]} />
                             <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
                             <EventTracker />
-                            <Tooltip contentComponent={currencyTooltip} />
+                            <Tooltip contentComponent={CurrencyTooltip} />
                         </Chart>
                     </Grid>
                 </Grid>
@@ -150,5 +119,5 @@ const mapDispatchToProps = {
     getNetWorth,
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
-    (BankingPanel)));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
+    (BankingPanel));

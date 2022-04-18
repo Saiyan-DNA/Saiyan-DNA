@@ -1,26 +1,17 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
-
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */), {fallback: <div>&nbsp;</div>});
+import { Card, Grid, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 const styles = theme => ({
     infoTileCard: {
         padding: "0em"
     },
-    infoTitle: {
-
-    },
-    infoContent: {
-
-    },
+    infoTitle: {},
+    infoContent: {},
     infoCaption: {
-        fontStyle: "italic",
-        fontSize: "0.7em"
+        fontStyle: "italic"        
     }
 });
 
@@ -38,14 +29,14 @@ class InfoTile extends React.Component {
             <Card variant={showBorder ? "outlined" : "elevation"} elevation={0} className={classes.infoTileCard}>
                 <Grid container direction="column" spacing={0} justifyContent={"center"} alignContent="center" style={{marginTop: "2px"}}>
                     <Grid item>
-                        <Typography variant="h6" align="center" className={classes.infoTitle}>{content}</Typography>
+                        <Typography variant="h5" align="center" className={classes.infoTitle}>{content}</Typography>
                     </Grid>
                     <Grid item>
                         <Typography variant="body1" align="center" className={classes.infoContent}>{title}</Typography>
                     </Grid>
                     {!caption ? null :
                         <Grid item>
-                            <Typography variant="body2" align="center" className={classes.infoCaption}>{caption}</Typography>
+                            <Typography variant="caption" align="center" className={classes.infoCaption}>{caption}</Typography>
                         </Grid>
                     }
                 </Grid>

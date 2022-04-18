@@ -29,8 +29,9 @@ module.exports = {
         /*new BundleAnalyzerPlugin({
             generateStatsFile: true,
             openAnalyzer: false
-        }), */
-        new CleanWebpackPlugin(),
+        }),*/
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /de|fr|hu/),
+        new CleanWebpackPlugin(),        
         new webpack.DefinePlugin({
             'process_env': {
                 'NODE_ENV': JSON.stringify('production')

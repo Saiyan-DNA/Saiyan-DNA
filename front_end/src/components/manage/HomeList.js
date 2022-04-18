@@ -3,17 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
-
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material-Layout" */));
+import { Button, Card, CardContent, Container, Grid, List, ListItem, ListItemText } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 import { setTitle } from '../../actions/navigation';
 import { getHomes } from '../../actions/homes';

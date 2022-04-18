@@ -1,17 +1,14 @@
-import React from "react";
+import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Grid, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "General" */));
-const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "General" */));
+const BasicModal = loadable(() => import('../common/BasicModal' /* webpackChunkName: "Common" */));
+const DestructiveButton = loadable(() => import('../common/DestructiveButton' /* webpackChunkName: "Common" */));
 
 import { deleteAccount } from '../../actions/accounts';
 

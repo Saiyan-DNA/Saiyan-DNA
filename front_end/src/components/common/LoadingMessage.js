@@ -1,10 +1,8 @@
 import React from 'react';
-import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 
-const CircularProgress = loadable(() => import('@material-ui/core/CircularProgress' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
+import { CircularProgress, Typography } from '@mui/material';
 
 const styles = theme => ({
     loadingMessage: {

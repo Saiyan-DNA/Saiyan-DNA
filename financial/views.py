@@ -1,6 +1,7 @@
 '''
 Views for the Accounting Application
 '''
+
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import Q
@@ -13,9 +14,11 @@ from core.models import Organization
 from core.serializers import OrganizationSerializer
 from .serializers import AccountSerializer, AccountReadSerializer, AssetSerializer
 from .serializers import AccountStatementSerializer, AccountStatementReadSerializer
+from .serializers import CreditReportSerializer, CreditReportReadSerializer
 from .serializers import FinancialCategorySerializer, FinancialCategoryReadSerializer
 from .serializers import TransactionReadSerializer, TransactionSerializer, TransferSerializer
-from .models import TransactionLog, TransferDetail, Account, AccountStatement, FinancialCategory
+from .models import Account, AccountStatement, FinancialCategory
+from .models import TransactionLog, TransferDetail
 
 
 def clear_cache_item(key):
@@ -140,7 +143,6 @@ class AccountStatementView(viewsets.ModelViewSet):
 
         else:
             accounts = self.request.user.accounts.all()
-            # print(accounts.values_list('id', flat=True))
             stmts = AccountStatement.objects.filter(account__in=accounts.values_list('id', flat=True))
 
             clear_cache_item(cache_key)
@@ -200,6 +202,40 @@ class AssetListView(viewsets.ModelViewSet):
             clear_cache_item(f"assets_{self.request.user.id}")
                 
         return assets
+
+
+class CreditReportView(viewsets.ModelViewSet):
+    '''
+    ListCreate API View for Assets
+    '''
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    
+    def get_serializer_class(self):
+        if self.request.method in ['GET']:
+            return CreditReportReadSerializer
+        return CreditReportSerializer
+
+    def get_queryset(self):
+
+        agency_id = self.request.query_params.get('agency')
+
+        if (self.request.method in ['GET']):
+            cache_key = f"credit_reports_{self.request.user.id}"
+
+            reports = cache.get(cache_key)
+
+            if (not reports):
+                reports = self.request.user.credit_reports.all()
+                cache.set(cache_key, reports)
+
+        else:
+            reports = CreditReport.objects.all()
+            clear_cache_item(f"credit_reports_{self.request.user.id}")
+                
+        return reports
 
 
 class FinancialCategoryListView(viewsets.ModelViewSet):
@@ -333,22 +369,17 @@ class TransactionListView(viewsets.ModelViewSet):
         filtered_set = []
 
         if (self.request.method in ['GET'] and account_id):
-            cache_key = f"transactions_{account_id}"
 
-            start_date = self.request.query_params.get('startDate')
-            end_date = self.request.query_params.get('endDate')
+            start_date = self.request.query_params.get('start_date')
+            end_date = self.request.query_params.get('end_date')
+            
+            if (start_date and end_date):
+                return TransactionLog.objects.filter(owner=self.request.user,account=account_id, transaction_date__range=[start_date, end_date])
 
-            transactions = cache.get(cache_key)
-
-            if (transactions):
-                filtered_set = transactions
-            else:
-                filtered_set = TransactionLog.objects.filter(owner=self.request.user, account=account_id)
-                cache.set(cache_key, filtered_set)
+            return TransactionLog.objects.filter(owner=self.request.user, account=account_id)
         else:
-            filtered_set = TransactionLog.objects.filter(owner=self.request.user)
-                 
-        return filtered_set
+            return TransactionLog.objects.filter(owner=self.request.user)
+
 
     def destroy(self, request, *args, **kwargs):
         try:
@@ -434,7 +465,6 @@ class TransferAPIView(APIView):
 
         transfer_out_transaction["account"] = request.data["transfer_detail"]["transfer_from"]
         transfer_in_transaction["account"] = request.data["transfer_detail"]["transfer_to"]
-
         
         transfer_detail = TransferDetail.objects.filter(Q(transfer_credit_transaction=transaction_id) | Q(transfer_debit_transaction=transaction_id))
 

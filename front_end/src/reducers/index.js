@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import accounts from './accounts';
 import assets from './assets';
 import auth from './auth';
+import creditReports from './creditReports';
 import dashboard from './dashboard';
 import email from './email';
 import homes from './homes';
@@ -19,6 +20,7 @@ const appReducer = combineReducers({
     accounts,
     assets,
     auth,
+    creditReports,
     dashboard,
     email,
     homes,

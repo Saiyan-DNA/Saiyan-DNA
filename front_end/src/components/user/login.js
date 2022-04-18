@@ -2,20 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
-
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
+import { Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 import { userLogin, clearLoginError } from '../../actions/auth';
 import { setTitle } from '../../actions/navigation';
@@ -106,33 +95,16 @@ class Login extends React.Component {
                                 <form onSubmit={this.onSubmit}>
                                     <Grid container spacing={2} justifyContent="center">
                                         <Grid item xs={10}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="username">Username / E-Mail Address</InputLabel>
-                                                <Input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="username"
-                                                    name="username"
-                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none"}}
-                                                    onChange={this.onChange}
-                                                    value={username}
-                                                />
-                                            </FormControl>
+                                            <TextField type="text" className="form-control" id="username" name="username" variant="standard"
+                                                inputProps={{autoCapitalize: "none", autoCorrect: "none"}} onChange={this.onChange}
+                                                value={username} label="Username / E-Mail Address" fullWidth required error={showUsernameError} />
                                             { showUsernameError &&
                                                 <Typography variant="caption" color="error" className={classes.errorCaption}>Unknown Username</Typography>
                                             }
                                         </Grid>
                                         <Grid item xs={10}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="password">Password</InputLabel>
-                                                <Input
-                                                    type="password"
-                                                    id="password"
-                                                    name="password"
-                                                    onChange={this.onChange}
-                                                    value={password}
-                                                />
-                                            </FormControl>
+                                            <TextField type="password" className="form-control" id="password" name="password" variant="standard"
+                                                onChange={this.onChange} value={password} label="Password" fullWidth required error={showPasswordError} />
                                             { showPasswordError &&
                                                 <Typography variant="caption" color="error" className={classes.errorCaption}>Incorrect Password</Typography>
                                             }

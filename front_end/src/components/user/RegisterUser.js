@@ -3,22 +3,12 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
-import zxcvbn from 'zxcvbn';
+// import zxcvbn from 'zxcvbn';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material'
+import { withStyles } from '@mui/styles';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
-const Input = loadable(() => import('@material-ui/core/Input' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
-
-const PasswordStrengthMeter = loadable(() => import('./PasswordStrengthMeter' /*webpackChunkName: "General" */));
+const PasswordStrengthMeter = loadable(() => import('./PasswordStrengthMeter' /*webpackChunkName: "Common" */));
 
 import { setTitle } from '../../actions/navigation';
 import { registerUser, clearRegistrationErrors } from '../../actions/auth';
@@ -122,9 +112,9 @@ class RegisterUser extends React.Component {
         }
         
         // Password Validation - Validate Password Strength (using zxcvbn)
-        if (zxcvbn(userInfo.password).score < 3) {
-            isValid = false;
-        }
+        //if (zxcvbn(userInfo.password).score < 3) {
+        //    isValid = false;
+        //}
 
         return isValid;
     }
@@ -187,77 +177,48 @@ class RegisterUser extends React.Component {
                                             <Typography variant="h5">Register a New Account</Typography>
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="firstName">First Name</InputLabel>
-                                                <Input type="text" className="form-control"
-                                                    id="firstName" name="firstName"
-                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
-                                                    onChange={this.onChange} value={userInfo.firstName}
-                                                />
-                                            </FormControl>
+                                            <TextField type="text" className="form-control" id="firstName" name="firstName" variant="standard"
+                                                inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
+                                                value={userInfo.firstName} onChange={this.onChange} label="First Name" fullWidth required />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="lastName">Last Name</InputLabel>
-                                                <Input type="text" className="form-control"
-                                                    id="lastName" name="lastName"
-                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
-                                                    onChange={this.onChange} value={userInfo.lastName}
-                                                />
-                                            </FormControl>
+                                            <TextField type="text" className="form-control" id="lastName" name="lastName" variant="standard"
+                                                inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
+                                                value={userInfo.lastName} onChange={this.onChange} label="Last Name" fullWidth required />
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="email">E-Mail Address</InputLabel>
-                                                <Input type="text" className="form-control"
-                                                    id="email" name="email"
-                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
-                                                    onChange={this.onChange} value={userInfo.email}
-                                                />
-                                            </FormControl>
+                                            <TextField type="email" className="form-control" id="email" name="email" variant="standard"
+                                                inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "off"}}
+                                                value={userInfo.email} onChange={this.onChange} label="E-Mail Address" fullWidth required
+                                                error={emailInUseMessageVisible} />
                                             { emailInUseMessageVisible &&
                                                 <Typography variant="caption" color="error">
                                                     This e-mail is already in use. Click <a href="#" className={classes.linkText} onClick={() => {requestUsernameEmail(userInfo.email)}}>here</a> to retrieve your username.
                                                 </Typography>
                                             }    
                                         </Grid>
-                                        <Grid item container xs={12} sm={12} spacing={0} justifyContent="flex-start">
-                                            <Grid item xs={12} sm={6}>
-                                                <FormControl fullWidth={true}>
-                                                    <InputLabel htmlFor="userName">Username</InputLabel>
-                                                    <Input type="text" className="form-control"
-                                                        id="userName" name="userName"
-                                                        inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-username"}}
-                                                        autoComplete="new-username" onChange={this.onChange} value={userInfo.userName}
-                                                    />
-                                                </FormControl>
-                                                {usernameInUseMessageVisible &&
-                                                    <Typography variant="caption" color="error">Username is already in use</Typography>
-                                                }    
-                                            </Grid>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="password">Password</InputLabel>
-                                                <Input type="password" className="form-control"
-                                                    id="password" name="password"
-                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
-                                                    autoComplete="new-password" onChange={this.onChange} value={userInfo.password}
-                                                />
-                                            </FormControl>
-                                            { userInfo.password &&
-                                                <PasswordStrengthMeter score={zxcvbn(userInfo.password).score} />    
+                                        <Grid item xs={12}>
+                                            <TextField type="text" className="form-control" id="userName" name="userName" variant="standard"
+                                                inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-username"}}
+                                                value={userInfo.userName} onChange={this.onChange} label="Username" fullWidth required
+                                                error={usernameInUseMessageVisible} />
+                                            {usernameInUseMessageVisible &&
+                                                <Typography variant="caption" color="error">Username is already in use</Typography>
                                             }
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
-                                            <FormControl fullWidth={true}>
-                                                <InputLabel htmlFor="password">Re-Enter Password</InputLabel>
-                                                <Input type="password" className="form-control"
-                                                    id="password2" name="password2"
-                                                    inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
-                                                    autoComplete="new-password" onChange={this.onChange} value={userInfo.password2}
-                                                />
-                                            </FormControl>
+                                            <TextField type="password" className="form-control" id="password" name="password" variant="standard"
+                                                inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
+                                                autoComplete="new-password" value={userInfo.password} onChange={this.onChange} label="Password" fullWidth required />
+                                            { userInfo.password &&
+                                                <PasswordStrengthMeter score={/*zxcvbn(userInfo.password).score*/ 100} />    
+                                            }
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <TextField type="password" className="form-control" id="password2" name="password2" variant="standard"
+                                                inputProps={{autoCapitalize: "none", autoCorrect: "none", autoComplete: "new-password"}}
+                                                value={userInfo.password2} onChange={this.onChange} label="Confirm Password" fullWidth required
+                                                error={passwordMismatchMessageVisible} />
                                             {passwordMismatchMessageVisible ?
                                                 <Typography variant="caption" color="error">Passwords must match</Typography> : 
                                                 <Typography variant="caption" color="primary">&nbsp;</Typography>

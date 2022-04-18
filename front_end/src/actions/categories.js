@@ -6,7 +6,7 @@ import { createMessage } from './messages';
 // GET CATEGORIES - Tree of Categories
 export const getCategories = () => (dispatch, getState) => {
     const jwt_token = getState().auth.token;
-    const home_id = getState().navigation.currentHome.id;
+    const home_id = getState().navigation.selectedHome.id;
 
     axios.get(`/api/inventory/categories?home=${home_id}`, {
         headers: {

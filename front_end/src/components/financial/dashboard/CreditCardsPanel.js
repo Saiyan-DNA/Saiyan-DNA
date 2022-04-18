@@ -1,43 +1,27 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Divider, Grid } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const CurrencyFormat = loadable(() => import('../../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const CurrencyTooltip = loadable(() => import('../controls/CurrencyTooltip' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const PercentageFormat = loadable(() => import('../../common/PercentageFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const EmptyMessage = loadable(() => import('../../common/EmptyMessage' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
+const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
-import { CurrencyFormat, PercentageFormat } from '../../common/NumberFormats'
-
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "General" */), {fallback: <span>&nbsp;</span>});
-const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
-
-import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-import { EventTracker, Palette } from '@devexpress/dx-react-chart';
+const Chart = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.Chart), {fallback: <span>&nbsp;</span>});
+const PieSeries = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.PieSeries), {fallback: <span>&nbsp;</span>});
+const Tooltip = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.Tooltip), {fallback: <span>&nbsp;</span>});
+const EventTracker = loadable(() => import('@devexpress/dx-react-chart' /* webpackChunkName: "Chart" */).then(m => m.EventTracker), {fallback: <span>&nbsp;</span>});
+const Palette = loadable(() => import('@devexpress/dx-react-chart' /* webpackChunkName: "Chart" */).then(m => m.Palette), {fallback: <span>&nbsp;</span>});
 
 import { getNetWorth } from '../../../actions/dashboard';
 
-
-const styles = theme => ({
-    
-});
-
-function currencyTooltip(props) {
-    const { text, targetItem } = props;
-
-    return (
-        <>
-            {targetItem.series === "defaultSeriesName" ? null :
-                <Typography variant="body1">{targetItem.series}</Typography>
-        }
-            <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
-        </>
-    );
-}
+const styles = theme => ({ });
 
 class CreditCardsPanel extends React.Component {
     state = {
@@ -58,13 +42,9 @@ class CreditCardsPanel extends React.Component {
         assetsLoading: PropTypes.bool.isRequired,
     }
 
-    componentDidMount() {
-        this.refreshAccounts();
-    }
+    componentDidMount() { this.refreshAccounts(); }
 
-    componentDidUpdate() {
-        this.refreshAccounts();
-    }
+    componentDidUpdate() { this.refreshAccounts(); }
 
     refreshAccounts() {
         const { netWorthLoading, netWorthLoaded, getNetWorth, netWorthData} = this.props;
@@ -83,6 +63,7 @@ class CreditCardsPanel extends React.Component {
                     totalAvailable: netWorthData.creditCards.available,
                     totalLimit: netWorthData.creditCards.limit,
                     utilization: netWorthData.creditCards.utilization,
+                    count: netWorthData.creditCards.count,
                     current: true
                 });
             }
@@ -96,39 +77,32 @@ class CreditCardsPanel extends React.Component {
         const creditdata = [{argument: "Owed", value: totalOwed}, {argument: "Available", value: totalAvailable}];
 
         return (
-            <SummaryCard header={
-                <Grid container spacing={0} justifyContent={"space-between"}>
-                    <Grid item>
-                        <Typography variant="h5">Credit Cards</Typography>
+            <SummaryCard headerTitle="Credit Cards" headerValue={totalOwed} valueScale={0}>
+                { count == 0 && <EmptyMessage message="No Credit Card information found." />}
+                { count > 0 && 
+                    <Grid container spacing={2} justifyContent={"center"}>
+                        <Grid item>
+                            <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
+                        </Grid>
+                        <Grid item>
+                            <Divider dir={"vertical"} orientation="vertical" light={true} />
+                        </Grid>
+                        <Grid item>
+                            <InfoTile title="Available" content={<CurrencyFormat value={totalAvailable} displayType={'text'} decimalScale={0} />} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Divider light={true} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Chart data={creditdata} height={180}>
+                                <Palette scheme={["#ffb21b", "#11823b"]} />
+                                <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
+                                <EventTracker />
+                                <Tooltip contentComponent={CurrencyTooltip} />
+                            </Chart>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={totalOwed} displayType={'text'} decimalScale={0} />
-                        </Typography>
-                    </Grid>                        
-                </Grid>}>
-                <Grid container spacing={2} justifyContent={"center"}>
-                    <Grid item>
-                        <InfoTile title="Utilization" content={<PercentageFormat value={utilization} displayType={'text'} decimalScale={2} />} />
-                    </Grid>
-                    <Grid item>
-                        <Divider dir={"vertical"} orientation="vertical" light={true} />
-                    </Grid>
-                    <Grid item>
-                        <InfoTile title="Available" content={<CurrencyFormat value={totalAvailable} displayType={'text'} decimalScale={0} />} />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Divider light={true} />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Chart data={creditdata} height={180}>
-                            <Palette scheme={["#ffb21b", "#11823b"]} />
-                            <PieSeries valueField="value" argumentField="argument" innerRadius={0.66} />
-                            <EventTracker />
-                            <Tooltip contentComponent={currencyTooltip} />
-                        </Chart>
-                    </Grid>
-                </Grid>
+                }
             </SummaryCard>
         );
     }
@@ -148,5 +122,5 @@ const mapDispatchToProps = {
     getNetWorth
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
-    (CreditCardsPanel)));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
+    (CreditCardsPanel));

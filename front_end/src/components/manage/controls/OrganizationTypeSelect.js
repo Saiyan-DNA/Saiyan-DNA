@@ -1,12 +1,18 @@
-import React from "react";
-import loadable from '@loadable/component';
+import React from 'react';
 
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Navigation" */));
-const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material-Input" */));
+import { withStyles } from '@mui/styles';
 
-const OrganizationTypeSelect = ({variant, value, defaultValue, onChange, onBlur, className, showAllTypes=true, showLabel=true, disabled=false}) => {
+import { MenuItem, TextField } from "@mui/material";
+
+const styles = theme => ({
+    hideForPrint: {
+        ['@media print']: { // eslint-disable-line no-useless-computed-key
+            display: "none",
+        }
+    }
+});
+
+const OrganizationTypeSelect = ({variant, value, defaultValue, onChange, onBlur, className, showAllTypes=true, showLabel=true, disabled=false, required=false}) => {
     const orgTypes = [
         { value: "ALL", label: "All Types" }, 
         { value: "CTY", label: "Charity" },
@@ -28,16 +34,14 @@ const OrganizationTypeSelect = ({variant, value, defaultValue, onChange, onBlur,
     }
 
     return (
-        <FormControl fullWidth={true}>
-            {showLabel && <InputLabel htmlFor="orgType">Type</InputLabel>}
-            <Select variant={variant} size="small" id="orgType" name="orgType" className={className} fullWidth={true}
-                value={value} defaultValue={defaultValue} onChange={onChange} onBlur={onBlur} disabled={disabled}>
-                {orgTypes.map(type => (
-                    <MenuItem key={type.value} value={type.value} className={className}>{type.label}</MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+        <TextField select label={showLabel ? "Organization Type" : null} variant={variant || "outlined"} size="small" id="orgType" name="orgType"
+            className={className} fullWidth={true} value={value} defaultValue={defaultValue} placeholder="Organization Type"
+            onChange={onChange} onBlur={onBlur} disabled={disabled} required={required}>
+            {orgTypes.map(type => (
+                <MenuItem key={type.value} value={type.value} className={className}>{type.label}</MenuItem>
+            ))}
+        </TextField>
     );
 }
 
-export default OrganizationTypeSelect
+export default (withStyles(styles, { withTheme: true })(OrganizationTypeSelect));

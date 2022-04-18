@@ -1,10 +1,8 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import loadable from '@loadable/component';
 
-const AutoComplete = loadable(() => import('@material-ui/lab/Autocomplete' /* webpackChunkName: "Material-Input" */));
-const TextField = loadable(() => import('@material-ui/core/TextField' /* webpackChunkName: "Material-Input" */));
+import { Autocomplete, TextField } from '@mui/material';
 
 import { getAccounts } from '../../../actions/accounts';
 
@@ -38,25 +36,23 @@ class AccountSelect extends React.Component {
     }
 
     render() {
-        const { id, name, label, accounts, onChange, onBlur, selection, disabledAccount } = this.props;
+        const { id, name, label, accounts, onChange, onBlur, selection, disabledAccount, disabled } = this.props;
 
         var filteredAccounts = accounts.filter(acct => acct.account_type != "BL");
         
         if (disabledAccount) filteredAccounts = filteredAccounts.filter(acct => acct.id != disabledAccount.id);
         
         return (
-            <AutoComplete id={id} name={name}
-                fullWidth={true} 
+            <Autocomplete id={id} name={name} 
                 options={filteredAccounts ? filteredAccounts.sort((a, b) => a.name.localeCompare(b.name)) : []}
                 getOptionLabel={(option) => option.name}
-                getOptionSelected={(option, value) => this.accountSelected(option, value)}
-                value={selection} onBlur={onBlur}
+                isOptionEqualToValue={(option, value) => this.accountSelected(option, value)}
+                value={selection} onBlur={onBlur} fullWidth={true} disabled={disabled}
                 onChange={(event, value) => onChange({target: {name: name, value: value}})}                
                 renderInput={(params) => <TextField {...params} label={label || "Account"} variant="standard" />}>
-            </AutoComplete>
+            </Autocomplete>
         )
     }
-
 }
 
 const mapStateToProps = state => ({

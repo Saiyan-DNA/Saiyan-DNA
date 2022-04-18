@@ -1,24 +1,14 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Divider, Grid, Typography } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
-
-import { CurrencyFormat } from '../../common/NumberFormats'
-
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "General" */), {fallback: <span>&nbsp;</span>});
-const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
-
-import { Chart, PieSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-import { EventTracker, Palette } from '@devexpress/dx-react-chart';
-
+const CurrencyFormat = loadable(() => import('../../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
 const styles = theme => ({
     listCard: {
@@ -107,7 +97,7 @@ class DebtIncomePanel extends React.Component {
         const { ...otherProps } = this.props;
         
         return (
-            <SummaryCard header="Debt-to-Income">
+            <SummaryCard headerTitle="Debt-to-Income">
                 <Grid container spacing={2} justifyContent={"center"}>
                 </Grid>
             </SummaryCard>
@@ -123,5 +113,5 @@ const mapDispatchToProps = {
     
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
-    (DebtIncomePanel)));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
+    (DebtIncomePanel));

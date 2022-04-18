@@ -1,44 +1,26 @@
-import React from "react";
+import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Divider, Grid } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const Grid = loadable(() => import('@material-ui/core/Grid' /* webpackChunkName: "Material-Layout" */));
-const Typography = loadable(() => import('@material-ui/core/Typography' /* webpackChunkName: "Material-Layout" */));
-const Divider = loadable(() => import('@material-ui/core/Divider' /* webpackChunkName: "Material" */));
+const CurrencyFormat = loadable(() => import('../../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const CurrencyTooltip = loadable(() => import('../controls/CurrencyTooltip' /* webpackChunkName: "Financial" */), { fallback: <div>&nbsp;</div> });
+const LoadingMessage = loadable(() => import('../../common/LoadingMessage' /* webpackChunkName: "Common" */), {fallback: <div>&nbsp;</div>});
+const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
+const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 
-import { CurrencyFormat } from '../../common/NumberFormats'
+const Chart = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.Chart), {fallback: <span>&nbsp;</span>});
+const BarSeries = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.BarSeries), {fallback: <span>&nbsp;</span>});
+const Tooltip = loadable(() => import('@devexpress/dx-react-chart-material-ui' /* webpackChunkName: "Chart" */).then(m => m.Tooltip), {fallback: <span>&nbsp;</span>});
 
-// const LoadingMessage = loadable(() => import('../common/LoadingMessage' /* webpackChunkName: "Layout" */), {fallback: <div>&nbsp;</div>});
-const InfoTile = loadable(() => import('../../common/InfoTile' /* webpackChunkName: "General" */), {fallback: <span>&nbsp;</span>});
-const SummaryCard = loadable(() => import('../../common/SummaryCard' /* webpackChunkName: "Layout" */), {fallback: <span>&nbsp;</span>});
-
-import { Chart, BarSeries, Tooltip } from '@devexpress/dx-react-chart-material-ui';
-import { EventTracker } from '@devexpress/dx-react-chart';
+const EventTracker = loadable(() => import('@devexpress/dx-react-chart' /* webpackChunkName: "Chart" */).then(m => m.EventTracker), {fallback: <span>&nbsp;</span>});
 
 import { getNetWorth } from '../../../actions/dashboard';
-import SelectInput from "@material-ui/core/Select/SelectInput";
 
-const styles = theme => ({
-    
-});
-
-function currencyTooltip(props) {
-    const { text, targetItem } = props;
-
-    return (
-        <>
-            {targetItem.series === "defaultSeriesName" ? null :
-                <Typography variant="body1">{targetItem.series}</Typography>
-        }
-            <CurrencyFormat value={text} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={0} />
-        </>
-    );
-}
+const styles = theme => ({});
 
 class NetWorthPanel extends React.Component {
     state = {
@@ -63,9 +45,9 @@ class NetWorthPanel extends React.Component {
         assetsLoading: PropTypes.bool.isRequired,
     }
 
-    componentDidMount() {
-        this.refreshData();
-    }
+    componentDidMount() { this.refreshData(); }
+
+    componentDidUpdate() { this.refreshData(); }
 
     refreshData = () => {
         const { netWorthLoading, netWorthLoaded, getNetWorth, netWorthData} = this.props;
@@ -93,50 +75,14 @@ class NetWorthPanel extends React.Component {
                 current: true
             });
         }
-    }
-
-    componentDidUpdate() {
-        this.refreshData();
-    }
-
-    netWorthHeader = () => {
-        const { netWorthLoaded } = this.props;
-        const { netWorth } = this.state;
-        
-        return (
-            <Grid container spacing={0} justifyContent={"space-between"}>
-                <Grid item>
-                    <Typography variant="h5">Net Worth</Typography>
-                </Grid>
-                { netWorthLoaded && 
-                    <Grid item xs={"auto"}>
-                        <Typography variant="h5">
-                            <CurrencyFormat value={netWorth} displayType={'text'} decimalScale={0} />
-                        </Typography>
-                    </Grid>           
-                }             
-            </Grid>
-        );
-    }
+    }    
 
     render() {
         const { netWorthLoaded, netWorthLoading, netWorthData, ...otherProps } = this.props;
         const { totalAssets, totalLiabilities, checkingAccounts, savingsAccounts, property, investments, loans, creditCards } = this.state;
 
-        if (netWorthLoading && !netWorthLoaded) {
-            return <span>Loading...</span>
-        }
-        
-        if (!netWorthLoading && !netWorthLoaded) {
-            return (
-                <SummaryCard header={this.netWorthHeader()}>
-                    <Container>
-                        <Typography variant="body1">
-                            No data available.
-                        </Typography>
-                    </Container>
-                </SummaryCard>
-            );
+        if (!netWorthLoaded) {
+            return <LoadingMessage message="Loading Net Worth" />;
         }
 
         const data = [
@@ -148,15 +94,15 @@ class NetWorthPanel extends React.Component {
         ];
         
         return (
-            <SummaryCard header={this.netWorthHeader()}>
+            <SummaryCard headerTitle="Net Worth" headerValue={netWorthData.netWorth}>
                 <Grid container spacing={2} justifyContent={"center"}>
-                    <Grid item xs={5}>
+                    <Grid item>
                         <InfoTile title="Assets" content={<CurrencyFormat value={totalAssets} displayType={'text'} decimalScale={0} />} />
                     </Grid>
-                    <Grid item xs={"auto"}>
+                    <Grid item>
                         <Divider dir={"vertical"} orientation="vertical" light={true} />
                     </Grid>
-                    <Grid item xs={5}>
+                    <Grid item>
                         <InfoTile title="Liabilities" content={<CurrencyFormat value={totalLiabilities} displayType={'text'} decimalScale={0} />} />
                     </Grid>
                     <Grid item xs={12}>
@@ -180,7 +126,7 @@ class NetWorthPanel extends React.Component {
                                 <BarSeries name="Credit Cards" valueField="cards" argumentField="argument" color={"#ffb21b"} />
                             }
                             <EventTracker />
-                            <Tooltip contentComponent={currencyTooltip} />
+                            <Tooltip contentComponent={CurrencyTooltip} />
                         </Chart>
                     </Grid>
                 </Grid>
@@ -203,5 +149,5 @@ const mapDispatchToProps = {
     getNetWorth,
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
-    (NetWorthPanel)));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {withTheme: true})
+    (NetWorthPanel));

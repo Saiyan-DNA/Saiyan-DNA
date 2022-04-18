@@ -9,7 +9,6 @@ from rest_framework import serializers
 from .models import Home, Organization, Person
 
 
-
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
@@ -48,7 +47,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ['first_name', 'last_name', 'status']
+        fields = ['id', 'first_name', 'last_name', 'status']
 
 
 class UserSerializer(serializers.ModelSerializer):

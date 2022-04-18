@@ -1,27 +1,48 @@
-import React from "react";
-import loadable from '@loadable/component';
+import React from 'react';
+import { connect } from 'react-redux';
 
-const FormControl = loadable(() => import('@material-ui/core/FormControl' /* webpackChunkName: "Material-Input" */));
-const InputLabel = loadable(() => import('@material-ui/core/InputLabel' /* webpackChunkName: "Material-Input" */));
-const MenuItem = loadable(() => import('@material-ui/core/MenuItem' /* webpackChunkName: "Material-Navigation" */));
-const Select = loadable(() => import('@material-ui/core/Select' /* webpackChunkName: "Material-Input" */));
+import { Autocomplete, TextField } from '@mui/material';
 
-const TransactionTypeSelect = ({value, defaultValue, onChange, onBlur}) => {
-    return (
-        <FormControl fullWidth={true}>
-            <InputLabel htmlFor="transactionType">Type</InputLabel>
-            <Select id="transactionType" name="transactionType" fullWidth={true} 
-                onChange={onChange} 
-                onBlur={onBlur}
-                value={value}
-                defaultValue={defaultValue}>
-                    <MenuItem value=""><em>None</em></MenuItem>
-                    <MenuItem value="CRD">Credit</MenuItem>
-                    <MenuItem value="DBT">Debit</MenuItem>
-                    <MenuItem value="TRN">Transfer</MenuItem>
-            </Select>
-        </FormControl>
-    );
+import { getFinancialCategories } from '../../../actions/financial_categories';
+
+class TransactionTypeSelect extends React.Component {
+    state = {
+        transactionTypes: [
+            {id: "CRD", name: "Credit"},
+            {id: "DBT", name: "Debit"},
+            {id: "TRN", name: "Transfer"}
+        ]
+    }
+
+    typeSelected = (option, value) => {
+        if (option.id === value) {
+            return true
+        }
+        return false;
+    }
+
+    getLabel = (option) => {
+        return option.name || this.state.transactionTypes.filter(t => t.id === option)[0].name;
+    }
+
+    render() {
+        const { id, name, onChange, selection } = this.props;
+        const { transactionTypes } = this.state;
+        
+        return (
+            <Autocomplete id={id || "transactionType"} name={name || "transactionType"}
+                fullWidth={true} 
+                options={transactionTypes}
+                getOptionLabel={(option) => this.getLabel(option)}
+                isOptionEqualToValue={(option, value) => this.typeSelected(option, value)}
+                value={selection}
+                onChange={(event, value) => onChange({target: {name: name || "transactionType", value: value.id}})}
+                renderInput={(params) => <TextField {...params} label="Type" variant="standard" />}>
+            </Autocomplete>
+        )
+    }
 }
 
-export default TransactionTypeSelect
+const mapStateToProps = state => ({});
+
+export default connect(mapStateToProps, { getFinancialCategories })(TransactionTypeSelect);

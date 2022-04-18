@@ -3,23 +3,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Card, CardContent, Collapse, Container, Grid, IconButton, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
-const Button = loadable(() => import('@material-ui/core/Button' /* webpackChunkName: "Material-Navigation" */));
-const Card = loadable(() => import('@material-ui/core/Card' /* webpackChunkName: "Material-Layout" */));
-const CardContent = loadable(() => import('@material-ui/core/CardContent' /* webpackChunkName: "Material-Layout" */));
-const Collapse = loadable(() => import('@material-ui/core/Collapse' /* webpackChunkName: "Material" */));
-const Container = loadable(() => import('@material-ui/core/Container' /* webpackChunkName: "Material-Layout" */));
-const IconButton = loadable(() => import('@material-ui/core/IconButton' /* webpackChunkName: "Material-Navigation" */));
-const List = loadable(() => import('@material-ui/core/List' /* webpackChunkName: "Material-Layout" */));
-const ListItem = loadable(() => import('@material-ui/core/ListItem' /* webpackChunkName: "Material-Layout" */));
-const ListItemIcon = loadable(() => import('@material-ui/core/ListItemIcon' /* webpackChunkName: "Material-Layout" */));
-const ListItemText = loadable(() => import('@material-ui/core/ListItemText' /* webpackChunkName: "Material-Layout" */));
-
-const ArrowRight = loadable(() => import('@material-ui/icons/ArrowRight' /* webpackChunkName: "Icons" */));
-const ArrowDropDown = loadable(() => import('@material-ui/icons/ArrowDropDown' /* webpackChunkName: "Icons" */));
-const Edit = loadable(() => import('@material-ui/icons/Edit' /* webpackChunkName: "Icons" */));
-
+const ArrowRight = loadable(() => import('@mui/icons-material/ArrowRight' /* webpackChunkName: "Icons" */));
+const ArrowDropDown = loadable(() => import('@mui/icons-material/ArrowDropDown' /* webpackChunkName: "Icons" */));
+const Edit = loadable(() => import('@mui/icons-material/Edit' /* webpackChunkName: "Icons" */));
 
 import { getCategories, getCategory, clearCategory } from '../../actions/categories';
 import { setTitle } from '../../actions/navigation';
