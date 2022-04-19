@@ -7,10 +7,7 @@ verify_ssl = true
 
 [packages]
 django = "*"
-djangorestframework = "*"
 pylint-django = "*"
-djangorestframework-jwt = "*"
-djangorestframework-recursive = "*"
 django-filter = "*"
 django-extensions = "*"
 pymysql = "*"
@@ -20,6 +17,10 @@ ua-parser = "*"
 user-agents = "*"
 django-user-agents = "*"
 python-memcached = "*"
+pillow = "*"
+djangorestframework = "*"
+djangorestframework-simplejwt = "*"
+djangorestframework-recursive = "*"
 
 [requires]
 python_version = "3.9"

@@ -23,7 +23,7 @@ export const getTransactions = (acct_id) => (dispatch, getState) => {
 
         const config = {
             headers: {
-                "Authorization": `bearer ${jwt_token}`
+                "Authorization": `Bearer ${jwt_token}`
             }
         };
 
@@ -46,7 +46,7 @@ export const createTransfer = (transferDetail) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -68,7 +68,7 @@ export const createTransaction = (transactionDetails, transferDetail) => (dispat
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -116,7 +116,7 @@ export const updateTransaction = (transactionDetails, transferDetail) => (dispat
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -161,7 +161,7 @@ export const deleteTransaction = (transaction) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 

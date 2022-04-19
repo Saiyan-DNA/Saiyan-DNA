@@ -28,7 +28,7 @@ export const createAsset = (asset) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -48,7 +48,7 @@ export const updateAsset = (id, asset) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -68,7 +68,7 @@ export const deleteAsset = (id) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -87,7 +87,7 @@ export const getAsset = (id) => (dispatch, getState) => {
 
     const config = {
         headers: {
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     }
 

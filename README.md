@@ -20,12 +20,13 @@ HomeCentral is a web application for managing personal home activities, includin
 - user-agents
 - Django v3.0.6
   - DjangoRestFramework
-  - DjangoRestFramework-JWT 
+  - DjangoRestFramework-SimpleJWT 
   - DjangoRestFramework-Recursive
   - Django-Filter
   - Django-Extensions
   - django-user-agents
   - django-redis
+- Pillow
 
 ### Front-End
 

@@ -9,7 +9,8 @@ from django.utils import timezone
 from django.views.generic import TemplateView
 from rest_framework import permissions, viewsets, generics
 from rest_framework.response import Response
-from rest_framework_jwt.settings import api_settings
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from django.conf import settings
 
@@ -30,13 +31,12 @@ class RegisterAPI(generics.GenericAPIView):
                 return Response({"errors": {"email": ["A user with that e-mail address already exists."]}})
             
             user = serializer.create()
-            jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-            jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-            payload = jwt_payload_handler(user)
+
+            token = AccessToken.for_user(user)
             
             return Response({
                 "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                "token": jwt_encode_handler(payload),
+                "token": token,
                 "deviceFamily": self.request.user_agent.device.family,
                 "isMobile": self.request.user_agent.is_mobile,
                 "isTablet": self.request.user_agent.is_tablet
@@ -58,13 +58,10 @@ class LoginAPI(generics.GenericAPIView):
 
             user = serializer.validated_data
 
-            jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-            jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-            payload = jwt_payload_handler(user)
-
             return Response({
                 "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                "token": jwt_encode_handler(payload),
+                "token": str(AccessToken.for_user(user)),
+                "refreshToken": str(RefreshToken.for_user(user)),
                 "deviceFamily": self.request.user_agent.device.family,
                 "isMobile": self.request.user_agent.is_mobile,
                 "isTablet": self.request.user_agent.is_tablet

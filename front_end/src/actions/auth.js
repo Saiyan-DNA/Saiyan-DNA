@@ -48,7 +48,7 @@ export const clearRegistrationErrors = () => (dispatch, getState) => {
 }
 
 export const refreshToken = () => (dispatch, getState) => {
-    const token = getState().auth.token;
+    const refreshToken = getState().auth.refreshToken;
 
     // Headers
     const config = {
@@ -57,15 +57,15 @@ export const refreshToken = () => (dispatch, getState) => {
         }
     }
 
-    config.headers['Authorization'] = `Bearer ${token}`;
+    // config.headers['Authorization'] = `Bearer ${token}`;
 
-    const body = { "token": token };
+    const body = { "refresh": refreshToken };
 
     axios.post('/api/auth/token_refresh', body, config)
     .then(res => {
         dispatch({
             type: LOGIN_SUCCESS,
-            payload: res.data
+            payload: {token: res.data.access}
         });
     }).catch(err => {
         dispatch({
@@ -195,6 +195,7 @@ export const userLogin = (username, password) => (dispatch) => {
                 type: LOGIN_FAIL,
                 payload: err
             });
+
             dispatch(createMessage({type: "error", title: "Login Failed!", detail: err}));
         });
 }
