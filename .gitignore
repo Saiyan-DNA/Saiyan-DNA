@@ -2,6 +2,8 @@
 .pylitrc
 __pycache__
 /ProjectNotes
+/static
+/recipe_covers
 manage.py
 homedb.sqlite3
 settings.py
@@ -14,5 +16,4 @@ node_modules
 .gcloudignore
 app.yaml
 main.py
-/static
 *main.js.LICENSE.txt
