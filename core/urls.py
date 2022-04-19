@@ -1,7 +1,6 @@
 from django.urls import path, include
-from django.conf.urls import url
 from rest_framework import routers
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import RegisterAPI, LoginAPI, UserAPI, HomeAPI, OrganizationAPI, IndexView
 from .views import EmailUsernameAPI, EmailVerificationAPI, ActivateAccountAPI
@@ -20,9 +19,9 @@ urlpatterns = [
     path('api/core/email_username', EmailUsernameAPI.as_view()),
     path('api/core/email_verification', EmailVerificationAPI.as_view()),
     path('api/core/activate_account', ActivateAccountAPI.as_view()),
-    path('api/auth/token_refresh', refresh_jwt_token),
+    path('api/auth/token_refresh', TokenRefreshView.as_view()),
     path('', IndexView.as_view(), name="index"),    
-    # path(r'api/auth/api-token-auth/', obtain_jwt_token),    
+    # path(r'api/auth/api-token-auth/', TokenObtainPairView.as_view(), name='token_obtain_pair'),),    
     #url(r"^$", IndexView.as_view(), name="base-index"),
     #url(r"^(?P<path>.*)/$", IndexView.as_view(), name='index'),
 ]

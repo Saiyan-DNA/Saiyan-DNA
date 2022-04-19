@@ -26,7 +26,7 @@ export const getCategory = (id) => (dispatch, getState) => {
 
     const config = {
         headers: {
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     }
 

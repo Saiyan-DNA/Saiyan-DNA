@@ -26,7 +26,7 @@ export const createHome = (acct) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -46,7 +46,7 @@ export const updateHome = (id, home) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -66,7 +66,7 @@ export const deleteHome = (id) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -85,7 +85,7 @@ export const getHome = (id) => (dispatch, getState) => {
 
     const config = {
         headers: {
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     }
 

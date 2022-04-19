@@ -31,7 +31,7 @@ export const createAccount = (acct) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -59,7 +59,7 @@ export const updateAccount = (id, acct) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -86,7 +86,7 @@ export const deleteAccount = (id) => (dispatch, getState) => {
     const config = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     };
 
@@ -109,7 +109,7 @@ export const getAccount = (id) => (dispatch, getState) => {
 
     const config = {
         headers: {
-            "Authorization": `bearer ${jwt_token}`
+            "Authorization": `Bearer ${jwt_token}`
         }
     }
 

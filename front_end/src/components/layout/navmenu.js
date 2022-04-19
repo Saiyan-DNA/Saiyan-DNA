@@ -188,7 +188,7 @@ class NavMenu extends React.Component {
                         }
                     </List>
                 </Collapse>
-                {this.props.userHasPermission("inventory") &&
+                {this.props.userHasPermission("view_item") &&
                     <>
                         <ListItem button className={this.classes.menuItem}
                             onClick={this.toggleInventoryGroup}
@@ -221,7 +221,7 @@ class NavMenu extends React.Component {
                             selected = {this.activeRoute("/manage/homes")}>
                                 Homes
                         </ListItem>
-                        {this.props.userHasPermission("inventory") &&
+                        {this.props.userHasPermission("view_item") &&
                             <ListItem button dense onClick={this.showManageInventoryMenu} className={this.classes.subMenuItem}>Inventory</ListItem>
                         }
                         <ListItem button dense className={this.classes.subMenuItem}

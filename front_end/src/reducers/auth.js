@@ -8,6 +8,7 @@ import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, CLEAR_LOGIN_ERROR } from '..
 
 const initialState = {
     token: localStorage.getItem('token'),
+    refreshToken: localStorage.getItem('refreshToken'),
     tokenExpires: new Date(localStorage.getItem('expires')).getTime(),
     tokenIsExpired: false,
     isAuthenticated: localStorage.getItem('token') ? true : false,
@@ -80,11 +81,13 @@ export default function(state = initialState, action, dispatch) {
                 isLoading: false,
             };
         case LOGIN_SUCCESS:
-            localStorage.setItem('token', action.payload.token);
             var decodedToken = jwt_decode(action.payload.token);
+              
+            localStorage.setItem('token', action.payload.token);    
+            localStorage.setItem('refreshToken', action.payload.refreshToken);
+
             var expires = new Date(0)
             expires.setUTCSeconds(decodedToken.exp);
-
             localStorage.setItem('expires', expires)
 
             return {
