@@ -5,6 +5,8 @@ Views for the Accounting Application
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import Q
+from django.http import (HttpResponse, HttpResponseBadRequest, 
+                         HttpResponseForbidden)
 
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions
@@ -48,6 +50,13 @@ class AccountListView(viewsets.ModelViewSet):
     def get_queryset(self):
         cache_key = f"accounts_{self.request.user.id}"
 
+        '''
+        TO-DO: Add logic to accept query parameter that will exclude closed accounts.
+        For now, all accounts are returned.
+
+        Closed accounts to be filtered on is_closed flag when parameter 
+        '''
+
         if (self.request.method in ['GET']):
             accounts = cache.get(cache_key)
 
@@ -55,7 +64,7 @@ class AccountListView(viewsets.ModelViewSet):
                 accounts = self.request.user.accounts.all()
                 cache.set(cache_key, accounts)
         else:
-            accounts = self.request.user.accounts.all()
+            accounts = self.request.user.accounts.all()    
             clear_cache_item(cache_key)
 
         return accounts
@@ -71,7 +80,16 @@ class AccountListView(viewsets.ModelViewSet):
         return result
 
     def update(self, request, *args, **kwargs):
-        result = super(AccountListView, self).update(request, *args, **kwargs)      
+
+        try: 
+
+            close_date = request.data["close_date"].split("T")[0]
+            request.data["close_date"] = close_date
+
+            result = super(AccountListView, self).update(request, *args, **kwargs)      
+        except HttpResponseBadRequest as e:
+            # TO-DO: Provide better error handling than just printing the exception to the console...
+            print(e)
 
         if result.status_code == 200:
             self.request.method = 'GET'
@@ -386,7 +404,7 @@ class TransactionListView(viewsets.ModelViewSet):
             instance = self.get_object()
             clear_cache_item(f"transactions_{instance.account.id}")
         except:
-            print("Error")
+            print("Error deleting transaction.")
 
         return super(TransactionListView, self).destroy(request, *args, **kwargs)
     

@@ -43,6 +43,8 @@ class Account(models.Model):
     credit_limit = models.FloatField(verbose_name="Credit Limit", null=True)
     owner = models.ForeignKey(User, related_name="accounts", verbose_name="Owner", on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, verbose_name="Organization", on_delete=models.PROTECT)
+    is_closed = models.BooleanField(verbose_name="Is Closed")
+    close_date = models.DateField(verbose_name="Close Date", null=True, blank=True)
 
     def __str__(self):
         balance_string = "${:,.2f}".format(self.current_balance)

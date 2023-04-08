@@ -14,6 +14,22 @@ const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpa
 import { getAccount } from '../../actions/accounts';
 
 const styles = theme => ({
+    accountList: {
+        maxHeight: "22em",
+        overflowY: "auto",
+        '&::-webkit-scrollbar': {
+            width: '0.25em',
+            margin: '0em 0em 0em 0.5em'
+        },
+        '&::-webkit-scrollbar-track': {
+            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+            webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+        },
+        '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(12, 162, 208, 0.5)',
+            outline: '0.5px solid slategrey'
+        }
+    },
     listCardSubHeader: {
         color: "#737373",
         fontWeight: "bold",
@@ -21,7 +37,7 @@ const styles = theme => ({
         paddingTop: "10px"
     },
     accountSummary: {
-        margin: "0em",
+        margin: "0em 0.1em 0em 0em",
         padding: "0.5em 0em 0em 0em",
         ['@media print']: {
             paddingTop: "4px",
@@ -63,7 +79,10 @@ class BankingList extends React.Component {
                     <Grid container spacing={0} justifyContent="space-between" className={classes.accountSummary} >
                         <Grid container item spacing={0} xs={12} justifyContent="space-between">
                             <Grid item>
-                                <Typography variant="body1">{acct.name}</Typography>
+                                <Typography variant="body1">
+                                    {acct.name}&nbsp;
+                                    { acct.is_closed ? <Typography variant="caption" sx={{fontStyle: "italic"}}>(Closed)</Typography> : null }
+                                </Typography>
                             </Grid>
                             <Grid item xs={"auto"}>
                                 <Typography variant="body1">
@@ -118,7 +137,7 @@ class BankingList extends React.Component {
         return (
             <AccountList cardTitle="Banking" totalBalance={totalBalance}
                 overviewContent={this.bankingOverview(checkingTotal, savingsTotal)}>
-                <React.Fragment>
+                <div className={classes.accountList}>
                     { !!checkingAccounts.length &&
                         <React.Fragment>
                             <Typography variant="body1" className={classes.listCardSubHeader}>Checking</Typography>
@@ -135,7 +154,7 @@ class BankingList extends React.Component {
                             </List>
                         </React.Fragment>
                     }
-                </React.Fragment>
+                </div>
             </AccountList>
         );
     }

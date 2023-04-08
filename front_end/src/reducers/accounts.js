@@ -32,7 +32,7 @@ export default function(state = initialState, action) {
                 accounts: action.payload,
                 accountsLoading: false,
                 accountsLoaded: true
-            };
+            }            
         case ACCOUNTS_LOAD_ERROR:
             return {
                 ...state,

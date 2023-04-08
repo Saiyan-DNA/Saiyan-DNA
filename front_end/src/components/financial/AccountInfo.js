@@ -3,8 +3,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import loadable from '@loadable/component';
 
-import { Button, Card, CardContent, Container, Grid, TextField } from '@mui/material';
+import { Button, Card, CardContent, Container, Grid, TextField, Checkbox, FormControlLabel } from '@mui/material';
 import { withStyles } from '@mui/styles';
+
+import DatePicker from '@mui/lab/DatePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import enLocale from 'date-fns/locale/en-US';
+import parseISO from 'date-fns/parseISO';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
 const CurrencyFormat = loadable(() => import('../common/CurrencyFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
 const PercentageFormat = loadable(() => import('../common/PercentageFormat' /* webpackChunkName: "Common" */), {fallback: <span>&nbsp;</span>});
@@ -36,6 +42,8 @@ class AccountInfo extends React.Component {
         currentBalance: null,
         creditLimit: "",
         interestRate: "",
+        isClosed: false,
+        closeDate: null,
         owner: null,
         isValid: false,
         deleteModalOpen: false,
@@ -67,6 +75,8 @@ class AccountInfo extends React.Component {
                 currentBalance: account.current_balance,
                 creditLimit: account.credit_limit,
                 interestRate: account.interest_rate,
+                isClosed: account.is_closed,
+                closeDate: account.close_date,
                 owner: account.owner,
                 balanceEditable: balanceEditable
             })
@@ -84,6 +94,9 @@ class AccountInfo extends React.Component {
         if (accountInfo.accountType && accountInfo.accountType.value === 'CR') {
             if (!accountInfo.creditLimit) isValid = false;
         }
+        if (accountInfo.isClosed && (accountInfo.closeDate == null || accountInfo.closeDate == "") ) {
+            isValid = false;
+        }
 
         return isValid;
     }
@@ -91,7 +104,18 @@ class AccountInfo extends React.Component {
     onChange = (e) => {
         var currentState = this.state;
 
-        currentState[e.target.name] = e.target.value;
+        if (e.target.name == "isClosed") {
+            currentState.isClosed = e.target.checked;
+        }
+        else if (e.target.name == "closeDate") {
+            let fullDate = new Date(e.target.value);
+            let dateOnly = fullDate.toISOString();
+            currentState.closeDate = dateOnly;
+        }
+        else {
+            currentState[e.target.name] = e.target.value;
+        }
+        
         currentState.isValid = this.validateAccount(currentState);
 
         this.setState(currentState);
@@ -122,7 +146,7 @@ class AccountInfo extends React.Component {
 
     saveAccountDetails = () => {
         const { currentUser, createAccount, updateAccount, history } = this.props;
-        const { id, accountName, accountType, organization, currentBalance, creditLimit, interestRate } = this.state
+        const { id, accountName, accountType, organization, currentBalance, creditLimit, interestRate, isClosed, closeDate } = this.state
 
         let accountObject = {
             "name": accountName,
@@ -131,6 +155,8 @@ class AccountInfo extends React.Component {
             "current_balance": parseFloat(currentBalance) || 0.00,
             "credit_limit": parseFloat(creditLimit) || 0.00,
             "interest_rate": (parseFloat(interestRate) || 0),
+            "is_closed":  isClosed,
+            "close_date": closeDate,
             "owner": currentUser.id
         }
 
@@ -141,7 +167,7 @@ class AccountInfo extends React.Component {
 
     render() {
         const { classes, history } = this.props;
-        const { id, accountName, accountType, organization, currentBalance, isValid, deleteModalOpen, balanceEditable } = this.state;
+        const { id, accountName, accountType, organization, currentBalance, isClosed, closeDate, isValid, deleteModalOpen, balanceEditable } = this.state;
 
         return (
             <Container>
@@ -181,6 +207,23 @@ class AccountInfo extends React.Component {
                                                 </Grid>
                                             }
                                             { accountType && ['CR', 'LN'].includes(accountType.value) ? this.creditFields(classes) : null }
+                                            <Grid item container xs={12} sm={6}>
+                                                <Grid item xs={4}>
+                                                    <FormControlLabel label="Closed" 
+                                                        control={<Checkbox id="isClosed" name="isClosed" checked={isClosed} onChange={this.onChange.bind(this)} />} />
+                                                </Grid>
+                                                <Grid item xs={8}>
+                                                    { isClosed && 
+                                                        <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>                                                                
+                                                            <DatePicker id="closeDate" name="closeDate" label="Close Date" 
+                                                                onChange={(value) => this.onChange({target: {name: "closeDate", value: value}})}
+                                                                value={closeDate} fullWidth={true}
+                                                                renderInput={(params) => <TextField {...params} fullWidth={true} size="small" variant="outlined" />} />
+                                                        </LocalizationProvider>                                           
+                                                    }
+                                                </Grid>
+                                            </Grid>
+                                            
                                         </Grid>
                                 </CardContent>
                             </Card>

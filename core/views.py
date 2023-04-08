@@ -217,7 +217,6 @@ class EmailVerificationAPI(generics.GenericAPIView):
         verification_code = self.generate_code()
         create_date = timezone.now()
         expiry_time = create_date + datetime.timedelta(minutes=30)
-        print(expiry_time)
 
         existing_codes = VerificationCode.objects.filter(user=user, status='A')
 

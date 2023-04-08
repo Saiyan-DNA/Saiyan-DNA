@@ -21,6 +21,8 @@ pillow = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 djangorestframework-recursive = "*"
+django-q = "*"
+django-redis = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"

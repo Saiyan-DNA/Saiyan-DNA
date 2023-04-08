@@ -9,8 +9,9 @@ from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Category, Item
 from core.models import Home
+from .models import Category, Item
+
 from .serializers import CategorySerializer, ItemReadSerializer, ItemSerializer
 
 
@@ -25,8 +26,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user_homes = self.request.user.homes.all().values()
-        for i in user_homes:
-            print(i)
 
         home_id = int(self.request.query_params["home"])
         if (home_id in (i["id"] for i in user_homes)):

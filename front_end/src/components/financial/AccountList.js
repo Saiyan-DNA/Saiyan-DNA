@@ -16,8 +16,24 @@ const SummaryCard = loadable(() => import('../common/SummaryCard' /* webpackChun
 import { getAccount } from '../../actions/accounts';
 
 const styles = theme => ({
+    accountList: {
+        maxHeight: "22em",
+        overflowY: "auto",
+        '&::-webkit-scrollbar': {
+            width: '0.25em',
+            margin: '0em 0em 0em 0.5em'
+        },
+        '&::-webkit-scrollbar-track': {
+            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+            webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+        },
+        '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(12, 162, 208, 0.5)',
+            outline: '0.5px solid slategrey'
+        }
+    },
     accountSummary: {
-        margin: "0em",
+        margin: "0em 0.1em 0em 0em",
         padding: "0.5em 0em 0em 0em",
         ['@media print']: {
             paddingTop: "4px",
@@ -59,11 +75,26 @@ class AccountList extends React.Component {
     }
 
     showMore = () => {
-        this.setState({accountsShown: this.state.accountsShown + 5});
+        const { accountList } = this.props;
+        const { accountsShown } = this.state;
+
+        var accountsToShow = accountsShown + 5;
+
+        if (accountsToShow >= accountList.length) {    
+            accountsToShow = accountList.length;
+        }
+
+        this.setState({accountsShown: accountsToShow});
     }
 
     showLess = () => {
-        this.setState({accountsShown: 5});
+        const { accountsShown } = this.state;
+
+        var accountsToShow = accountsShown - 5;
+
+        if (accountsToShow < 5) accountsToShow = 5;
+
+        this.setState({accountsShown: accountsToShow});
     }
 
     accountSummary = (acct, classes) => {
@@ -76,7 +107,10 @@ class AccountList extends React.Component {
                     <Grid container spacing={0} justifyContent="space-between" className={classes.accountSummary} >
                         <Grid container item spacing={0} xs={12} justifyContent="space-between">
                             <Grid item>
-                                <Typography variant="body1">{acct.name}</Typography>
+                                <Typography variant="body1">
+                                    { acct.name }&nbsp;
+                                    { acct.is_closed ? <Typography variant="caption" sx={{fontStyle: "italic"}}>(Closed)</Typography> : null }
+                                </Typography>
                             </Grid>
                             <Grid item xs={"auto"}>
                                 <Typography variant="body1">
@@ -94,7 +128,7 @@ class AccountList extends React.Component {
                                 <Typography variant="caption" style={{verticalAlign: "text-top", fontStyle: "italic"}}>
                                     {acct.organization.website_url != null ?
                                         <Link rel="noreferrer" onClick={this.goToBankingURL.bind(this, acct.organization.website_url)}>{acct.organization.name}</Link> :
-                                        acct.financial_institution.name
+                                        acct.organization.name
                                     }
                                 </Typography>
                             </Grid>
@@ -118,13 +152,13 @@ class AccountList extends React.Component {
 
         var showMore = accountList && accountsShown < accountList.length ? true : false;
         var showLess = accountList && accountsShown > 5 ? true : false;
-        
+
         return (
             <SummaryCard headerTitle={cardTitle} headerValue={totalBalance}>
                 {overviewContent}
                 {accountList &&
-                    <List>
-                        {accountList.slice(0, accountsShown).map(acct => this.accountSummary(acct, classes))}
+                    <List className={classes.accountList}>
+                        { accountList.slice(0, accountsShown).map(acct => this.accountSummary(acct, classes)) }
                         { (showMore || showLess) && (
                             <ListItem key="more" disableGutters>
                                 <Grid container spacing={0} justifyContent="center">
